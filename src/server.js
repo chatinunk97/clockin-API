@@ -17,8 +17,11 @@ app.use(morgan("dev"));
 app.use(express.json());
 //////////
 
+app.use('/' , (req,res,next)=>{
+  res.json({message : "Connected ! "})
+})
 
 
-app.listen(PORT, () => {
-  console.log(" ############ Server is running on PORT ", +PORT);
+app.listen(PORT || 8080, () => {
+  console.log(" ############ Server is running on PORT ", +PORT || 8080);
 });
