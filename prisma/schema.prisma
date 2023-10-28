@@ -6,6 +6,180 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                @id @default(autoincrement())
+  profileImage         String?
+  employeeId           String
+  firstName            String
+  lastName             String
+  email                String             @unique
+  mobile               String             @unique
+  position             PositionType
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  userType             UserRole
+  isActive             Boolean            @default(true)
+  checkLocation        Boolean            @default(true)
+  companyProfileId     Int
+  companyProfile       CompanyProfile     @relation(fields: [companyProfileId], references: [id])
+  userLeave            UserLeave[]
+  userRelationshipBoss UserRelationship[] @relation("userBoss")
+  userRelationshipUser UserRelationship[] @relation("user")
+  clock                Clock[]
+  flexiblaTime         FlexiblaTime[]
+  requestOT            requestOT[]
+}
+
+enum PositionType {
+  ADMIN
+  USER
+  HR
+  MANEGER
+}
+
+enum UserRole {
+  FULLTIME
+  PARTTIME
+}
+
+model UserRelationship {
+  id         Int  @id @default(autoincrement())
+  userBossId Int
+  userBoss   User @relation("userBoss", fields: [userBossId], references: [id])
+  userId     Int
+  user       User @relation("user", fields: [userId], references: [id])
+}
+
+model Package {
+  id             Int              @id @default(autoincrement())
+  price          Decimal          @db.Decimal(10, 2)
+  userCount      Int
+  companyProfile CompanyProfile[]
+}
+
+model CompanyProfile {
+  id               Int            @id @default(autoincrement())
+  companyName      String
+  packageId        Int
+  package          Package        @relation(fields: [packageId], references: [id])
+  isActive         Boolean        @default(true)
+  latitudeCompany  Float
+  longitudeCompany Float
+  user             User[]
+  payment          Payment[]
+  leaveProfile     LeaveProfile[]
+  timeProfile      TimeProfile[]
+}
+
+model Payment {
+  id               Int            @id @default(autoincrement())
+  companyProfileId Int
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
+  paySlip          String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now())
+}
+
+model LeaveProfile {
+  id               Int            @id @default(autoincrement())
+  companyProfileId Int
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
+  leaveName        String
+  userLeave        UserLeave[]
+}
+
+model RequestLeave {
+  id            Int          @id @default(autoincrement())
+  userLeaveId   Int
+  userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
+  startDate     DateTime
+  endDate       DateTime
+  halfDate      Boolean
+  statusRequest StateRequest
+  messageLeave  String
+}
+
+enum StateRequest {
+  PENDING
+  ACCEPT
+  REJECT
+}
+
+model UserLeave {
+  id             Int            @id @default(autoincrement())
+  userId         Int
+  user           User           @relation(fields: [userId], references: [id])
+  leaveProfiieId Int
+  leaveProfile   LeaveProfile   @relation(fields: [leaveProfileId], references: [id])
+  leaveProfileId Int
+  requestLeave   RequestLeave[]
+  dateAmount     Int            @default(0)
+}
+
+model Clock {
+  id                Int          @id @default(autoincrement())
+  userId            Int
+  user              User         @relation(fields: [userId], references: [id])
+  clockInTime       DateTime
+  clockOutTime      DateTime
+  latitudeClockIn   Float
+  longitudeClockIn  Float
+  latitudeClockOut  Float
+  longitudeClockOut Float
+  statusClockIn     stateClockIn
+  reasonLate        String
+  requestOT         requestOT[]
+}
+
+enum stateClockIn {
+  ONTIME
+  LATE
+}
+
+model FlexiblaTime {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  date          DateTime
+  timeProfileId Int
+  timeProfile   TimeProfile @relation(fields: [timeProfileId], references: [id])
+}
+
+model TimeProfile {
+  id               Int            @id @default(autoincrement())
+  companyProfileId Int
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
+  start            DateTime
+  end              DateTime
+  typeTime         Typetime
+  flexiblaTime     FlexiblaTime[]
+}
+
+enum Typetime {
+  DEFAULT
+  FIRSTHALF
+  SECONDHAFT
+  NOTSPECIFIED
+}
+
+model requestOT {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  clockId   Int
+  clock     Clock    @relation(fields: [clockId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  statusOT  stateOT
+  messageOT String
+}
+
+enum stateOT {
+  PENDING
+  ACCEPT
+  REJECT
 }
