@@ -63,17 +63,24 @@ model Package {
 }
 
 model CompanyProfile {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   companyName      String
   packageId        Int
-  package          Package        @relation(fields: [packageId], references: [id])
-  isActive         Boolean        @default(true)
-  latitudeCompany  Float
-  longitudeCompany Float
+  package          Package           @relation(fields: [packageId], references: [id])
+  isActive         Boolean           @default(true)
   user             User[]
   payment          Payment[]
   leaveProfile     LeaveProfile[]
   timeProfile      TimeProfile[]
+  companyLocations CompanyLocation[]
+}
+
+model CompanyLocation {
+  id               Int            @id @default(autoincrement())
+  latitudeCompany  Float
+  longitudeCompany Float
+  companyProfileId Int
+  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
 }
 
 model Payment {
@@ -114,8 +121,8 @@ model UserLeave {
   id             Int            @id @default(autoincrement())
   userId         Int
   user           User           @relation(fields: [userId], references: [id])
-  leaveProfile   LeaveProfile   @relation(fields: [leaveProfileId], references: [id])
-  leaveProfileId Int
+  leaveProfiieId Int
+  leaveProfile   LeaveProfile   @relation(fields: [leaveProfiieId], references: [id])
   requestLeave   RequestLeave[]
   dateAmount     Int            @default(0)
 }
@@ -128,10 +135,10 @@ model Clock {
   clockOutTime      DateTime
   latitudeClockIn   Float
   longitudeClockIn  Float
-  latitudeClockOut  Float
-  longitudeClockOut Float
+  latitudeClockOut  Float?
+  longitudeClockOut Float?
   statusClockIn     stateClockIn
-  reasonLate        String
+  reasonLate        String?
   requestOT         requestOT[]
 }
 
