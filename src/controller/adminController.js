@@ -1,7 +1,7 @@
-const prisma = require('../models/prisma');
-const { registerCompanySchema } = require('../validators/authAdmin-validators');
-const createError = require('../utils/create-error');
-const { upload } = require('../utils/cloudinary');
+const prisma = require("../models/prisma");
+const { registerCompanySchema } = require("../validators/admin-validators");
+const createError = require("../utils/create-error");
+const { upload } = require("../utils/cloudinary");
 
 exports.createPackage = async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ exports.createPackage = async (req, res, next) => {
       data: req.body,
     });
 
-    res.status(201).json({ message: 'Package was created', package });
+    res.status(201).json({ message: "Package was created", package });
   } catch (error) {
     next(error);
   }
@@ -39,7 +39,7 @@ exports.registerCompany = async (req, res, next) => {
 
     res
       .status(201)
-      .json({ message: 'Company was created', company, companyLocation });
+      .json({ message: "Company was created", company, companyLocation });
   } catch (error) {
     next(error);
   }
@@ -50,7 +50,7 @@ exports.createPayment = async (req, res, next) => {
     console.log(req.file);
     console.log(req.body);
     if (!req.file) {
-      return next(createError('Pay slip is required'));
+      return next(createError("Pay slip is required"));
     }
     const url = await upload(req.file.path);
 
@@ -60,7 +60,7 @@ exports.createPayment = async (req, res, next) => {
         paySlip: url,
       },
     });
-    res.status(201).json({ message: 'Payment was created', payment });
+    res.status(201).json({ message: "Payment was created", payment });
   } catch (error) {
     next(error);
   }

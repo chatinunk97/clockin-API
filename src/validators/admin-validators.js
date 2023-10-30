@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const registerCompanySchema = Joi.object({
   companyName: Joi.string().trim().required(),

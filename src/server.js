@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 //Routes
-const authAdminRoute = require("../src/routes/authAdmin-route");
+const adminRoute = require("../src/routes/admin-route");
 const authUserRoute = require("./routes/authUser-route");
 
 //Middlewares
@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 //////////
 
-app.use("/admin", authAdminRoute);
+app.use("/admin", adminRoute);
 app.use("/users", authUserRoute);
 
 app.use(notFoundMiddleware);
