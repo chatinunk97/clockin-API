@@ -7,11 +7,17 @@ const adminController = require("../controller/adminController");
 const router = express.Router();
 
 router.post("/createPackage", adminController.createPackage);
-router.post("/registerCompany", adminController.registerCompany);
 router.post(
-  "/createPayment",
+  "/registerCompany",
   uploadMiddleware.single("paySlip"),
-  adminController.createPayment
+  adminController.registerCompany
 );
+router.post(
+  "/createAdmin",
+  uploadMiddleware.single("profileImage"),
+  adminController.createAdmin
+);
+
+router.delete("/deleteAdmin/:id", adminController.deleteAdmin);
 
 module.exports = router;
