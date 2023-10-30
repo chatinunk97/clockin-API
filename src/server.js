@@ -7,10 +7,10 @@ const cors = require("cors");
 
 //Routes
 const leaveRoute = require("./routes/leave-route");
-
-//Middlewares
 const adminRoute = require("../src/routes/admin-route");
 const authUserRoute = require("./routes/authUser-route");
+
+//Middlewares
 const requestLimitMiddleware = require("./middleware/defaultMiddleware/requestLimit");
 const errorMiddleware = require("../src/middleware/defaultMiddleware/error");
 const notFoundMiddleware = require("../src/middleware/defaultMiddleware/not-found");
