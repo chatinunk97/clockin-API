@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 //Routes
+const leaveRoute = require("./routes/leave-route");
 const adminRoute = require("../src/routes/admin-route");
 const authUserRoute = require("./routes/authUser-route");
 
@@ -20,6 +21,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 //////////
 
+app.use("/leave", leaveRoute);
 app.use("/admin", adminRoute);
 app.use("/users", authUserRoute);
 
