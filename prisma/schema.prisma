@@ -17,11 +17,12 @@ model User {
   firstName            String
   lastName             String
   email                String             @unique
+  password             String
   mobile               String             @unique
-  position             PositionType
+  position             PositionType       @default(USER)
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
-  userType             UserRole
+  userType             UserRole           @default(FULLTIME)
   isActive             Boolean            @default(true)
   checkLocation        Boolean            @default(true)
   companyProfileId     Int
@@ -98,8 +99,8 @@ model RequestLeave {
   userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
   startDate     DateTime
   endDate       DateTime
-  halfDate      Boolean
-  statusRequest StateRequest
+  halfDate      Boolean      @default(false)
+  statusRequest StateRequest @default(PENDING)
   messageLeave  String
 }
 
@@ -113,7 +114,6 @@ model UserLeave {
   id             Int            @id @default(autoincrement())
   userId         Int
   user           User           @relation(fields: [userId], references: [id])
-  leaveProfiieId Int
   leaveProfile   LeaveProfile   @relation(fields: [leaveProfileId], references: [id])
   leaveProfileId Int
   requestLeave   RequestLeave[]
@@ -174,7 +174,7 @@ model requestOT {
   clock     Clock    @relation(fields: [clockId], references: [id])
   startTime DateTime
   endTime   DateTime
-  statusOT  stateOT
+  statusOT  stateOT  @default(PENDING)
   messageOT String
 }
 
