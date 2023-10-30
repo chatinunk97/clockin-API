@@ -1,12 +1,12 @@
-const fs = require('fs/promises');
-const prisma = require('../models/prisma');
+const fs = require("fs/promises");
+const prisma = require("../models/prisma");
 const {
   registerCompanySchema,
   createAdminSchema,
   deleteAdminSchema,
-} = require('../validators/admin-validators');
-const createError = require('../utils/create-error');
-const { upload } = require('../utils/cloudinary');
+} = require("../validators/admin-validators");
+const createError = require("../utils/create-error");
+const { upload } = require("../utils/cloudinary");
 
 exports.createPackage = async (req, res, next) => {
   try {
@@ -14,7 +14,7 @@ exports.createPackage = async (req, res, next) => {
       data: req.body,
     });
 
-    res.status(201).json({ message: 'Package was created', package });
+    res.status(201).json({ message: "Package was created", package });
   } catch (error) {
     next(error);
   }
@@ -23,7 +23,7 @@ exports.createPackage = async (req, res, next) => {
 exports.registerCompany = async (req, res, next) => {
   try {
     if (!req.file) {
-      return next(createError('Pay slip is required'));
+      return next(createError("Pay slip is required"));
     }
 
     const url = await upload(req.file.path);
@@ -34,7 +34,7 @@ exports.registerCompany = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    console.log(value, '========================');
+    console.log(value, "========================");
 
     const company = await prisma.companyProfile.create({
       data: {
@@ -59,7 +59,7 @@ exports.registerCompany = async (req, res, next) => {
             email: value.email,
             mobile: value.mobile,
             password: value.password,
-            position: 'ADMIN',
+            position: "ADMIN",
           },
         },
       },
@@ -71,7 +71,7 @@ exports.registerCompany = async (req, res, next) => {
     });
 
     res.status(201).json({
-      message: 'Company was created',
+      message: "Company was created",
       company,
     });
   } catch (error) {
@@ -93,11 +93,11 @@ exports.createAdmin = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    value.position = 'ADMIN';
+    value.position = "ADMIN";
     const admin = await prisma.user.create({
       data: value,
     });
-    res.status(201).json({ message: 'Good', admin });
+    res.status(201).json({ message: "Good", admin });
   } catch (error) {
     next(error);
   }
@@ -112,7 +112,7 @@ exports.deleteAdmin = async (req, res, next) => {
 
     const foundAdmin = await prisma.user.findFirst({
       where: {
-        position: 'ADMIN',
+        position: "ADMIN",
         id: value.id,
       },
     });
@@ -123,7 +123,7 @@ exports.deleteAdmin = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: 'Deleted' });
+    res.status(200).json({ message: "Deleted" });
   } catch (error) {
     next(error);
   }
