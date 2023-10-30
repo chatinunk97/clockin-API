@@ -83,45 +83,6 @@ exports.registerCompany = async (req, res, next) => {
   }
 };
 
-// exports.registerCompany = async (req, res, next) => {
-//   try {
-//     if (!req.file) {
-//       return next(createError('Pay slip is required'));
-//     }
-
-//     const url = await upload(req.file.path);
-//     req.body.paySlip = url;
-
-//     const { value, error } = registerCompanySchema.validate(req.body);
-//     if (error) {
-//       return next(error);
-//     }
-
-//     const company = await prisma.companyProfile.create({
-//       data:{
-
-//       },
-
-//       include: {
-//         companyLocations: true,
-//         payment: true,
-//         user: true,
-//       },
-//     });
-
-//     res.status(201).json({
-//       message: 'Company was created',
-//       company,
-//     });
-//   } catch (error) {
-//     next(error);
-//   } finally {
-//     if (req.file) {
-//       fs.unlink(req.file.path);
-//     }
-//   }
-// };
-
 exports.createAdmin = async (req, res, next) => {
   try {
     if (req.file) {
