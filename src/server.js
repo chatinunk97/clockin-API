@@ -1,27 +1,29 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-require("dotenv").config();
+require('dotenv').config();
 const PORT = process.env.PORT;
-const morgan = require("morgan");
-const cors = require('cors')
+const morgan = require('morgan');
+const cors = require('cors');
 
 //Routes
+const authAdminRoute = require('../src/routes/authAdmin-route');
 
 //Middlewares
-const requestLimitMiddleware = require('./middleware/defaultMiddleware/requestLimit')
-
+const requestLimitMiddleware = require('./middleware/defaultMiddleware/requestLimit');
+const errorMiddleware = require('../src/middleware/defaultMiddleware/error');
+const notFoundMiddleware = require('../src/middleware/defaultMiddleware/not-found');
 //Default Middleware
-app.use(cors())
-app.use(requestLimitMiddleware)
-app.use(morgan("dev"));
+app.use(cors());
+app.use(requestLimitMiddleware);
+app.use(morgan('dev'));
 app.use(express.json());
 //////////
 
-app.use('/' , (req,res,next)=>{
-  res.json({message : "Connected ! "})
-})
+app.use('/admin', authAdminRoute);
 
+app.use(notFoundMiddleware);
+app.use(errorMiddleware);
 
 app.listen(PORT || 8080, () => {
-  console.log(" ############ Server is running on PORT ", +PORT || 8080);
+  console.log(' ############ Server is running on PORT ', +PORT || 8080);
 });
