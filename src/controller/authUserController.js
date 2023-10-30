@@ -1,8 +1,8 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const prisma = require("../models/prisma");
-const { createUserSchema } = require("../validators/authUser-validator.js");
-const createError = require("../utils/create-error");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const prisma = require('../models/prisma');
+const { createUserSchema } = require('../validators/user-validator.js');
+const createError = require('../utils/create-error');
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -82,7 +82,7 @@ exports.deleteUsers = async (req, res, next) => {
     // }
 
     if (!userId) {
-      return next(createError("user is not exist", 404));
+      return next(createError('user is not exist', 404));
     }
     console.log(userId);
     const deletedUser = await prisma.user.delete({
@@ -91,15 +91,15 @@ exports.deleteUsers = async (req, res, next) => {
       },
     });
 
-    res.json({ message: "User deleted successfully", user: deletedUser });
+    res.json({ message: 'User deleted successfully', user: deletedUser });
   } catch (error) {
     next(error);
   }
 };
 
 function generateAuthToken(user) {
-  const token = jwt.sign({ userId: user.id }, "your-secret-key", {
-    expiresIn: "1h",
+  const token = jwt.sign({ userId: user.id }, 'your-secret-key', {
+    expiresIn: '1h',
   });
   return token;
 }
