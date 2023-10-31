@@ -1,11 +1,23 @@
+const fs = require("fs/promises");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const prisma = require("../models/prisma");
-const { createUserSchema } = require("../validators/authUser-validator.js");
+const {
+  createUserSchema,
+  updateUserSchema,
+} = require("../validators/user-validator.js");
 const createError = require("../utils/create-error");
+const { upload } = require("../utils/cloudinary");
 
 exports.createUser = async (req, res, next) => {
   try {
+    console.log(req.file);
+    console.log(req.body);
+    if (req.file) {
+      const url = await upload(req.file.path);
+      console.log(url);
+      req.body.profileImage = url;
+    }
     const { error, value } = createUserSchema.validate(req.body);
 
     if (error) {
@@ -28,41 +40,48 @@ exports.createUser = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  } finally {
+    if (req.file) {
+      fs.unlink(req.file.path);
+    }
   }
 };
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const userId = await prisma.user.findFirst({
-      where: {
-        id: +req.params.userId,
-      },
+    if (req.file) {
+      const url = await upload(req.file.path);
+      req.body.profileImage = url;
+    }
+
+    const { value, error } = updateUserSchema.validate(req.body);
+
+    if (error) {
+      throw next(error);
+    }
+    const updateUser = await prisma.user.update({
+      where: { id: value.id },
+      data: value,
     });
-    const { email, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { email, password: hashedPassword },
-    });
-
-    res.json(updatedUser);
-  } catch (error) {
-    next(error);
+    res.status(201).json({ message: "Update User SUCCESS", updateUser });
+  } catch (err) {
+    console.log("####");
+    next(err);
   }
 };
 
 exports.getUserById = async (req, res, next) => {
   try {
-    const userId = await prisma.user.findUnique({
-      where: { id: userId },
+    const user = await prisma.user.findMany({
+      where: { id: +req.params.userId },
     });
-    if (!user) {
+
+    if (!user || user.length === 0) {
       throw createError(404, "User not found");
     }
-
-    res.json(user);
+    console.log(user);
+    res.status(200).json({ message: "Get user", user: user });
   } catch (error) {
     next(error);
   }
