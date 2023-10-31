@@ -24,20 +24,21 @@ const createUserSchema = Joi.object({
 });
 
 const updateUserSchema = Joi.object({
+  id: Joi.number(),
   profileImage: Joi.string(),
   employeeId: Joi.string(),
   firstName: Joi.string(),
   lastName: Joi.string(),
   email: Joi.string().email(),
-  password: Joi.string()
-    .pattern(/^[a-zA-Z0-9]{6,30}$/)
-    .trim()
-    .required(),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref("password"))
-    .trim()
-    .required()
-    .strip(),
+  // password: Joi.string()
+  //   .pattern(/^[a-zA-Z0-9]{6,30}$/)
+  //   .trim()
+  //   .required(),
+  // confirmPassword: Joi.string()
+  //   .valid(Joi.ref("password"))
+  //   .trim()
+  //   .required()
+  //   .strip(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),

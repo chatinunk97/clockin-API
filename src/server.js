@@ -8,7 +8,7 @@ const cors = require("cors");
 //Routes
 const leaveRoute = require("./routes/leave-route");
 const adminRoute = require("../src/routes/admin-route");
-const authUserRoute = require("./routes/authUser-route");
+const userRoute = require("./routes/user-route");
 
 //Middlewares
 const requestLimitMiddleware = require("./middleware/defaultMiddleware/requestLimit");
@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use("/leave", leaveRoute);
 app.use("/admin", adminRoute);
-app.use("/users", authUserRoute);
+app.use("/users", userRoute);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
