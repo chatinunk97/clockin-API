@@ -3,11 +3,15 @@ const {
   createRequestLeaveSchema,
   createUserLeaveSchema,
   createProfileLeaveSchema,
+  updateUserLeaveSchema,
+  deleteUserLeaveSchema,
   updateStatusRequestAcceptByUserLeaveIdSchema,
   updateStatusRequestRejectByUserLeaveIdSchema,
+  deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
 } = require("../validators/leave-validator");
 
+// ########## request leave ##########
 exports.createLeaveRequest = async (req, res, next) => {
   try {
     const { value, error } = createRequestLeaveSchema.validate(req.body);
@@ -32,8 +36,8 @@ exports.createLeaveRequest = async (req, res, next) => {
 exports.getLeaveRequestsByUserLeaveId = async (req, res, next) => {
   try {
     const { value, error } = getLeaveRequestsByUserLeaveId.validate(req.params);
-    console.log("value", value);
-    console.log(req.params);
+    // console.log("value", value);
+    // console.log("req.params", req.params);
 
     if (error) {
       error.statusCode = 400;
@@ -109,6 +113,7 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
   try {
     const { value, error } =
@@ -142,6 +147,31 @@ exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
   }
 };
 
+exports.deleteLeaveRequestsByLeaveRequestId = async (req, res, next) => {
+  try {
+    const { value, error } = deleteLeaveRequestsByUserLeaveIdSchema.validate(
+      req.params
+    );
+    // console.log("value", value);
+    // console.log("req.params", req.params);
+
+    if (error) {
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Delete userLeaveId
+    const result = await prisma.requestLeave.delete({
+      where: {
+        id: value.leaveRequestId,
+      },
+    });
+    res.status(200).json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createUserLeave = async (req, res, next) => {
   try {
     const { value, error } = createUserLeaveSchema.validate(req.body);
@@ -165,6 +195,69 @@ exports.createUserLeave = async (req, res, next) => {
   }
 };
 
+exports.updateUserLeave = async (req, res, next) => {
+  try {
+    const { value, error } = updateUserLeaveSchema.validate(req.body);
+    // console.log("value", value);
+    // console.log("req.body", req.body);
+
+    if (error) {
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const result = await prisma.userLeave.update({
+      data: {
+        leaveProfileId: req.body.leaveProfileId,
+        dateAmount: req.body.dateAmount,
+      },
+      where: {
+        id: +req.params.userId,
+      },
+    });
+    res.status(200).json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteUserLeave = async (req, res, next) => {
+  try {
+    const { value, error } = deleteUserLeaveSchema.validate(req.params);
+    console.log("value", value);
+    // console.log("req.params", req.params);
+
+    if (error) {
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Find userLeaveId in table requestLeave
+    const found = await prisma.requestLeave.findFirst({
+      where: { userLeaveId: +value.userLeaveId },
+    });
+    // console.log("founddddd", found);
+
+    // Delete in table userLeave
+    if (found === null) {
+      await prisma.userLeave.delete({
+        where: {
+          id: value.userLeaveId,
+        },
+      });
+    }
+
+    if (found) {
+      return res.status(404).json({ message: "userLeaveId has request leave" });
+    }
+
+    res.status(200).json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ########## profile leave ##########
 exports.createProfileLeave = async (req, res, next) => {
   try {
     const { value, error } = createProfileLeaveSchema.validate(req.body);

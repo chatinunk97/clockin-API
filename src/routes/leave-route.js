@@ -2,18 +2,28 @@ const express = require("express");
 const leaveController = require("../controller/leave-controller");
 const router = express.Router();
 
+// request leave
 router.get("/", leaveController.getAllLeaveRequests);
 router.post("/create", leaveController.createLeaveRequest);
-router.get("/get/:userLeaveId", leaveController.getLeaveRequestsByUserLeaveId);
+router.delete(
+  "/:leaveRequestId",
+  leaveController.deleteLeaveRequestsByLeaveRequestId
+);
+// user leave
+router.get("/:userLeaveId", leaveController.getLeaveRequestsByUserLeaveId);
 router.post("/create/:userId", leaveController.createUserLeave);
-router.post("/profile", leaveController.createProfileLeave);
+router.patch("/:userId", leaveController.updateUserLeave);
 router.patch(
-  "/update/status/accept/:userLeaveId",
+  "/status/accept/:userLeaveId",
   leaveController.updateStatusRequestAcceptByUserLeaveId
 );
 router.patch(
-  "/update/status/reject/:userLeaveId",
+  "/status/reject/:userLeaveId",
   leaveController.updateStatusRequestRejectByUserLeaveId
 );
+router.delete("/delete/:userLeaveId", leaveController.deleteUserLeave);
+
+// profile leave
+router.post("/profile", leaveController.createProfileLeave);
 
 module.exports = router;
