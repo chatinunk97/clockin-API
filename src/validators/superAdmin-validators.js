@@ -1,12 +1,26 @@
 const Joi = require('joi');
 
-const loginAdminSchema = Joi.object({
+const registerCompanySchema = Joi.object({
+  companyName: Joi.string().trim().required(),
+  packageId: Joi.number().integer().positive().required(),
+  latitudeCompany: Joi.number().required(),
+  longitudeCompany: Joi.number().required(),
+  paySlip: Joi.string().required(),
+  employeeId: Joi.string().required(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string().trim().required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,16}$/)
+    .trim()
+    .required(),
+  mobile: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required(),
 });
-exports.loginAdminSchema = loginAdminSchema;
+exports.registerCompanySchema = registerCompanySchema;
 
-const createAdminSchema = Joi.object({
+const createSuperAdminSchema = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
   firstName: Joi.string().required(),
@@ -21,9 +35,9 @@ const createAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.createAdminSchema = createAdminSchema;
+exports.createSuperAdminSchema = createSuperAdminSchema;
 
-const updateAdminSchema = Joi.object({
+const updateSuperAdminSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
@@ -38,9 +52,9 @@ const updateAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.updateAdminSchema = updateAdminSchema;
+exports.updateSuperAdminSchema = updateSuperAdminSchema;
 
-const deleteAdminSchema = Joi.object({
+const deleteSuperAdminSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-exports.deleteAdminSchema = deleteAdminSchema;
+exports.deleteSuperAdminSchema = deleteSuperAdminSchema;

@@ -6,12 +6,6 @@ const adminController = require('../controller/adminController');
 
 const router = express.Router();
 
-// router.post('/createPackage', adminController.createPackage);
-// router.post(
-//   '/registerCompany',
-//   uploadMiddleware.single('paySlip'),
-//   adminController.registerCompany
-// );
 router.post(
   '/createAdmin',
   uploadMiddleware.single('profileImage'),
@@ -23,7 +17,6 @@ router.patch(
   uploadMiddleware.single('profileImage'),
   adminController.updateAdmin
 );
-
 router.delete('/deleteAdmin/:id', adminController.deleteAdmin);
 
 module.exports = router;

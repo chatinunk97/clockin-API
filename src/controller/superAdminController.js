@@ -2,7 +2,9 @@ const fs = require('fs/promises');
 
 const prisma = require('../models/prisma');
 const createError = require('../utils/create-error');
-const { registerCompanySchema } = require('../validators/admin-validators');
+const {
+  registerCompanySchema,
+} = require('../validators/superAdmin-validators');
 const { upload } = require('../utils/cloudinary');
 
 exports.createPackage = async (req, res, next) => {
