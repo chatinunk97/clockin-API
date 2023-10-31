@@ -118,7 +118,7 @@ exports.updateAdmin = async (req, res, next) => {
     });
 
     if (!foundAdmin) {
-      return next(createError('Admin is not exists'));
+      return next(createError('Admin is not exists', 400));
     }
 
     if (req.file) {
@@ -145,5 +145,23 @@ exports.updateAdmin = async (req, res, next) => {
     if (req.file) {
       fs.unlink(req.file.path);
     }
+  }
+};
+
+exports.resetPasswordAdmin = async (req, res, next) => {
+  try {
+    const foundAdmin = await prisma.user.findFirst({
+      where: {
+        position: 'ADMIN',
+        id: +req.body.id,
+      },
+    });
+
+    if (!foundAdmin) {
+      return next(createError('Admin is not exists', 400));
+    }
+    res.status(200).json({ message: 'dfsdghfddfs' });
+  } catch (error) {
+    next(error);
   }
 };

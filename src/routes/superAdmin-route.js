@@ -12,4 +12,17 @@ router.post(
   uploadMiddleware.single('paySlip'),
   superAdminController.registerCompany
 );
+router.post(
+  '/createSuperAdmin',
+  uploadMiddleware.single('profileImage'),
+  superAdminController.createSuperAdmin
+);
+router.patch(
+  '/updateSuperAdmin',
+  uploadMiddleware.single('profileImage'),
+  superAdminController.updateSuperAdmin
+);
+router.delete('/deleteSuperAdmin/:id', superAdminController.deleteSuperAdmin);
+router.post('/loginSuperAdmin', superAdminController.loginSuperAdmin);
+
 module.exports = router;

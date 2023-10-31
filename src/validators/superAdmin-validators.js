@@ -20,6 +20,12 @@ const registerCompanySchema = Joi.object({
 });
 exports.registerCompanySchema = registerCompanySchema;
 
+const loginSuperAdminSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().trim().required(),
+});
+exports.loginSuperAdminSchema = loginSuperAdminSchema;
+
 const createSuperAdminSchema = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),

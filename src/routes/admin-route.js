@@ -19,4 +19,6 @@ router.patch(
 );
 router.delete('/deleteAdmin/:id', adminController.deleteAdmin);
 
+router.patch('/resetPasswordAdmin', adminController.resetPasswordAdmin);
+
 module.exports = router;
