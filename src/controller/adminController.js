@@ -87,13 +87,12 @@ exports.loginAdmin = async (req, res, next) => {
     if (!admin) {
       return next(createError('Somethings went wrong, please try again', 400));
     }
-
-    const isMatch = await bcrypt.compare(value.password, foundAdmin.password);
+    const isMatch = await bcrypt.compare(value.password, admin.password);
     if (!isMatch) {
       return next(createError('Somethings went wrong, please try again', 400));
     }
 
-    const payload = { adminId: foundAdmin.id, position: foundAdmin.position };
+    const payload = { adminId: admin.id, position: admin.position };
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
