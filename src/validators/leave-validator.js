@@ -14,6 +14,15 @@ const createUserLeaveSchema = Joi.object({
   dateAmount: Joi.number().integer().positive().required(),
 });
 
+const updateUserLeaveSchema = Joi.object({
+  leaveProfileId: Joi.number().integer().positive(),
+  dateAmount: Joi.number().integer().positive(),
+});
+
+const deleteUserLeaveSchema = Joi.object({
+  userLeaveId: Joi.number().integer().positive().required(),
+});
+
 const createProfileLeaveSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive().required(),
   leaveName: Joi.string().required(),
@@ -26,6 +35,10 @@ const updateStatusRequestRejectByUserLeaveIdSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
 });
 
+const deleteLeaveRequestsByUserLeaveIdSchema = Joi.object({
+  leaveRequestId: Joi.number().integer().positive().required(),
+});
+
 const getLeaveRequestsByUserLeaveId = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
 });
@@ -33,8 +46,11 @@ const getLeaveRequestsByUserLeaveId = Joi.object({
 module.exports = {
   createRequestLeaveSchema,
   createUserLeaveSchema,
+  updateUserLeaveSchema,
+  deleteUserLeaveSchema,
   createProfileLeaveSchema,
   updateStatusRequestAcceptByUserLeaveIdSchema,
   updateStatusRequestRejectByUserLeaveIdSchema,
+  deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
 };
