@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/", leaveController.getAllLeaveRequests);
 router.post("/create", leaveController.createLeaveRequest);
 router.get("/get/:userLeaveId", leaveController.getLeaveRequestsByUserLeaveId);
-router.post("/create/:userLeaveId", leaveController.createUserLeave);
+router.post("/create/:userId", leaveController.createUserLeave);
 router.post("/profile", leaveController.createProfileLeave);
 router.patch(
   "/update/status/accept/:userLeaveId",
