@@ -52,20 +52,22 @@ exports.createUser = async (req, res, next) => {
 //     next(error);
 //   }
 // };
-// exports.getUserById = async (req, res, next) => {
-//   try {
-//     const userId = parseInt(req.params.userId, 10);
-//     const user = await prisma.user.findUnique({ where: { id: userId } });
 
-//     if (!user) {
-//       throw createError(404, "User not found");
-//     }
+exports.getUserById = async (req, res, next) => {
+  try {
+    const userId = await prisma.user.findUnique({
+      where: { id: userId },
+    });
 
-//     res.json(user);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    if (!user) {
+      throw createError(404, "User not found");
+    }
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.deleteUsers = async (req, res, next) => {
   try {
