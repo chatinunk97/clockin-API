@@ -31,41 +31,42 @@ exports.createUser = async (req, res, next) => {
   }
 };
 
-// exports.updateUser = async (req, res, next) => {
-//   try {
-//     const userId = await prisma.user.findFirst({
-//       where: {
-//         id: +req.params.userId,
-//       },
-//     });
-//     const { email, password } = req.body;
+exports.updateUser = async (req, res, next) => {
+  try {
+    const userId = await prisma.user.findFirst({
+      where: {
+        id: +req.params.userId,
+      },
+    });
+    const { email, password } = req.body;
 
-//     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-//     const updatedUser = await prisma.user.update({
-//       where: { id: userId },
-//       data: { email, password: hashedPassword },
-//     });
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { email, password: hashedPassword },
+    });
 
-//     res.json(updatedUser);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-// exports.getUserById = async (req, res, next) => {
-//   try {
-//     const userId = parseInt(req.params.userId, 10);
-//     const user = await prisma.user.findUnique({ where: { id: userId } });
+    res.json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
 
-//     if (!user) {
-//       throw createError(404, "User not found");
-//     }
+exports.getUserById = async (req, res, next) => {
+  try {
+    const userId = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw createError(404, "User not found");
+    }
 
-//     res.json(user);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.deleteUsers = async (req, res, next) => {
   try {
