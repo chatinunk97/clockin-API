@@ -81,8 +81,6 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
   try {
     const { value, error } =
       updateStatusRequestAcceptByUserLeaveIdSchema.validate(req.params);
-    console.log("value", value);
-    console.log("req.params", req.params);
 
     if (error) {
       error.statusCode = 400;
@@ -90,8 +88,8 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
     }
 
     // Find userLeaveId
-    const found = await prisma.requestLeave.findUnique({
-      where: { id: value.userLeaveId },
+    const found = await prisma.requestLeave.findFirst({
+      where: { userLeaveId: +value.userLeaveId },
     });
     if (!found) {
       return res.status(404).json({ message: "userLeaveId not found" });
@@ -99,11 +97,11 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
 
     // Update the status to 'accept'
     const result = await prisma.requestLeave.update({
-      where: {
-        id: userLeaveId,
-      },
       data: {
         statusRequest: "ACCEPT",
+      },
+      where: {
+        id: found.id,
       },
     });
     res.status(200).json({ result });
@@ -122,8 +120,8 @@ exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
     }
 
     // Find userLeaveId
-    const found = await prisma.requestLeave.findUnique({
-      where: { id: value.userLeaveId },
+    const found = await prisma.requestLeave.findFirst({
+      where: { userLeaveId: +value.userLeaveId },
     });
     if (!found) {
       return res.status(404).json({ message: "userLeaveId not found" });
@@ -131,11 +129,11 @@ exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
 
     // Update the status to 'reject'
     const result = await prisma.requestLeave.update({
-      where: {
-        id: userLeaveId,
-      },
       data: {
         statusRequest: "REJECT",
+      },
+      where: {
+        id: found.id,
       },
     });
     res.status(200).json({ result });
@@ -155,7 +153,11 @@ exports.createUserLeave = async (req, res, next) => {
     }
 
     const result = await prisma.userLeave.create({
-      data: value,
+      data: {
+        userId: +req.params.userId,
+        leaveProfileId: req.body.leaveProfileId,
+        dateAmount: req.body.dateAmount,
+      },
     });
     res.status(200).json({ result });
   } catch (error) {
