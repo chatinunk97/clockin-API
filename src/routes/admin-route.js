@@ -6,12 +6,12 @@ const adminController = require('../controller/adminController');
 
 const router = express.Router();
 
-router.post('/createPackage', adminController.createPackage);
-router.post(
-  '/registerCompany',
-  uploadMiddleware.single('paySlip'),
-  adminController.registerCompany
-);
+// router.post('/createPackage', adminController.createPackage);
+// router.post(
+//   '/registerCompany',
+//   uploadMiddleware.single('paySlip'),
+//   adminController.registerCompany
+// );
 router.post(
   '/createAdmin',
   uploadMiddleware.single('profileImage'),
