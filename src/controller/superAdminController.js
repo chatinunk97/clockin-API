@@ -16,6 +16,9 @@ const { upload } = require('../utils/cloudinary');
 
 exports.createPackage = async (req, res, next) => {
   try {
+    // if (req.user.position !== 'SUPERADMIN') {
+    //   return next(createError('You do not have permission to access', 403));
+    // }
     const package = await prisma.package.create({
       data: req.body,
     });
@@ -28,8 +31,11 @@ exports.createPackage = async (req, res, next) => {
 
 exports.registerCompany = async (req, res, next) => {
   try {
+    // if (req.user.position !== 'SUPERADMIN') {
+    //   return next(createError('You do not have permission to access', 403));
+    // }
     if (!req.file) {
-      return next(createError('Pay slip is required'));
+      return next(createError('Pay slip is required', 400));
     }
 
     const url = await upload(req.file.path);
@@ -91,6 +97,10 @@ exports.registerCompany = async (req, res, next) => {
 
 exports.createSuperAdmin = async (req, res, next) => {
   try {
+    // if (req.user.position !== 'SUPERADMIN') {
+    //   return next(createError('You do not have permission to access', 403));
+    // }
+
     if (req.file) {
       const url = await upload(req.file.path);
       req.body.profileImage = url;
@@ -127,6 +137,10 @@ exports.createSuperAdmin = async (req, res, next) => {
 
 exports.deleteSuperAdmin = async (req, res, next) => {
   try {
+    // if (req.user.position !== 'SUPERADMIN') {
+    //   return next(createError('You do not have permission to access', 403));
+    // }
+
     const { value, error } = deleteSuperAdminSchema.validate(req.params);
     if (error) {
       return next(error);
@@ -153,6 +167,10 @@ exports.deleteSuperAdmin = async (req, res, next) => {
 
 exports.loginSuperAdmin = async (req, res, next) => {
   try {
+    // if (req.user.position !== 'SUPERADMIN') {
+    //   return next(createError('You do not have permission to access', 403));
+    // }
+
     const { value, error } = loginSuperAdminSchema.validate(req.body);
     if (error) {
       return next(error);
