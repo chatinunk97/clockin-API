@@ -42,7 +42,7 @@ async function main() {
       user: true,
     },
   });
-  console.log({ bob });
+  console.log({ company });
 }
 main()
   .then(async () => {
