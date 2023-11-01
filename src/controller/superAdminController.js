@@ -58,7 +58,7 @@ exports.registerCompany = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-
+    value.password = await bcrypt.hash(value.password , 10 )
     const company = await prisma.companyProfile.create({
       data: {
         companyName: value.companyName,
