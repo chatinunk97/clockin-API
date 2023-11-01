@@ -29,18 +29,32 @@ exports.createPackage = async (req, res, next) => {
   }
 };
 
+exports.getallPackage = async (req, res, next) => {
+  try {
+    const packages = await prisma.package.findMany({
+      select: {
+        id: true,
+        price: true,
+        userCount: true,
+        companyProfile: false,
+      },
+    });
+    res.status(200).json({ packages });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.registerCompany = async (req, res, next) => {
   try {
+    const data = JSON.parse(req.body.data);
     if (!req.file) {
       return next(createError('Pay slip is required', 400));
     }
 
     const url = await upload(req.file.path);
-    req.body.paySlip = url;
-
-    req.body.password = nanoid(16);
-    console.log(req.body);
-    const { value, error } = registerCompanySchema.validate(req.body);
+    data.paySlip = url;
+    const { value, error } = registerCompanySchema.validate(data);
     if (error) {
       return next(error);
     }

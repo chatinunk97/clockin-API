@@ -16,9 +16,9 @@ router.post(
   authenticatedMiddleware,
   superAdminController.createPackage
 );
+router.get('/showpackage', superAdminController.getallPackage);
 router.post(
   '/registerCompany',
-  authenticatedMiddleware,
   uploadMiddleware.single('paySlip'),
   superAdminController.registerCompany
 );
