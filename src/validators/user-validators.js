@@ -9,7 +9,7 @@ exports.loginSchema = loginSchema;
 const createUserSchemaByAdmin = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('HR', 'MANEGER', 'USER'),
+  position: Joi.string().valid('HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -27,7 +27,7 @@ exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 const createUserSchemaByHR = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('MANEGER', 'USER'),
+  position: Joi.string().valid('MANAGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -46,7 +46,7 @@ const updateUserSchemaByAdmin = Joi.object({
   id: Joi.number().integer().positive().required(),
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('ADMIN', 'HR', 'MANEGER', 'USER'),
+  position: Joi.string().valid('ADMIN', 'HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -64,7 +64,7 @@ const updateUserSchemaByHR = Joi.object({
   id: Joi.number().integer().positive().required(),
   profileImage: Joi.string().allow(null, ''),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('HR', 'MANEGER', 'USER'),
+  position: Joi.string().valid('HR', 'MANAGER', 'USER'),
   userType: Joi.string().valid('FULLTIME', 'PARTTIME'),
   isActive: Joi.boolean(),
   checkLocation: Joi.boolean(),
@@ -85,7 +85,7 @@ const updateUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('MANEGER', 'USER'),
+  position: Joi.string().valid('MANAGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -99,7 +99,7 @@ const updateUserSchema = Joi.object({
 });
 exports.updateUserSchema = updateUserSchema;
 
-const deleteAdminSchema = Joi.object({
+const deleteUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-exports.deleteAdminSchema = deleteAdminSchema;
+exports.deleteUserSchema = deleteUserSchema;

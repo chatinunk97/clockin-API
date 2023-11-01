@@ -8,9 +8,9 @@ const {
   createUserSchemaByHR,
   updateUserSchemaByHR,
   updateUserSchemaByAdmin,
-  deleteAdminSchema,
   updateUserSchema,
-} = require('../validators/admin-validators');
+  deleteUserSchema,
+} = require('../validators/user-validators');
 const createError = require('../utils/create-error');
 const { upload } = require('../utils/cloudinary');
 
@@ -58,34 +58,47 @@ exports.createUser = async (req, res, next) => {
   }
 };
 
-exports.deleteUserByAdmin = async (req, res, next) => {
+exports.deleteUser = async (req, res, next) => {
   try {
-    if (req.body.role !== 'ADMIN') {
+    if (req.user.position === 'USER' || req.user.position === 'MANAGER') {
       return next(createError('You do not have permission to access', 403));
     }
 
-    const { value, error } = deleteAdminSchema.validate(req.params);
+    const { value, error } = deleteUserSchema.validate(req.params);
     if (error) {
       return next(error);
     }
-
-    const foundUser = await prisma.user.findFirst({
+    const foundUser = await prisma.user.findUnique({
       where: {
         id: value.id,
       },
     });
-
-    if (foundUser === req.user.id) {
-      return next(createError('You can not delete your own account', 403));
+    if (!foundUser) {
+      return next(createError('User not found', 400));
+    }
+    if (req.user.position === 'ADMIN') {
+      if (foundUser.position === req.user.position) {
+        return next(createError('Can not change same position', 400));
+      }
     }
 
-    await prisma.user.delete({
+    if (req.user.position === 'HR') {
+      if (
+        foundUser.position === req.user.position ||
+        foundUser.position === 'ADMIN'
+      ) {
+        return next(createError('Can not change same position', 400));
+      }
+    }
+    await prisma.user.update({
+      data: {
+        isActive: false,
+      },
       where: {
-        id: foundAdmin.id,
+        id: foundUser.id,
       },
     });
-
-    res.status(200).json({ message: 'Deleted' });
+    res.status(200).json({ message: 'Successfully' });
   } catch (error) {
     next(error);
   }
@@ -104,11 +117,11 @@ exports.login = async (req, res, next) => {
       },
     });
     if (!user) {
-      return next(createError('Somethings went wrong, please try again', 400));
+      return next(createError('Invalid credentials', 400));
     }
     const isMatch = await bcrypt.compare(value.password, user.password);
     if (!isMatch) {
-      return next(createError('Somethings went wrong, please try again', 400));
+      return next(createError('Invalid credentials', 400));
     }
 
     const payload = { userId: user.id, position: user.position };
