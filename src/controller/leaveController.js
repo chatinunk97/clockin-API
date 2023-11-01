@@ -1,4 +1,4 @@
-const prisma = require("../models/prisma");
+const prisma = require('../models/prisma');
 const {
   createRequestLeaveSchema,
   createUserLeaveSchema,
@@ -9,7 +9,7 @@ const {
   updateStatusRequestRejectByUserLeaveIdSchema,
   deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
-} = require("../validators/leave-validator");
+} = require('../validators/leave-validators');
 
 // ########## request leave ##########
 exports.createLeaveRequest = async (req, res, next) => {
@@ -96,13 +96,13 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
       where: { userLeaveId: +value.userLeaveId },
     });
     if (!found) {
-      return res.status(404).json({ message: "userLeaveId not found" });
+      return res.status(404).json({ message: 'userLeaveId not found' });
     }
 
     // Update the status to 'accept'
     const result = await prisma.requestLeave.update({
       data: {
-        statusRequest: "ACCEPT",
+        statusRequest: 'ACCEPT',
       },
       where: {
         id: found.id,
@@ -129,13 +129,13 @@ exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
       where: { userLeaveId: +value.userLeaveId },
     });
     if (!found) {
-      return res.status(404).json({ message: "userLeaveId not found" });
+      return res.status(404).json({ message: 'userLeaveId not found' });
     }
 
     // Update the status to 'reject'
     const result = await prisma.requestLeave.update({
       data: {
-        statusRequest: "REJECT",
+        statusRequest: 'REJECT',
       },
       where: {
         id: found.id,
@@ -224,7 +224,7 @@ exports.updateUserLeave = async (req, res, next) => {
 exports.deleteUserLeave = async (req, res, next) => {
   try {
     const { value, error } = deleteUserLeaveSchema.validate(req.params);
-    console.log("value", value);
+    console.log('value', value);
     // console.log("req.params", req.params);
 
     if (error) {
@@ -248,10 +248,10 @@ exports.deleteUserLeave = async (req, res, next) => {
     }
 
     if (found) {
-      return res.status(404).json({ message: "userLeaveId has request leave" });
+      return res.status(404).json({ message: 'userLeaveId has request leave' });
     }
 
-    res.status(200).json({ message: "Deleted" });
+    res.status(200).json({ message: 'Deleted' });
   } catch (error) {
     next(error);
   }
