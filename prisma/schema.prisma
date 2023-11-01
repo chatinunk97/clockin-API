@@ -40,7 +40,7 @@ enum PositionType {
   ADMIN
   USER
   HR
-  MANEGER
+  MANAGER
 }
 
 enum UserRole {
