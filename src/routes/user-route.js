@@ -1,64 +1,65 @@
-const express = require('express');
+const express = require("express");
 
 // Controller
-const adminController = require('../controller/adminController');
-const superAdminController = require('../controller/superAdminController');
+const adminController = require("../controller/adminController");
+const superAdminController = require("../controller/superAdminController");
 
 // Middlewares
-const uploadMiddleware = require('../middleware/defaultMiddleware/upload');
-const authenticatedMiddleware = require('../middleware/authenticate/authenticate');
+const uploadMiddleware = require("../middleware/defaultMiddleware/upload");
+const authenticatedMiddleware = require("../middleware/authenticate/authenticate");
 
 const router = express.Router();
 
 //________________________Routes for super admin operations________________________
 router.post(
-  '/createPackage',
+  "/createPackage",
   authenticatedMiddleware,
   superAdminController.createPackage
 );
+router.get("/showpackage", superAdminController.getallPackage);
 router.post(
-  '/registerCompany',
+  "/registerCompany",
   authenticatedMiddleware,
-  uploadMiddleware.single('paySlip'),
+  uploadMiddleware.single("paySlip"),
   superAdminController.registerCompany
 );
 router.post(
-  '/createSuperAdmin',
+  "/createSuperAdmin",
   authenticatedMiddleware,
-  uploadMiddleware.single('profileImage'),
+  uploadMiddleware.single("profileImage"),
   superAdminController.createSuperAdmin
 );
 router.patch(
-  '/updateSuperAdmin',
+  "/updateSuperAdmin",
   authenticatedMiddleware,
-  uploadMiddleware.single('profileImage'),
+  uploadMiddleware.single("profileImage"),
   superAdminController.updateSuperAdmin
 );
 router.delete(
-  '/deleteSuperAdmin/:id',
+  "/deleteSuperAdmin/:id",
   authenticatedMiddleware,
   superAdminController.deleteSuperAdmin
 );
 router.post(
-  '/loginSuperAdmin',
+  "/loginSuperAdmin",
   authenticatedMiddleware,
   superAdminController.loginSuperAdmin
 );
 
 //________________________Routes for admin operations________________________
 router.post(
-  '/createUser',
+  "/createUser",
   authenticatedMiddleware,
-  uploadMiddleware.single('profileImage'),
+  uploadMiddleware.single("profileImage"),
   adminController.createUser
 );
-router.post('/login', adminController.login);
+router.post("/login", adminController.login);
 router.patch(
-  '/updateUser',
+  "/updateUser",
   authenticatedMiddleware,
-  uploadMiddleware.single('profileImage'),
+  uploadMiddleware.single("profileImage"),
   adminController.updateUser
 );
-router.delete('/deleteUserByAdmin/:id', adminController.deleteUserByAdmin);
+router.delete("/deleteUserByAdmin/:id", adminController.deleteUserByAdmin);
 
 module.exports = router;
