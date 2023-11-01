@@ -62,19 +62,4 @@ router.patch(
 );
 router.delete('/deleteUserByAdmin/:id', adminController.deleteUserByAdmin);
 
-//________________________Routes for user operations________________________
-
-// router.post(
-//   '/',
-//   uploadMiddleware.single('profileImage'),
-//   userController.createUser
-// );
-// router.patch(
-//   '/updateUser',
-//   uploadMiddleware.single('profileImage'),
-//   userController.updateUser
-// );
-// router.get('/:userId', userController.getUserById);
-// router.delete('/:userId', userController.deleteUsers);
-
 module.exports = router;
