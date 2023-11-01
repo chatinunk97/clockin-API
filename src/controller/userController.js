@@ -137,16 +137,10 @@ exports.updateUser = async (req, res, next) => {
     if (!foundUser) {
       return next(createError('User is not exists', 400));
     }
-    console.log(foundUser, '+++++++++++++foundUser++++++++++++++++');
-    console.log(req.body, '______________req.body________________');
 
     if (req.file) {
       const url = await upload(req.file.path);
       foundUser.profileImage = url;
-    }
-
-    if (foundUser.profileImage === null) {
-      foundUser.profileImage = 'image';
     }
 
     delete foundUser.createdAt;

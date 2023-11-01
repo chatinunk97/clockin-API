@@ -1,7 +1,7 @@
 const express = require('express');
 
 // Controller
-const adminController = require('../controller/adminController');
+const userController = require('../controller/userController');
 const superAdminController = require('../controller/superAdminController');
 
 // Middlewares
@@ -50,15 +50,15 @@ router.post(
   '/createUser',
   authenticatedMiddleware,
   uploadMiddleware.single('profileImage'),
-  adminController.createUser
+  userController.createUser
 );
-router.post('/login', adminController.login);
+router.post('/login', userController.login);
 router.patch(
   '/updateUser',
   authenticatedMiddleware,
   uploadMiddleware.single('profileImage'),
-  adminController.updateUser
+  userController.updateUser
 );
-router.delete('/deleteUserByAdmin/:id', adminController.deleteUserByAdmin);
+router.delete('/deleteUserByAdmin/:id', userController.deleteUserByAdmin);
 
 module.exports = router;

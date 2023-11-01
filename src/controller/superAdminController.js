@@ -16,9 +16,9 @@ const { upload } = require('../utils/cloudinary');
 
 exports.createPackage = async (req, res, next) => {
   try {
-    // if (req.user.position !== 'SUPERADMIN') {
-    //   return next(createError('You do not have permission to access', 403));
-    // }
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
     const package = await prisma.package.create({
       data: req.body,
     });
@@ -31,9 +31,6 @@ exports.createPackage = async (req, res, next) => {
 
 exports.registerCompany = async (req, res, next) => {
   try {
-    // if (req.user.position !== 'SUPERADMIN') {
-    //   return next(createError('You do not have permission to access', 403));
-    // }
     if (!req.file) {
       return next(createError('Pay slip is required', 400));
     }
@@ -97,9 +94,9 @@ exports.registerCompany = async (req, res, next) => {
 
 exports.createSuperAdmin = async (req, res, next) => {
   try {
-    // if (req.user.position !== 'SUPERADMIN') {
-    //   return next(createError('You do not have permission to access', 403));
-    // }
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
 
     if (req.file) {
       const url = await upload(req.file.path);
@@ -137,9 +134,9 @@ exports.createSuperAdmin = async (req, res, next) => {
 
 exports.deleteSuperAdmin = async (req, res, next) => {
   try {
-    // if (req.user.position !== 'SUPERADMIN') {
-    //   return next(createError('You do not have permission to access', 403));
-    // }
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
 
     const { value, error } = deleteSuperAdminSchema.validate(req.params);
     if (error) {
@@ -211,6 +208,10 @@ exports.loginSuperAdmin = async (req, res, next) => {
 
 exports.updateSuperAdmin = async (req, res, next) => {
   try {
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
+
     const foundSuperAdmin = await prisma.user.findFirst({
       where: {
         position: 'SUPERADMIN',

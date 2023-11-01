@@ -62,9 +62,12 @@ exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
 
 const updateUserSchemaByHR = Joi.object({
   id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string(),
+  profileImage: Joi.string().allow(null, ''),
   employeeId: Joi.string().required(),
   position: Joi.string().valid('HR', 'MANEGER', 'USER'),
+  userType: Joi.string().valid('FULLTIME', 'PARTTIME'),
+  isActive: Joi.boolean(),
+  checkLocation: Joi.boolean(),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
