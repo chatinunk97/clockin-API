@@ -3,39 +3,52 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const prisma = require('../models/prisma');
 const {
-  createAdminSchema,
+  loginSchema,
+  createUserSchemaByAdmin,
+  createUserSchemaByHR,
+  updateUserSchemaByHR,
+  updateUserSchemaByAdmin,
   deleteAdminSchema,
-  loginAdminSchema,
-  updateAdminSchema,
+  updateUserSchema,
 } = require('../validators/admin-validators');
 const createError = require('../utils/create-error');
 const { upload } = require('../utils/cloudinary');
 
-exports.createAdmin = async (req, res, next) => {
+exports.createUser = async (req, res, next) => {
   try {
+    let validate;
+    if (req.user.position === 'ADMIN') {
+      validate = createUserSchemaByAdmin.validate(req.body);
+    } else if (req.user.position === 'HR') {
+      validate = createUserSchemaByHR.validate(req.body);
+    } else {
+      return next(createError('You do not have permission to access', 403));
+    }
+
     if (req.file) {
       const url = await upload(req.file.path);
-      req.body.profileImage = url;
-    }
-    const { value, error } = createAdminSchema.validate(req.body);
-    if (error) {
-      return next(error);
+      validate.value.profileImage = url;
     }
 
-    value.password = await bcrypt.hash(value.password, 14);
-    value.position = 'ADMIN';
-    const admin = await prisma.user.create({
-      data: value,
+    if (validate.error) {
+      return next(validate.error);
+    }
+
+    validate.value.password = await bcrypt.hash(validate.value.password, 14);
+    const user = await prisma.user.create({
+      data: validate.value,
     });
 
-    const payload = { adminId: admin.id };
+    const payload = { userId: user.id };
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
     );
 
-    delete admin.password;
-    res.status(201).json({ message: 'Admin was created', admin, accessToken });
+    user.accessToken = accessToken;
+    delete user.password;
+
+    res.status(201).json({ message: 'User was created', user });
   } catch (error) {
     next(error);
   } finally {
@@ -45,19 +58,26 @@ exports.createAdmin = async (req, res, next) => {
   }
 };
 
-exports.deleteAdmin = async (req, res, next) => {
+exports.deleteUserByAdmin = async (req, res, next) => {
   try {
+    if (req.body.role !== 'ADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
+
     const { value, error } = deleteAdminSchema.validate(req.params);
     if (error) {
       return next(error);
     }
 
-    const foundAdmin = await prisma.user.findFirst({
+    const foundUser = await prisma.user.findFirst({
       where: {
-        position: 'ADMIN',
         id: value.id,
       },
     });
+
+    if (foundUser === req.user.id) {
+      return next(createError('You can not delete your own account', 403));
+    }
 
     await prisma.user.delete({
       where: {
@@ -71,73 +91,92 @@ exports.deleteAdmin = async (req, res, next) => {
   }
 };
 
-exports.loginAdmin = async (req, res, next) => {
+exports.login = async (req, res, next) => {
   try {
-    const { value, error } = loginAdminSchema.validate(req.body);
+    const { value, error } = loginSchema.validate(req.body);
     if (error) {
       return next(error);
     }
 
-    const admin = await prisma.user.findFirst({
+    const user = await prisma.user.findFirst({
       where: {
-        position: 'ADMIN',
         email: value.email,
       },
     });
-    if (!admin) {
+    if (!user) {
       return next(createError('Somethings went wrong, please try again', 400));
     }
-    const isMatch = await bcrypt.compare(value.password, admin.password);
+    const isMatch = await bcrypt.compare(value.password, user.password);
     if (!isMatch) {
       return next(createError('Somethings went wrong, please try again', 400));
     }
 
-    const payload = { adminId: admin.id, position: admin.position };
+    const payload = { userId: user.id, position: user.position };
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
     );
 
-    admin.accessToken = accessToken;
-    delete admin.password;
+    user.accessToken = accessToken;
+    delete user.password;
 
-    res.status(200).json({ admin });
+    res.status(200).json({ user });
   } catch (error) {
     next(error);
   }
 };
 
-exports.updateAdmin = async (req, res, next) => {
+exports.updateUser = async (req, res, next) => {
   try {
-    const foundAdmin = await prisma.user.findFirst({
+    const foundUser = await prisma.user.findFirst({
       where: {
-        position: 'ADMIN',
         id: +req.body.id,
       },
     });
 
-    if (!foundAdmin) {
-      return next(createError('Admin is not exists', 400));
+    if (!foundUser) {
+      return next(createError('User is not exists', 400));
     }
-
+    console.log(foundUser, '+++++++++++++foundUser++++++++++++++++');
+    console.log(req.body, '______________req.body________________');
     if (req.file) {
       const url = await upload(req.file.path);
       req.body.profileImage = url;
     }
 
-    const { value, error } = updateAdminSchema.validate(req.body);
-    if (error) {
-      return next(error);
+    let validate;
+    if (req.user.position === 'ADMIN') {
+      validate = updateUserSchemaByAdmin.validate(req.body);
+    } else if (req.user.position === 'HR' && req.body.position !== 'HR') {
+      console.log('first');
+      validate = updateUserSchemaByHR.validate(req.body);
+    } else if (
+      req.user.position === 'HR' &&
+      req.body.position === 'HR' &&
+      req.user.id === req.body.id
+    ) {
+      console.log('second');
+      validate = updateUserSchemaByHR.validate(req.body);
+    } else if (req.user.id === req.body.id) {
+      validate = updateUserSchema.validate(req.body);
+    } else {
+      return next(createError('You do not have permission to access', 403));
     }
 
-    const admin = await prisma.user.update({
-      data: value,
+    if (validate.error) {
+      return next(validate.error);
+    }
+
+    const user = await prisma.user.update({
+      data: validate.value,
       where: {
-        id: value.id,
+        id: validate.value.id,
       },
     });
 
-    res.status(200).json({ message: 'Admin was updated', admin });
+    delete user.password;
+
+    res.status(200).json({ message: 'User was updated', user });
   } catch (error) {
     next(error);
   } finally {
@@ -147,19 +186,17 @@ exports.updateAdmin = async (req, res, next) => {
   }
 };
 
-exports.resetPasswordAdmin = async (req, res, next) => {
+exports.getUserById = async (req, res, next) => {
   try {
-    const foundAdmin = await prisma.user.findFirst({
-      where: {
-        position: 'ADMIN',
-        id: +req.body.id,
-      },
+    const user = await prisma.user.findMany({
+      where: { id: +req.params.userId },
     });
 
-    if (!foundAdmin) {
-      return next(createError('Admin is not exists', 400));
+    if (!user || user.length === 0) {
+      throw createError(404, 'User not found');
     }
-    res.status(200).json({ message: 'dfsdghfddfs' });
+    console.log(user);
+    res.status(200).json({ message: 'Get user', user: user });
   } catch (error) {
     next(error);
   }
