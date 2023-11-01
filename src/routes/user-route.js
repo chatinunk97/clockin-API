@@ -61,5 +61,5 @@ router.patch(
   adminController.updateUser
 );
 router.delete("/deleteUserByAdmin/:id", adminController.deleteUserByAdmin);
-
+router.get("/me", authenticatedMiddleware, adminController.getMe);
 module.exports = router;
