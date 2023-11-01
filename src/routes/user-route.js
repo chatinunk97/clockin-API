@@ -59,6 +59,7 @@ router.patch(
   uploadMiddleware.single("profileImage"),
   userController.updateUser
 );
+router.get("/me", authenticatedMiddleware, userController.getMe);
 router.delete("/deleteUserByAdmin/:id", userController.deleteUserByAdmin);
 
 module.exports = router;
