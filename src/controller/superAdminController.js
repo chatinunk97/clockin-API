@@ -47,19 +47,14 @@ exports.getallPackage = async (req, res, next) => {
 
 exports.registerCompany = async (req, res, next) => {
   try {
-    // if (req.user.position !== 'SUPERADMIN') {
-    //   return next(createError('You do not have permission to access', 403));
-    // }
+    const data = JSON.parse(req.body.data)
     if (!req.file) {
       return next(createError("Pay slip is required", 400));
     }
 
     const url = await upload(req.file.path);
-    req.body.paySlip = url;
-
-    req.body.password = nanoid(16);
-    console.log(req.body);
-    const { value, error } = registerCompanySchema.validate(req.body);
+    data.paySlip = url;
+    const { value, error } = registerCompanySchema.validate(data);
     if (error) {
       return next(error);
     }
