@@ -52,13 +52,17 @@ router.post(
   uploadMiddleware.single("profileImage"),
   adminController.createAdmin
 );
-router.post("/loginAdmin", adminController.loginAdmin);
+router.post("/login", authenticatedMiddleware, adminController.login);
 router.patch(
   "/updateAdmin",
   uploadMiddleware.single("profileImage"),
   adminController.updateAdmin
 );
-router.delete("/deleteAdmin/:id", adminController.deleteAdmin);
+router.delete(
+  "/deleteAdmin/:id",
+  authenticatedMiddleware,
+  adminController.deleteAdmin
+);
 
 router.patch("/resetPasswordAdmin", adminController.resetPasswordAdmin);
 
