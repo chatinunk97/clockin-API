@@ -139,26 +139,35 @@ exports.updateUser = async (req, res, next) => {
     }
     console.log(foundUser, '+++++++++++++foundUser++++++++++++++++');
     console.log(req.body, '______________req.body________________');
+
     if (req.file) {
       const url = await upload(req.file.path);
-      req.body.profileImage = url;
+      foundUser.profileImage = url;
     }
+
+    if (foundUser.profileImage === null) {
+      foundUser.profileImage = 'image';
+    }
+
+    delete foundUser.createdAt;
+    delete foundUser.updatedAt;
+    delete foundUser.password;
 
     let validate;
     if (req.user.position === 'ADMIN') {
-      validate = updateUserSchemaByAdmin.validate(req.body);
-    } else if (req.user.position === 'HR' && req.body.position !== 'HR') {
+      validate = updateUserSchemaByAdmin.validate(foundUser);
+    } else if (req.user.position === 'HR' && foundUser.position !== 'HR') {
       console.log('first');
-      validate = updateUserSchemaByHR.validate(req.body);
+      validate = updateUserSchemaByHR.validate(foundUser);
     } else if (
       req.user.position === 'HR' &&
-      req.body.position === 'HR' &&
-      req.user.id === req.body.id
+      foundUser.position === 'HR' &&
+      req.user.id === foundUser.id
     ) {
       console.log('second');
-      validate = updateUserSchemaByHR.validate(req.body);
-    } else if (req.user.id === req.body.id) {
-      validate = updateUserSchema.validate(req.body);
+      validate = updateUserSchemaByHR.validate(foundUser);
+    } else if (req.user.id === foundUser.id) {
+      validate = updateUserSchema.validate(foundUser);
     } else {
       return next(createError('You do not have permission to access', 403));
     }
@@ -173,8 +182,6 @@ exports.updateUser = async (req, res, next) => {
         id: validate.value.id,
       },
     });
-
-    delete user.password;
 
     res.status(200).json({ message: 'User was updated', user });
   } catch (error) {

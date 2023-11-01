@@ -1,7 +1,6 @@
 const express = require('express');
 
 // Controller
-const userController = require('../controller/userController');
 const adminController = require('../controller/adminController');
 const superAdminController = require('../controller/superAdminController');
 
