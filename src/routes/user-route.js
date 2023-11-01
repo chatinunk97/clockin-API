@@ -2,7 +2,6 @@ const express = require("express");
 
 // Controller
 const userController = require("../controller/userController");
-const adminController = require("../controller/adminController");
 const superAdminController = require("../controller/superAdminController");
 
 // Middlewares
@@ -17,9 +16,9 @@ router.post(
   authenticatedMiddleware,
   superAdminController.createPackage
 );
+router.get("/showpackage", superAdminController.getallPackage);
 router.post(
   "/registerCompany",
-  authenticatedMiddleware,
   uploadMiddleware.single("paySlip"),
   superAdminController.registerCompany
 );
@@ -48,37 +47,18 @@ router.post(
 
 //________________________Routes for admin operations________________________
 router.post(
-  "/createAdmin",
-  uploadMiddleware.single("profileImage"),
-  adminController.createAdmin
-);
-router.post("/login", authenticatedMiddleware, adminController.login);
-router.patch(
-  "/updateAdmin",
-  uploadMiddleware.single("profileImage"),
-  adminController.updateAdmin
-);
-router.delete(
-  "/deleteAdmin/:id",
+  "/createUser",
   authenticatedMiddleware,
-  adminController.deleteAdmin
-);
-
-router.patch("/resetPasswordAdmin", adminController.resetPasswordAdmin);
-
-//________________________Routes for user operations________________________
-
-router.post(
-  "/",
   uploadMiddleware.single("profileImage"),
   userController.createUser
 );
+router.post("/login", userController.login);
 router.patch(
   "/updateUser",
+  authenticatedMiddleware,
   uploadMiddleware.single("profileImage"),
   userController.updateUser
 );
-router.get("/:userId", userController.getUserById);
-router.delete("/:userId", userController.deleteUsers);
+router.delete("/deleteUserByAdmin/:id", userController.deleteUserByAdmin);
 
 module.exports = router;

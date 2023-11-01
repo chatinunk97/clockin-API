@@ -1,14 +1,15 @@
 const Joi = require('joi');
 
-const loginAdminSchema = Joi.object({
+const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().trim().required(),
 });
-exports.loginAdminSchema = loginAdminSchema;
+exports.loginSchema = loginSchema;
 
-const createAdminSchema = Joi.object({
+const createUserSchemaByAdmin = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
+  position: Joi.string().valid('HR', 'MANEGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -21,12 +22,31 @@ const createAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.createAdminSchema = createAdminSchema;
+exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 
-const updateAdminSchema = Joi.object({
+const createUserSchemaByHR = Joi.object({
+  profileImage: Joi.string(),
+  employeeId: Joi.string().required(),
+  position: Joi.string().valid('MANEGER', 'USER'),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,16}$/)
+    .trim()
+    .required(),
+  mobile: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required(),
+  companyProfileId: Joi.number().integer().positive().required(),
+});
+exports.createUserSchemaByHR = createUserSchemaByHR;
+
+const updateUserSchemaByAdmin = Joi.object({
   id: Joi.number().integer().positive().required(),
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
+  position: Joi.string().valid('ADMIN', 'HR', 'MANEGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -38,7 +58,46 @@ const updateAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.updateAdminSchema = updateAdminSchema;
+exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
+
+const updateUserSchemaByHR = Joi.object({
+  id: Joi.number().integer().positive().required(),
+  profileImage: Joi.string().allow(null, ''),
+  employeeId: Joi.string().required(),
+  position: Joi.string().valid('HR', 'MANEGER', 'USER'),
+  userType: Joi.string().valid('FULLTIME', 'PARTTIME'),
+  isActive: Joi.boolean(),
+  checkLocation: Joi.boolean(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,16}$/)
+    .trim(),
+  mobile: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required(),
+  companyProfileId: Joi.number().integer().positive().required(),
+});
+exports.updateUserSchemaByHR = updateUserSchemaByHR;
+
+const updateUserSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+  profileImage: Joi.string(),
+  employeeId: Joi.string().required(),
+  position: Joi.string().valid('MANEGER', 'USER'),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,16}$/)
+    .trim(),
+  mobile: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required(),
+  companyProfileId: Joi.number().integer().positive().required(),
+});
+exports.updateUserSchema = updateUserSchema;
 
 const deleteAdminSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
