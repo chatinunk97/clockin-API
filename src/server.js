@@ -9,6 +9,8 @@ const cors = require('cors');
 const leaveRoute = require('./routes/leave-route');
 const userRoute = require('./routes/user-route');
 const clockRoute = require('./routes/clock-route');
+const OTRoute = require('./routes/OT-route');
+const timeRoute = require('./routes/time-route');
 
 //Middlewares
 const requestLimitMiddleware = require('./middleware/defaultMiddleware/requestLimit');
@@ -23,6 +25,8 @@ app.use(express.json());
 app.use('/leave', leaveRoute);
 app.use('/user', userRoute);
 app.use('/clock', clockRoute);
+app.use('/OT', OTRoute);
+app.use('/time', timeRoute);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

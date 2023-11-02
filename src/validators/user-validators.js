@@ -20,7 +20,7 @@ const createUserSchemaByAdmin = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
-  companyProfileId: Joi.number().integer().positive().required(),
+  userBossId: Joi.number().integer().positive().required(),
 });
 exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 
@@ -38,7 +38,7 @@ const createUserSchemaByHR = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
-  companyProfileId: Joi.number().integer().positive().required(),
+  userBossId: Joi.number().integer().positive().required(),
 });
 exports.createUserSchemaByHR = createUserSchemaByHR;
 
@@ -57,6 +57,7 @@ const updateUserSchemaByAdmin = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
+  userBossId: Joi.number().integer().positive().required(),
 });
 exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
 
@@ -78,6 +79,7 @@ const updateUserSchemaByHR = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
+  userBossId: Joi.number().integer().positive().required(),
 });
 exports.updateUserSchemaByHR = updateUserSchemaByHR;
 
@@ -96,6 +98,7 @@ const updateUserSchema = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
+  userBossId: Joi.number().integer().positive().required(),
 });
 exports.updateUserSchema = updateUserSchema;
 

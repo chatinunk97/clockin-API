@@ -60,6 +60,11 @@ router.patch(
   userController.updateUser
 );
 router.get('/me', authenticatedMiddleware, userController.getMe);
-router.delete('/deleteUser/:id', userController.deleteUser);
+router.delete(
+  '/deleteUser/:id',
+  authenticatedMiddleware,
+  userController.deleteUser
+);
+router.get('/getAllUser', authenticatedMiddleware, userController.getAllUser);
 
 module.exports = router;

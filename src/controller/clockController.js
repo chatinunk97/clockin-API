@@ -9,7 +9,23 @@ exports.clockIn = async (req, res, next) => {
       return next(error);
     }
 
+    const foundUser = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+      include: {
+        flexiblaTime: {
+          include: {
+            timeProfile: true,
+          },
+        },
+      },
+    });
+    console.log(foundUser, '=======================');
+
     value.userId = req.user.id;
+    console.log(value, '=======================');
+    value.clockOutTime = null;
     const clockIn = await prisma.clock.create({
       data: value,
     });
