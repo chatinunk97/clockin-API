@@ -129,21 +129,21 @@ model UserLeave {
 }
 
 model Clock {
-  id                Int          @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   userId            Int
-  user              User         @relation(fields: [userId], references: [id])
-  clockInTime       DateTime
-  clockOutTime      DateTime
+  user              User          @relation(fields: [userId], references: [id])
+  clockInTime       DateTime      @default(now())
+  clockOutTime      DateTime?
   latitudeClockIn   Float
   longitudeClockIn  Float
   latitudeClockOut  Float?
   longitudeClockOut Float?
-  statusClockIn     stateClockIn
+  statusClockIn     statusClockIn @default(ONTIME)
   reasonLate        String?
   requestOT         requestOT[]
 }
 
-enum stateClockIn {
+enum statusClockIn {
   ONTIME
   LATE
 }
@@ -161,8 +161,8 @@ model TimeProfile {
   id               Int            @id @default(autoincrement())
   companyProfileId Int
   companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
-  start            DateTime
-  end              DateTime
+  start            DateTime       @db.Time()
+  end              DateTime       @db.Time()
   typeTime         Typetime
   flexiblaTime     FlexiblaTime[]
 }

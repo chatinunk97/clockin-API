@@ -1,29 +1,28 @@
-const fs = require("fs/promises");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const { nanoid } = require("nanoid");
+const fs = require('fs/promises');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const prisma = require("../models/prisma");
-const createError = require("../utils/create-error");
+const prisma = require('../models/prisma');
+const createError = require('../utils/create-error');
 const {
   registerCompanySchema,
   createSuperAdminSchema,
   updateSuperAdminSchema,
   deleteSuperAdminSchema,
   loginSuperAdminSchema,
-} = require("../validators/superAdmin-validators");
-const { upload } = require("../utils/cloudinary");
+} = require('../validators/superAdmin-validators');
+const { upload } = require('../utils/cloudinary');
 
 exports.createPackage = async (req, res, next) => {
   try {
-    if (req.user.position !== "SUPERADMIN") {
-      return next(createError("You do not have permission to access", 403));
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
     }
     const package = await prisma.package.create({
       data: req.body,
     });
 
-    res.status(201).json({ message: "Package was created", package });
+    res.status(201).json({ message: 'Package was created', package });
   } catch (error) {
     next(error);
   }
@@ -49,7 +48,7 @@ exports.registerCompany = async (req, res, next) => {
   try {
     const data = JSON.parse(req.body.data);
     if (!req.file) {
-      return next(createError("Pay slip is required", 400));
+      return next(createError('Pay slip is required', 400));
     }
 
     const url = await upload(req.file.path);
@@ -58,7 +57,7 @@ exports.registerCompany = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    value.password = await bcrypt.hash(value.password , 10 )
+    value.password = await bcrypt.hash(value.password, 10);
     const company = await prisma.companyProfile.create({
       data: {
         companyName: value.companyName,
@@ -82,7 +81,7 @@ exports.registerCompany = async (req, res, next) => {
             email: value.email,
             mobile: value.mobile,
             password: value.password,
-            position: "ADMIN",
+            position: 'ADMIN',
           },
         },
       },
@@ -94,7 +93,7 @@ exports.registerCompany = async (req, res, next) => {
     });
 
     res.status(201).json({
-      message: "Company was created",
+      message: 'Company was created',
       company,
     });
   } catch (error) {
@@ -108,8 +107,8 @@ exports.registerCompany = async (req, res, next) => {
 
 exports.createSuperAdmin = async (req, res, next) => {
   try {
-    if (req.user.position !== "SUPERADMIN") {
-      return next(createError("You do not have permission to access", 403));
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
     }
 
     if (req.file) {
@@ -122,7 +121,7 @@ exports.createSuperAdmin = async (req, res, next) => {
     }
 
     value.password = await bcrypt.hash(value.password, 14);
-    value.position = "SUPERADMIN";
+    value.position = 'SUPERADMIN';
     const superAdmin = await prisma.user.create({
       data: value,
     });
@@ -130,13 +129,13 @@ exports.createSuperAdmin = async (req, res, next) => {
     const payload = { superAdminId: superAdmin.id };
     const accessToken = jwt.sign(
       payload,
-      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD"
+      process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
     );
 
     delete superAdmin.password;
     res
       .status(201)
-      .json({ message: "Super admin was created", superAdmin, accessToken });
+      .json({ message: 'Super admin was created', superAdmin, accessToken });
   } catch (error) {
     next(error);
   } finally {
@@ -148,8 +147,8 @@ exports.createSuperAdmin = async (req, res, next) => {
 
 exports.deleteSuperAdmin = async (req, res, next) => {
   try {
-    if (req.user.position !== "SUPERADMIN") {
-      return next(createError("You do not have permission to access", 403));
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
     }
 
     const { value, error } = deleteSuperAdminSchema.validate(req.params);
@@ -159,7 +158,7 @@ exports.deleteSuperAdmin = async (req, res, next) => {
 
     const foundSuperAdmin = await prisma.user.findFirst({
       where: {
-        position: "SUPERADMIN",
+        position: 'SUPERADMIN',
         id: value.id,
       },
     });
@@ -170,7 +169,7 @@ exports.deleteSuperAdmin = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: "Deleted" });
+    res.status(200).json({ message: 'Deleted' });
   } catch (error) {
     next(error);
   }
@@ -189,17 +188,17 @@ exports.loginSuperAdmin = async (req, res, next) => {
 
     const superAdmin = await prisma.user.findFirst({
       where: {
-        position: "SUPERADMIN",
+        position: 'SUPERADMIN',
         email: value.email,
       },
     });
     if (!superAdmin) {
-      return next(createError("Somethings went wrong, please try again", 400));
+      return next(createError('Somethings went wrong, please try again', 400));
     }
 
     const isMatch = await bcrypt.compare(value.password, superAdmin.password);
     if (!isMatch) {
-      return next(createError("Somethings went wrong, please try again", 400));
+      return next(createError('Somethings went wrong, please try again', 400));
     }
 
     const payload = {
@@ -208,7 +207,7 @@ exports.loginSuperAdmin = async (req, res, next) => {
     };
     const accessToken = jwt.sign(
       payload,
-      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD"
+      process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
     );
 
     superAdmin.accessToken = accessToken;
@@ -221,21 +220,21 @@ exports.loginSuperAdmin = async (req, res, next) => {
 };
 
 exports.updateSuperAdmin = async (req, res, next) => {
-  console.log("req.user", req.user);
+  console.log('req.user', req.user);
   try {
-    if (req.user.position !== "SUPERADMIN") {
-      return next(createError("You do not have permission to access", 403));
+    if (req.user.position !== 'SUPERADMIN') {
+      return next(createError('You do not have permission to access', 403));
     }
 
     const foundSuperAdmin = await prisma.user.findFirst({
       where: {
-        position: "SUPERADMIN",
+        position: 'SUPERADMIN',
         id: +req.body.id,
       },
     });
 
     if (!foundSuperAdmin) {
-      return next(createError("Super admin is not exists", 400));
+      return next(createError('Super admin is not exists', 400));
     }
 
     if (req.file) {
@@ -255,7 +254,7 @@ exports.updateSuperAdmin = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: "Super admin was updated", superAdmin });
+    res.status(200).json({ message: 'Super admin was updated', superAdmin });
   } catch (error) {
     next(error);
   } finally {
