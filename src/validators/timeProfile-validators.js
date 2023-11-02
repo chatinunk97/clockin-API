@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const TypetimeEnum = ["DEFAULT", "FIRSTHALF", "SECONDHAFT", "NOTSPECIFIED"];
+const TypetimeEnum = ["DEFAULT", "FIRSTHALF", "SECONDHALF", "NOTSPECIFIED"];
 
 const timeProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive(),
