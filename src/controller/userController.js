@@ -19,7 +19,10 @@ exports.createUser = async (req, res, next) => {
   try {
     let validate;
     const data = JSON.parse(req.body.data);
-    data.password = nanoid(10);
+    const alphabet =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    data.password = nanoid(10, alphabet);
+    console.log(data.password);
     if (req.user.position === "ADMIN") {
       validate = createUserSchemaByAdmin.validate(data);
     } else if (req.user.position === "HR") {
