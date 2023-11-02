@@ -18,11 +18,11 @@ const { nanoid } = require("nanoid");
 exports.createUser = async (req, res, next) => {
   try {
     let validate;
+    console.log(req.user)
     const data = JSON.parse(req.body.data);
     const alphabet =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     data.password = nanoid(10, alphabet);
-    console.log(data.password);
     if (req.user.position === "ADMIN") {
       validate = createUserSchemaByAdmin.validate(data);
     } else if (req.user.position === "HR") {
