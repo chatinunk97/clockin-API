@@ -47,6 +47,7 @@ exports.getallPackage = async (req, res, next) => {
 exports.registerCompany = async (req, res, next) => {
   try {
     const data = JSON.parse(req.body.data);
+    console.log(data);
     if (!req.file) {
       return next(createError('Pay slip is required', 400));
     }
