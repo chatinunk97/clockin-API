@@ -78,6 +78,7 @@ exports.createUser = async (req, res, next) => {
 };
 
 exports.deleteUser = async (req, res, next) => {
+  console.log(req.user);
   try {
     if (req.user.position === 'USER' || req.user.position === 'MANAGER') {
       return next(createError('You do not have permission to access', 403));
@@ -125,6 +126,8 @@ exports.deleteUser = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+    const { loginType } = req.body;
+    delete req.body.loginType;
     const { value, error } = loginSchema.validate(req.body);
     if (error) {
       return next(error);
@@ -142,14 +145,20 @@ exports.login = async (req, res, next) => {
     if (!isMatch) {
       return next(createError('Invalid credentials', 400));
     }
-
+    if (loginType === 'dashboard' && user.position === 'USER') {
+      return next(createError('You do not have permission', 400));
+    }
     const payload = { userId: user.id, position: user.position };
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
     );
+    if (loginType === 'dashboard') {
+      user.accessToken_db = accessToken;
+    } else {
+      user.accessToken = accessToken;
+    }
 
-    user.accessToken = accessToken;
     delete user.password;
 
     res.status(200).json({ user });
