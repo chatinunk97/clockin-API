@@ -13,12 +13,13 @@ const {
 } = require("../validators/user-validators");
 const createError = require("../utils/create-error");
 const { upload } = require("../utils/cloudinary");
+const { nanoid } = require("nanoid");
 
 exports.createUser = async (req, res, next) => {
   try {
     let validate;
     const data = JSON.parse(req.body.data);
-    console.log(data);
+    data.password = nanoid(10);
     if (req.user.position === "ADMIN") {
       validate = createUserSchemaByAdmin.validate(data);
     } else if (req.user.position === "HR") {
