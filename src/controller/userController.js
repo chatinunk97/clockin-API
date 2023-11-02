@@ -1,7 +1,7 @@
-const fs = require('fs/promises');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const prisma = require('../models/prisma');
+const fs = require("fs/promises");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const prisma = require("../models/prisma");
 const {
   loginSchema,
   createUserSchemaByAdmin,
@@ -10,19 +10,19 @@ const {
   updateUserSchemaByAdmin,
   updateUserSchema,
   deleteUserSchema,
-} = require('../validators/user-validators');
-const createError = require('../utils/create-error');
-const { upload } = require('../utils/cloudinary');
+} = require("../validators/user-validators");
+const createError = require("../utils/create-error");
+const { upload } = require("../utils/cloudinary");
 
 exports.createUser = async (req, res, next) => {
   try {
     let validate;
-    if (req.user.position === 'ADMIN') {
+    if (req.user.position === "ADMIN") {
       validate = createUserSchemaByAdmin.validate(req.body);
-    } else if (req.user.position === 'HR') {
+    } else if (req.user.position === "HR") {
       validate = createUserSchemaByHR.validate(req.body);
     } else {
-      return next(createError('You do not have permission to access', 403));
+      return next(createError("You do not have permission to access", 403));
     }
 
     if (req.file) {
@@ -42,13 +42,13 @@ exports.createUser = async (req, res, next) => {
     const payload = { userId: user.id };
     const accessToken = jwt.sign(
       payload,
-      process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
+      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD"
     );
 
     user.accessToken = accessToken;
     delete user.password;
 
-    res.status(201).json({ message: 'User was created', user });
+    res.status(201).json({ message: "User was created", user });
   } catch (error) {
     next(error);
   } finally {
@@ -59,9 +59,10 @@ exports.createUser = async (req, res, next) => {
 };
 
 exports.deleteUser = async (req, res, next) => {
+  console.log(req.user);
   try {
-    if (req.user.position === 'USER' || req.user.position === 'MANAGER') {
-      return next(createError('You do not have permission to access', 403));
+    if (req.user.position === "USER" || req.user.position === "MANAGER") {
+      return next(createError("You do not have permission to access", 403));
     }
 
     const { value, error } = deleteUserSchema.validate(req.params);
@@ -74,20 +75,20 @@ exports.deleteUser = async (req, res, next) => {
       },
     });
     if (!foundUser) {
-      return next(createError('User not found', 400));
+      return next(createError("User not found", 400));
     }
-    if (req.user.position === 'ADMIN') {
+    if (req.user.position === "ADMIN") {
       if (foundUser.position === req.user.position) {
-        return next(createError('Can not change same position', 400));
+        return next(createError("Can not change same position", 400));
       }
     }
 
-    if (req.user.position === 'HR') {
+    if (req.user.position === "HR") {
       if (
         foundUser.position === req.user.position ||
-        foundUser.position === 'ADMIN'
+        foundUser.position === "ADMIN"
       ) {
-        return next(createError('Can not change same position', 400));
+        return next(createError("Can not change same position", 400));
       }
     }
     await prisma.user.update({
@@ -98,7 +99,7 @@ exports.deleteUser = async (req, res, next) => {
         id: foundUser.id,
       },
     });
-    res.status(200).json({ message: 'Successfully' });
+    res.status(200).json({ message: "Successfully" });
   } catch (error) {
     next(error);
   }
@@ -119,11 +120,11 @@ exports.login = async (req, res, next) => {
       },
     });
     if (!user) {
-      return next(createError('Invalid credentials', 400));
+      return next(createError("Invalid credentials", 400));
     }
     const isMatch = await bcrypt.compare(value.password, user.password);
     if (!isMatch) {
-      return next(createError('Invalid credentials', 400));
+      return next(createError("Invalid credentials", 400));
     }
     if(loginType === "dashboard" && user.position === "USER"){
       return next(createError("You do not have permission", 400))
@@ -131,7 +132,7 @@ exports.login = async (req, res, next) => {
     const payload = { userId: user.id, position: user.position };
     const accessToken = jwt.sign(
       payload,
-      process.env.JWT_SECRET_KEY || 'CATBORNTOBEGOD'
+      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD"
     );
       if(loginType==="dashboard"){
         user.accessToken_db = accessToken;
@@ -157,7 +158,7 @@ exports.updateUser = async (req, res, next) => {
     });
 
     if (!foundUser) {
-      return next(createError('User is not exists', 400));
+      return next(createError("User is not exists", 400));
     }
 
     if (req.file) {
@@ -170,22 +171,22 @@ exports.updateUser = async (req, res, next) => {
     delete foundUser.password;
 
     let validate;
-    if (req.user.position === 'ADMIN') {
+    if (req.user.position === "ADMIN") {
       validate = updateUserSchemaByAdmin.validate(foundUser);
-    } else if (req.user.position === 'HR' && foundUser.position !== 'HR') {
-      console.log('first');
+    } else if (req.user.position === "HR" && foundUser.position !== "HR") {
+      console.log("first");
       validate = updateUserSchemaByHR.validate(foundUser);
     } else if (
-      req.user.position === 'HR' &&
-      foundUser.position === 'HR' &&
+      req.user.position === "HR" &&
+      foundUser.position === "HR" &&
       req.user.id === foundUser.id
     ) {
-      console.log('second');
+      console.log("second");
       validate = updateUserSchemaByHR.validate(foundUser);
     } else if (req.user.id === foundUser.id) {
       validate = updateUserSchema.validate(foundUser);
     } else {
-      return next(createError('You do not have permission to access', 403));
+      return next(createError("You do not have permission to access", 403));
     }
 
     if (validate.error) {
@@ -199,7 +200,7 @@ exports.updateUser = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: 'User was updated', user });
+    res.status(200).json({ message: "User was updated", user });
   } catch (error) {
     next(error);
   } finally {
@@ -216,10 +217,10 @@ exports.getUserById = async (req, res, next) => {
     });
 
     if (!user || user.length === 0) {
-      throw createError(404, 'User not found');
+      throw createError(404, "User not found");
     }
     console.log(user);
-    res.status(200).json({ message: 'Get user', user: user });
+    res.status(200).json({ message: "Get user", user: user });
   } catch (error) {
     next(error);
   }

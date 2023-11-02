@@ -31,7 +31,7 @@ model User {
   userRelationshipBoss UserRelationship[] @relation("userBoss")
   userRelationshipUser UserRelationship[] @relation("user")
   clock                Clock[]
-  flexiblaTime         FlexiblaTime[]
+  flexibleTime         FlexibleTime[]
   requestOT            requestOT[]
 }
 
@@ -148,7 +148,7 @@ enum statusClockIn {
   LATE
 }
 
-model FlexiblaTime {
+model FlexibleTime {
   id            Int         @id @default(autoincrement())
   userId        Int
   user          User        @relation(fields: [userId], references: [id])
@@ -164,13 +164,13 @@ model TimeProfile {
   start            DateTime       @db.Time()
   end              DateTime       @db.Time()
   typeTime         Typetime
-  flexiblaTime     FlexiblaTime[]
+  flexibleTime     FlexibleTime[]
 }
 
 enum Typetime {
   DEFAULT
   FIRSTHALF
-  SECONDHAFT
+  SECONDHALF
   NOTSPECIFIED
 }
 
