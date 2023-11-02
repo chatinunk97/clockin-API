@@ -35,8 +35,27 @@ exports.createUser = async (req, res, next) => {
     }
 
     validate.value.password = await bcrypt.hash(validate.value.password, 14);
+
     const user = await prisma.user.create({
-      data: validate.value,
+      data: {
+        employeeId: validate.value.employeeId,
+        firstName: validate.value.firstName,
+        lastName: validate.value.lastName,
+        email: validate.value.email,
+        mobile: validate.value.mobile,
+        password: validate.value.password,
+        position: validate.value.position,
+        companyProfileId: req.user.companyProfileId,
+        userRelationshipUser: {
+          create: {
+            userBossId: validate.value.userBossId,
+          },
+        },
+      },
+      include: {
+        userRelationshipBoss: true,
+        userRelationshipUser: true,
+      },
     });
 
     const payload = { userId: user.id };
@@ -150,30 +169,29 @@ exports.updateUser = async (req, res, next) => {
     if (!foundUser) {
       return next(createError('User is not exists', 400));
     }
+    console.log(foundUser, '=============================');
 
+    const foundRelationship = await prisma.userRelationship.findFirst({
+      where: { userId: +req.body.id },
+    });
+    console.log(foundRelationship, '=============================');
     if (req.file) {
       const url = await upload(req.file.path);
-      foundUser.profileImage = url;
+      req.body.profileImage = url;
     }
-
-    delete foundUser.createdAt;
-    delete foundUser.updatedAt;
-    delete foundUser.password;
 
     let validate;
     if (req.user.position === 'ADMIN') {
-      validate = updateUserSchemaByAdmin.validate(foundUser);
+      validate = updateUserSchemaByAdmin.validate(req.body);
     } else if (req.user.position === 'HR' && foundUser.position !== 'HR') {
-      console.log('first');
-      validate = updateUserSchemaByHR.validate(foundUser);
+      validate = updateUserSchemaByHR.validate(req.body);
     } else if (
       req.user.position === 'HR' &&
       foundUser.position === 'HR' &&
       req.user.id === foundUser.id
     ) {
-      console.log('second');
-      validate = updateUserSchemaByHR.validate(foundUser);
-    } else if (req.user.id === foundUser.id) {
+      validate = updateUserSchemaByHR.validate(req.body);
+    } else if (req.user.id === req.body.id) {
       validate = updateUserSchema.validate(foundUser);
     } else {
       return next(createError('You do not have permission to access', 403));
@@ -182,11 +200,29 @@ exports.updateUser = async (req, res, next) => {
     if (validate.error) {
       return next(validate.error);
     }
+    console.log(validate.value, '=============================');
 
     const user = await prisma.user.update({
-      data: validate.value,
-      where: {
-        id: validate.value.id,
+      where: { id: validate.value.id },
+      data: {
+        employeeId: validate.value.employeeId,
+        firstName: validate.value.firstName,
+        lastName: validate.value.lastName,
+        email: validate.value.email,
+        mobile: validate.value.mobile,
+        position: validate.value.position,
+        companyProfileId: req.user.companyProfileId,
+        userRelationshipUser: {
+          update: {
+            where: { id: foundRelationship.id },
+            data: {
+              userBossId: validate.value.userBossId,
+            },
+          },
+        },
+      },
+      include: {
+        userRelationshipUser: true,
       },
     });
 
@@ -211,6 +247,19 @@ exports.getUserById = async (req, res, next) => {
     }
     console.log(user);
     res.status(200).json({ message: 'Get user', user: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllUser = async (req, res, next) => {
+  try {
+    const allUser = await prisma.user.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
+    res.status(200).json({ allUser });
   } catch (error) {
     next(error);
   }
