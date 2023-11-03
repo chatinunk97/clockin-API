@@ -52,7 +52,7 @@ router.post(
   uploadMiddleware.single("profileImage"),
   userController.createUser
 );
-router.post("/login", authenticatedMiddleware, userController.login);
+router.post("/login", userController.login);
 router.patch(
   "/updateUser",
   authenticatedMiddleware,
@@ -60,6 +60,8 @@ router.patch(
   userController.updateUser
 );
 router.get("/me", authenticatedMiddleware, userController.getMe);
+router.get("/:userId", authenticatedMiddleware, userController.getUserById);
+
 router.delete(
   "/deleteUser/:id",
   authenticatedMiddleware,
