@@ -12,12 +12,11 @@ exports.createTimeProfile = async (req, res, next) => {
     }
 
     req.body.companyProfileId = req.user.companyProfileId;
-    console.log(req.body);
+
     const { value, error } = timeProfileSchema.validate(req.body);
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-    console.log("##########", value);
     const timeProfile = await prisma.timeProfile.create({
       data: value,
     });
@@ -51,6 +50,50 @@ exports.updateTimeProfile = async (req, res, next) => {
     res
       .status(200)
       .json({ message: "TimeProfile was updated", updatedTimeProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getTimeProfileById = async (req, res, next) => {
+  try {
+    const timeProfile = await prisma.timeProfile.findMany({
+      where: {
+        id: +req.params.timeProfileId,
+      },
+    });
+
+    if (timeProfile.length === 0) {
+      throw createError("Time profile not found", 404);
+    }
+    res
+      .status(200)
+      .json({ message: "Get timeProfile", timeProfile: timeProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// exports.getAllTimeProfile = async (req, res, next) => {
+//   try {
+//     const allTime = await prisma.timeProfile.findMany({
+//       where: {
+//         companyProfileId: req.timeProfile.companyProfileId,
+//       },
+//     });
+//     res.status(200).json({ allTime });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+exports.getAllTimeProfile = async (req, res, next) => {
+  try {
+    const allTime = await prisma.timeProfile.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
+    res.status(200).json({ allTime });
   } catch (error) {
     next(error);
   }

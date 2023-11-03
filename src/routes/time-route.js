@@ -15,6 +15,17 @@ router.post(
   timeProfileController.createTimeProfile
 );
 
+router.get(
+  "/:timeProfileId",
+  authenticatedMiddleware,
+  timeProfileController.getTimeProfileById
+);
+router.get(
+  "/getTimeProfile",
+  authenticatedMiddleware,
+  timeProfileController.getAllTimeProfile
+);
+
 router.patch(
   "/updateTimeProfile/:timeProfileId",
   authenticatedMiddleware,
