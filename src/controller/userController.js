@@ -264,7 +264,6 @@ exports.getUserById = async (req, res, next) => {
     if (!user || user.length === 0) {
       throw createError(404, 'User not found');
     }
-    console.log(user);
     res.status(200).json({ message: 'Get user', user: user });
   } catch (error) {
     next(error);
@@ -291,8 +290,9 @@ exports.getMe = (req, res) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     const { value, error } = resetPasswordSchema.validate(req.body);
+
     if (error) {
-      next(error);
+      return next(error);
     }
 
     value.password = await bcrypt.hash(value.password, 14);

@@ -7,7 +7,7 @@ const loginSchema = Joi.object({
 exports.loginSchema = loginSchema;
 
 const createUserSchemaByAdmin = Joi.object({
-  profileImage: Joi.string(),
+  profileImage: Joi.string().allow("",null),
   employeeId: Joi.string().required(),
   position: Joi.string().valid('HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
