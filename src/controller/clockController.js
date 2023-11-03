@@ -1,4 +1,7 @@
-const { clockInSchema } = require('../validators/clock-validators');
+const {
+  clockInSchema,
+  clockOutSchema,
+} = require('../validators/clock-validators');
 const prisma = require('../models/prisma');
 const createError = require('../utils/create-error');
 
@@ -21,11 +24,11 @@ exports.clockIn = async (req, res, next) => {
     console.log(foundTimeProfile);
 
     value.userId = req.user.id;
-    value.clockOutTime = null;
 
     const clockIn = await prisma.clock.create({
       data: {
         clockInTime: value.clockInTime,
+        clockOutTime: value.clockOutTime,
         latitudeClockIn: value.latitudeClockIn,
         longitudeClockIn: value.longitudeClockIn,
         user: { connect: { id: value.userId } },
@@ -39,9 +42,14 @@ exports.clockIn = async (req, res, next) => {
 
 exports.clockOut = async (req, res, next) => {
   try {
+    const { value, error } = clockOutSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+
     const foundClock = await prisma.clock.findFirst({
       where: {
-        id: req.body.id,
+        id: value.id,
       },
     });
 
@@ -49,15 +57,14 @@ exports.clockOut = async (req, res, next) => {
       return next(createError('Not found', 400));
     }
 
-    req.body.clockOutTime = new Date().toJSON();
     const clock = await prisma.clock.update({
-      data: req.body,
+      data: value,
       where: {
-        id: req.body.id,
+        id: value.id,
       },
     });
 
-    res.status(200).json({ message: 'Hello', clock });
+    res.status(200).json({ clock });
   } catch (error) {
     next(error);
   }
