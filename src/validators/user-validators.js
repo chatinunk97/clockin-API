@@ -103,3 +103,17 @@ const deleteUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
 exports.deleteUserSchema = deleteUserSchema;
+
+const resetPasswordSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,16}$/)
+    .trim()
+    .required(),
+  confirmPassword: Joi.string()
+    .valid(Joi.ref('password'))
+    .trim()
+    .required()
+    .strip(),
+});
+exports.resetPasswordSchema = resetPasswordSchema;
