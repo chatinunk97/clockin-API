@@ -105,7 +105,6 @@ const deleteUserSchema = Joi.object({
 exports.deleteUserSchema = deleteUserSchema;
 
 const resetPasswordSchema = Joi.object({
-  id: Joi.number().integer().positive().required(),
   password: Joi.string()
     .pattern(/^[a-zA-Z0-9]{6,16}$/)
     .trim()
