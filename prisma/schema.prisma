@@ -133,7 +133,7 @@ model Clock {
   userId            Int
   user              User          @relation(fields: [userId], references: [id])
   clockInTime       String
-  clockOutTime      String
+  clockOutTime      String?
   latitudeClockIn   Float
   longitudeClockIn  Float
   latitudeClockOut  Float?

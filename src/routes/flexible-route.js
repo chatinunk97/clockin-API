@@ -14,4 +14,11 @@ router.post(
   authenticatedMiddleware,
   flexibleController.createFlexible
 );
+
+// router.patch(
+//   "/updateFlexible",
+//   authenticatedMiddleware,
+//   flexibleController.updateFlexible
+// );
+
 module.exports = router;
