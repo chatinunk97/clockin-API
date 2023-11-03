@@ -5,11 +5,10 @@ const {
   createUserLeaveSchema,
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
-  updateStatusRequestAcceptByUserLeaveIdSchema,
-  updateStatusRequestRejectByUserLeaveIdSchema,
   deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
   createLeaveProfileSchema,
+  updateRequestSchema,
 } = require('../validators/leave-validators');
 
 // ########## request leave ##########
@@ -79,13 +78,11 @@ exports.getAllLeaveRequests = async (req, res, next) => {
   }
 };
 
-exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
+exports.updateRequestLeave = async (req, res, next) => {
   try {
-    const { value, error } =
-      updateStatusRequestAcceptByUserLeaveIdSchema.validate(req.params);
+    const { value, error } = updateRequestSchema.validate(req.params);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
@@ -101,39 +98,6 @@ exports.updateStatusRequestAcceptByUserLeaveId = async (req, res, next) => {
     const result = await prisma.requestLeave.update({
       data: {
         statusRequest: 'ACCEPT',
-      },
-      where: {
-        id: found.id,
-      },
-    });
-    res.status(200).json({ result });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.updateStatusRequestRejectByUserLeaveId = async (req, res, next) => {
-  try {
-    const { value, error } =
-      updateStatusRequestRejectByUserLeaveIdSchema.validate(req.params);
-
-    if (error) {
-      error.statusCode = 400;
-      return next(error);
-    }
-
-    // Find userLeaveId
-    const found = await prisma.requestLeave.findFirst({
-      where: { userLeaveId: +value.userLeaveId },
-    });
-    if (!found) {
-      return res.status(404).json({ message: 'userLeaveId not found' });
-    }
-
-    // Update the status to 'reject'
-    const result = await prisma.requestLeave.update({
-      data: {
-        statusRequest: 'REJECT',
       },
       where: {
         id: found.id,

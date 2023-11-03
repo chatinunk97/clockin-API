@@ -10,6 +10,7 @@ const {
   updateUserSchemaByAdmin,
   updateUserSchema,
   deleteUserSchema,
+  resetPasswordSchema,
 } = require('../validators/user-validators');
 const createError = require('../utils/create-error');
 const { upload } = require('../utils/cloudinary');
@@ -183,12 +184,10 @@ exports.updateUser = async (req, res, next) => {
     if (!foundUser) {
       return next(createError('User is not exists', 400));
     }
-    console.log(foundUser, '=============================');
 
     const foundRelationship = await prisma.userRelationship.findFirst({
       where: { userId: +req.body.id },
     });
-    console.log(foundRelationship, '=============================');
     if (req.file) {
       const url = await upload(req.file.path);
       req.body.profileImage = url;
@@ -214,7 +213,6 @@ exports.updateUser = async (req, res, next) => {
     if (validate.error) {
       return next(validate.error);
     }
-    console.log(validate.value, '=============================');
 
     const user = await prisma.user.update({
       where: { id: validate.value.id },
@@ -252,15 +250,14 @@ exports.updateUser = async (req, res, next) => {
 
 exports.getUserById = async (req, res, next) => {
   try {
-    const user = await prisma.user.findMany({
+    const user = await prisma.user.findUnique({
       where: { id: +req.params.userId },
     });
 
-    if (!user || user.length === 0) {
-      throw createError(404, 'User not found');
+    if (!user) {
+      throw createError('User not found', 404);
     }
-    console.log(user);
-    res.status(200).json({ message: 'Get user', user: user });
+    res.status(200).json({ message: 'Get user', user });
   } catch (error) {
     next(error);
   }
@@ -270,7 +267,7 @@ exports.getAllUser = async (req, res, next) => {
   try {
     const allUser = await prisma.user.findMany({
       where: {
-        companyProfileId: req.user.companyProfileId,
+        companyProfileId: +req.user.companyProfileId,
       },
     });
     res.status(200).json({ allUser });
@@ -281,4 +278,26 @@ exports.getAllUser = async (req, res, next) => {
 
 exports.getMe = (req, res) => {
   res.status(200).json({ user: req.user });
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { value, error } = resetPasswordSchema.validate(req.body);
+    if (error) {
+      next(error);
+    }
+
+    value.password = await bcrypt.hash(value.password, 14);
+
+    await prisma.user.update({
+      data: {
+        password: value.password,
+      },
+      where: { id: req.user.id },
+    });
+
+    res.status(200).json({ message: 'Password was reset' });
+  } catch (error) {
+    next(error);
+  }
 };
