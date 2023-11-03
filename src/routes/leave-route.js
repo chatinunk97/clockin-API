@@ -11,7 +11,16 @@ const router = express.Router();
 
 // request leave
 router.get('/', leaveController.getAllLeaveRequests);
-router.post('/create', leaveController.createLeaveRequest);
+router.post(
+  '/createRequestLeave',
+  authenticatedMiddleware,
+  leaveController.createRequestLeave
+);
+router.patch(
+  '/updateRequestLeave',
+  authenticatedMiddleware,
+  leaveController.updateRequestLeave
+);
 router.delete(
   '/:leaveRequestId',
   leaveController.deleteLeaveRequestsByLeaveRequestId
@@ -23,16 +32,18 @@ router.post(
   authenticatedMiddleware,
   leaveController.createUserLeave
 );
-router.patch('/:userId', leaveController.updateUserLeave);
+
 router.patch(
-  '/status/accept/:userLeaveId',
-  leaveController.updateStatusRequestAcceptByUserLeaveId
+  '/updateUserLeave/:userLeaveId',
+  authenticatedMiddleware,
+  leaveController.updateUserLeave
 );
-router.patch(
-  '/status/reject/:userLeaveId',
-  leaveController.updateStatusRequestRejectByUserLeaveId
+
+router.delete(
+  '/deleteUserLeave/:userLeaveId',
+  authenticatedMiddleware,
+  leaveController.deleteUserLeave
 );
-router.delete('/delete/:userLeaveId', leaveController.deleteUserLeave);
 
 // leave profile
 router.post(

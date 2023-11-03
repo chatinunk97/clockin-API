@@ -105,8 +105,8 @@ model RequestLeave {
   id            Int          @id @default(autoincrement())
   userLeaveId   Int
   userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
-  startDate     DateTime
-  endDate       DateTime
+  startDate     String
+  endDate       String
   halfDate      Boolean      @default(false)
   statusRequest StateRequest @default(PENDING)
   messageLeave  String
