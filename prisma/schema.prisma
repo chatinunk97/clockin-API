@@ -132,8 +132,8 @@ model Clock {
   id                Int           @id @default(autoincrement())
   userId            Int
   user              User          @relation(fields: [userId], references: [id])
-  clockInTime       DateTime      @default(now())
-  clockOutTime      DateTime?
+  clockInTime       String
+  clockOutTime      String
   latitudeClockIn   Float
   longitudeClockIn  Float
   latitudeClockOut  Float?
@@ -152,7 +152,7 @@ model FlexibleTime {
   id            Int         @id @default(autoincrement())
   userId        Int
   user          User        @relation(fields: [userId], references: [id])
-  date          DateTime
+  date          String
   timeProfileId Int
   timeProfile   TimeProfile @relation(fields: [timeProfileId], references: [id])
 }
@@ -161,8 +161,8 @@ model TimeProfile {
   id               Int            @id @default(autoincrement())
   companyProfileId Int
   companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
-  start            DateTime       @db.Time()
-  end              DateTime       @db.Time()
+  start            String
+  end              String
   typeTime         Typetime
   flexibleTime     FlexibleTime[]
 }
@@ -175,14 +175,14 @@ enum Typetime {
 }
 
 model requestOT {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   userId    Int
-  User      User     @relation(fields: [userId], references: [id])
+  User      User    @relation(fields: [userId], references: [id])
   clockId   Int
-  clock     Clock    @relation(fields: [clockId], references: [id])
-  startTime DateTime
-  endTime   DateTime
-  statusOT  stateOT  @default(PENDING)
+  clock     Clock   @relation(fields: [clockId], references: [id])
+  startTime String
+  endTime   String
+  statusOT  stateOT @default(PENDING)
   messageOT String
 }
 
