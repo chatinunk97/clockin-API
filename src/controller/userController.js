@@ -18,7 +18,7 @@ const { nanoid } = require("nanoid");
 exports.createUser = async (req, res, next) => {
   try {
     let validate;
-    console.log(req.user)
+    console.log(req.user);
     const data = JSON.parse(req.body.data);
     const alphabet =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
