@@ -46,9 +46,17 @@ exports.updateRequestOT = async (req, res, next) => {
 exports.getAllRequestOT = async (req, res, next) => {
   try {
     const OT = await prisma.requestOT.findMany({
-      where: {},
+      where: {
+        User: {
+          userRelationshipUser: {
+            every: {
+              userBossId: req.user.id,
+            },
+          },
+        },
+      },
     });
-    res.status(200).json({ message: 'Yooooo' });
+    res.status(200).json({ message: 'Yooooo', OT });
   } catch (error) {
     next(error);
   }

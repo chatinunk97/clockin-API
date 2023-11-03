@@ -1,15 +1,16 @@
-const Joi = require("joi").extend(require("@joi/date"));
+const Joi = require('joi').extend(require('@joi/date'));
 
 const createRequestLeaveSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
-  startDate: Joi.date().format("DD/MM/YYYY").utc().required(),
-  endDate: Joi.date().format("DD/MM/YYYY").utc().required(),
+  startDate: Joi.date().format('DD/MM/YYYY').utc().required(),
+  endDate: Joi.date().format('DD/MM/YYYY').utc().required(),
   halfDate: Joi.boolean(),
-  statusRequest: Joi.string().trim().valid("PENDING", "ACCEPT", "REJECT"),
+  statusRequest: Joi.string().trim().valid('PENDING', 'ACCEPT', 'REJECT'),
   messageLeave: Joi.string(),
 });
 
 const createUserLeaveSchema = Joi.object({
+  userId: Joi.number().integer().positive().required(),
   leaveProfileId: Joi.number().integer().positive().required(),
   dateAmount: Joi.number().integer().positive().required(),
 });
@@ -23,7 +24,7 @@ const deleteUserLeaveSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
 });
 
-const createProfileLeaveSchema = Joi.object({
+const createLeaveProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive().required(),
   leaveName: Joi.string().required(),
 });
@@ -48,7 +49,7 @@ module.exports = {
   createUserLeaveSchema,
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
-  createProfileLeaveSchema,
+  createLeaveProfileSchema,
   updateStatusRequestAcceptByUserLeaveIdSchema,
   updateStatusRequestRejectByUserLeaveIdSchema,
   deleteLeaveRequestsByUserLeaveIdSchema,
