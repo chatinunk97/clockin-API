@@ -10,12 +10,14 @@ exports.createTimeProfile = async (req, res, next) => {
     if (req.user.position !== "ADMIN") {
       return next(createError("You do not have permission to access", 403));
     }
+
     req.body.companyProfileId = req.user.companyProfileId;
+    console.log(req.body);
     const { value, error } = timeProfileSchema.validate(req.body);
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-
+    console.log("##########", value);
     const timeProfile = await prisma.timeProfile.create({
       data: value,
     });
