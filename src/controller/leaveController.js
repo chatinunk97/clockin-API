@@ -13,22 +13,19 @@ const {
 } = require('../validators/leave-validators');
 
 // ########## request leave ##########
-exports.createLeaveRequest = async (req, res, next) => {
+exports.createRequestLeave = async (req, res, next) => {
   try {
     const { value, error } = createRequestLeaveSchema.validate(req.body);
-    // console.log("value", value);
-    // console.log(req.body);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
-    const result = await prisma.requestLeave.create({
+    const requestLeave = await prisma.requestLeave.create({
       data: value,
     });
 
-    res.status(201).json({ result });
+    res.status(201).json({ requestLeave });
   } catch (error) {
     next(error);
   }
@@ -173,19 +170,19 @@ exports.deleteLeaveRequestsByLeaveRequestId = async (req, res, next) => {
   }
 };
 
+// ########## user leave ##########
+
 exports.createUserLeave = async (req, res, next) => {
   try {
-    console.log(req.user.position, '==========================');
     if (!(req.user.position == 'ADMIN' || req.user.position == 'HR')) {
       return next(createError('You do not have permission to access', 403));
     }
-    console.log('++++++++++++++++++++++++');
     const { value, error } = createUserLeaveSchema.validate(req.body);
 
     if (error) {
       return next(error);
     }
-    console.log(value);
+
     const userLeave = await prisma.userLeave.create({
       data: {
         dateAmount: value.dateAmount,
@@ -201,25 +198,27 @@ exports.createUserLeave = async (req, res, next) => {
 
 exports.updateUserLeave = async (req, res, next) => {
   try {
+    if (!(req.user.position == 'ADMIN' || req.user.position == 'HR')) {
+      return next(createError('You do not have permission to access', 403));
+    }
+
     const { value, error } = updateUserLeaveSchema.validate(req.body);
-    // console.log("value", value);
-    // console.log("req.body", req.body);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
-    const result = await prisma.userLeave.update({
+    const userLeave = await prisma.userLeave.update({
       data: {
-        leaveProfileId: req.body.leaveProfileId,
-        dateAmount: req.body.dateAmount,
+        dateAmount: value.dateAmount,
+        user: { connect: { id: value.userId } },
+        leaveProfile: { connect: { id: value.leaveProfileId } },
       },
       where: {
-        id: +req.params.userId,
+        id: +req.params.userLeaveId,
       },
     });
-    res.status(200).json({ result });
+    res.status(200).json({ userLeave });
   } catch (error) {
     next(error);
   }
@@ -227,32 +226,31 @@ exports.updateUserLeave = async (req, res, next) => {
 
 exports.deleteUserLeave = async (req, res, next) => {
   try {
+    if (!(req.user.position == 'ADMIN' || req.user.position == 'HR')) {
+      return next(createError('You do not have permission to access', 403));
+    }
+
     const { value, error } = deleteUserLeaveSchema.validate(req.params);
     console.log('value', value);
-    // console.log("req.params", req.params);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
-    // Find userLeaveId in table requestLeave
-    const found = await prisma.requestLeave.findFirst({
+    const foundRequestLeave = await prisma.requestLeave.findFirst({
       where: { userLeaveId: +value.userLeaveId },
     });
-    // console.log("founddddd", found);
 
-    // Delete in table userLeave
-    if (found === null) {
+    if (foundRequestLeave) {
+      return next(createError('userLeaveId has request leave', 400));
+    }
+
+    if (foundRequestLeave === null) {
       await prisma.userLeave.delete({
         where: {
           id: value.userLeaveId,
         },
       });
-    }
-
-    if (found) {
-      return res.status(404).json({ message: 'userLeaveId has request leave' });
     }
 
     res.status(200).json({ message: 'Deleted' });

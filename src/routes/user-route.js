@@ -60,7 +60,11 @@ router.patch(
   userController.updateUser
 );
 router.get("/me", authenticatedMiddleware, userController.getMe);
-router.get("/:userId", authenticatedMiddleware, userController.getUserById);
+router.get(
+  "/getuser/:userId",
+  authenticatedMiddleware,
+  userController.getUserById
+);
 
 router.delete(
   "/deleteUser/:id",
