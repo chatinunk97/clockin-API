@@ -7,7 +7,10 @@ exports.createFlexible = async (req, res, next) => {
     if (req.user.userType !== "PARTTIME") {
       return next(createError("It's not your business", 403));
     }
-    // req.body.companyProfileId = req.user.companyProfileId;
+    // if (!req.timeProfile || req.timeProfile.typeTime !== "NOTSPECIFIED") {
+    //   return next(createError("It's for part time's, Jackass.", 403));
+    // }
+
     const { value, error } = flexiblaTimeSchema.validate(req.body);
     if (error) {
       return next(createError(error.details[0].message, 400));
@@ -22,3 +25,5 @@ exports.createFlexible = async (req, res, next) => {
     next(error);
   }
 };
+
+// exports.updateFlexible
