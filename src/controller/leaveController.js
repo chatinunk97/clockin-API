@@ -1,14 +1,15 @@
 const prisma = require('../models/prisma');
+const createError = require('../utils/create-error');
 const {
   createRequestLeaveSchema,
   createUserLeaveSchema,
-  createProfileLeaveSchema,
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
   updateStatusRequestAcceptByUserLeaveIdSchema,
   updateStatusRequestRejectByUserLeaveIdSchema,
   deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
+  createLeaveProfileSchema,
 } = require('../validators/leave-validators');
 
 // ########## request leave ##########
@@ -174,22 +175,25 @@ exports.deleteLeaveRequestsByLeaveRequestId = async (req, res, next) => {
 
 exports.createUserLeave = async (req, res, next) => {
   try {
+    console.log(req.user.position, '==========================');
+    if (!(req.user.position == 'ADMIN' || req.user.position == 'HR')) {
+      return next(createError('You do not have permission to access', 403));
+    }
+    console.log('++++++++++++++++++++++++');
     const { value, error } = createUserLeaveSchema.validate(req.body);
-    // console.log("value", value);
-    // console.log("req.body", req.body);
+
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
-
-    const result = await prisma.userLeave.create({
+    console.log(value);
+    const userLeave = await prisma.userLeave.create({
       data: {
-        userId: +req.params.userId,
-        leaveProfileId: req.body.leaveProfileId,
-        dateAmount: req.body.dateAmount,
+        dateAmount: value.dateAmount,
+        user: { connect: { id: value.userId } },
+        leaveProfile: { connect: { id: value.leaveProfileId } },
       },
     });
-    res.status(200).json({ result });
+    res.status(200).json({ userLeave });
   } catch (error) {
     next(error);
   }
@@ -257,22 +261,25 @@ exports.deleteUserLeave = async (req, res, next) => {
   }
 };
 
-// ########## profile leave ##########
-exports.createProfileLeave = async (req, res, next) => {
+// ########## leave profile ##########
+exports.createLeaveProfile = async (req, res, next) => {
   try {
-    const { value, error } = createProfileLeaveSchema.validate(req.body);
-    // console.log("value", value);
-    // console.log("req.body", req.body);
+    if (req.user.position !== 'ADMIN') {
+      return next(createError('You do not have permission to access', 403));
+    }
+
+    req.body.companyProfileId = req.user.companyProfileId;
+
+    const { value, error } = createLeaveProfileSchema.validate(req.body);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
-    const result = await prisma.leaveProfile.create({
+    const leaveProfile = await prisma.leaveProfile.create({
       data: value,
     });
-    res.status(200).json({ result });
+    res.status(201).json({ leaveProfile });
   } catch (error) {
     next(error);
   }

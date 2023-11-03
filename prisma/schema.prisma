@@ -161,8 +161,8 @@ model TimeProfile {
   id               Int            @id @default(autoincrement())
   companyProfileId Int
   companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
-  start            DateTime       @db.Time()
-  end              DateTime       @db.Time()
+  start            String
+  end              String
   typeTime         Typetime
   flexibleTime     FlexibleTime[]
 }
