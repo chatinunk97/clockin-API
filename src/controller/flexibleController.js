@@ -7,7 +7,7 @@ exports.createFlexible = async (req, res, next) => {
     if (req.user.userType !== "PARTTIME") {
       return next(createError("It's not your business", 403));
     }
-    req.body.companyProfileId = req.user.companyProfileId;
+    // req.body.companyProfileId = req.user.companyProfileId;
     const { value, error } = flexiblaTimeSchema.validate(req.body);
     if (error) {
       return next(createError(error.details[0].message, 400));

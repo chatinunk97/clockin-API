@@ -14,3 +14,4 @@ router.post(
   authenticatedMiddleware,
   flexibleController.createFlexible
 );
+module.exports = router;
