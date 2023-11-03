@@ -21,11 +21,11 @@ exports.createRequestLeave = async (req, res, next) => {
       return next(error);
     }
 
-    const result = await prisma.requestLeave.create({
+    const requestLeave = await prisma.requestLeave.create({
       data: value,
     });
 
-    res.status(201).json({ result });
+    res.status(201).json({ requestLeave });
   } catch (error) {
     next(error);
   }
