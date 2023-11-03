@@ -30,11 +30,12 @@ const createLeaveProfileSchema = Joi.object({
   leaveName: Joi.string().required(),
 });
 
-const updateStatusRequestAcceptByUserLeaveIdSchema = Joi.object({
+const updateRequestSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
-});
-const updateStatusRequestRejectByUserLeaveIdSchema = Joi.object({
-  userLeaveId: Joi.number().integer().positive().required(),
+  startDate: Joi.string().required(),
+  endDate: Joi.string().required(),
+  statusRequest: Joi.string().required(),
+  messageLeave: Joi.string().required(),
 });
 
 const deleteLeaveRequestsByUserLeaveIdSchema = Joi.object({
@@ -51,8 +52,7 @@ module.exports = {
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
   createLeaveProfileSchema,
-  updateStatusRequestAcceptByUserLeaveIdSchema,
-  updateStatusRequestRejectByUserLeaveIdSchema,
+  updateRequestSchema,
   deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
 };
