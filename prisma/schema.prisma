@@ -105,8 +105,8 @@ model RequestLeave {
   id            Int          @id @default(autoincrement())
   userLeaveId   Int
   userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
-  startDate     DateTime
-  endDate       DateTime
+  startDate     String
+  endDate       String
   halfDate      Boolean      @default(false)
   statusRequest StateRequest @default(PENDING)
   messageLeave  String
@@ -133,7 +133,7 @@ model Clock {
   userId            Int
   user              User          @relation(fields: [userId], references: [id])
   clockInTime       String
-  clockOutTime      String
+  clockOutTime      String?
   latitudeClockIn   Float
   longitudeClockIn  Float
   latitudeClockOut  Float?

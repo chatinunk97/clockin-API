@@ -24,7 +24,12 @@ exports.clockIn = async (req, res, next) => {
     value.clockOutTime = null;
 
     const clockIn = await prisma.clock.create({
-      data: value,
+      data: {
+        clockInTime: value.clockInTime,
+        latitudeClockIn: value.latitudeClockIn,
+        longitudeClockIn: value.longitudeClockIn,
+        user: { connect: { id: value.userId } },
+      },
     });
     res.status(201).json({ clockIn });
   } catch (error) {
