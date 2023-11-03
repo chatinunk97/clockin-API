@@ -72,7 +72,7 @@ exports.createUser = async (req, res, next) => {
     );
 
     user.accessToken = accessToken;
-    nodemailerSender(admin.email, accessToken);
+    nodemailerSender(user.email, accessToken);
     delete user.password;
 
     res.status(201).json({ message: "User was created", user });
