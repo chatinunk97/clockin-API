@@ -34,6 +34,7 @@ const updateRequestSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
   startDate: Joi.string().required(),
   endDate: Joi.string().required(),
+  halfDate: Joi.boolean(),
   statusRequest: Joi.string().required(),
   messageLeave: Joi.string().required(),
 });
