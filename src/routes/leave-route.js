@@ -1,5 +1,12 @@
 const express = require('express');
+
+// Controller
+
 const leaveController = require('../controller/leaveController');
+
+// Middlewares
+const authenticatedMiddleware = require('../middleware/authenticate/authenticate');
+
 const router = express.Router();
 
 // request leave
@@ -11,7 +18,11 @@ router.delete(
 );
 // user leave
 router.get('/:userLeaveId', leaveController.getLeaveRequestsByUserLeaveId);
-router.post('/create/:userId', leaveController.createUserLeave);
+router.post(
+  '/createUserLeave',
+  authenticatedMiddleware,
+  leaveController.createUserLeave
+);
 router.patch('/:userId', leaveController.updateUserLeave);
 router.patch(
   '/status/accept/:userLeaveId',
@@ -23,7 +34,11 @@ router.patch(
 );
 router.delete('/delete/:userLeaveId', leaveController.deleteUserLeave);
 
-// profile leave
-router.post('/profile', leaveController.createProfileLeave);
+// leave profile
+router.post(
+  '/createLeaveProfile',
+  authenticatedMiddleware,
+  leaveController.createLeaveProfile
+);
 
 module.exports = router;
