@@ -16,6 +16,11 @@ router.post(
   authenticatedMiddleware,
   leaveController.createRequestLeave
 );
+router.patch(
+  '/updateRequestLeave',
+  authenticatedMiddleware,
+  leaveController.updateRequestLeave
+);
 router.delete(
   '/:leaveRequestId',
   leaveController.deleteLeaveRequestsByLeaveRequestId
@@ -27,19 +32,13 @@ router.post(
   authenticatedMiddleware,
   leaveController.createUserLeave
 );
+
 router.patch(
   '/updateUserLeave/:userLeaveId',
   authenticatedMiddleware,
   leaveController.updateUserLeave
 );
-router.patch(
-  '/status/accept/:userLeaveId',
-  leaveController.updateStatusRequestAcceptByUserLeaveId
-);
-router.patch(
-  '/status/reject/:userLeaveId',
-  leaveController.updateStatusRequestRejectByUserLeaveId
-);
+
 router.delete(
   '/deleteUserLeave/:userLeaveId',
   authenticatedMiddleware,
