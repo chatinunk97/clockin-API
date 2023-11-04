@@ -273,6 +273,9 @@ exports.getAllUser = async (req, res, next) => {
       where: {
         companyProfileId: +req.user.companyProfileId,
       },
+      include: {
+        userRelationshipBoss: true,
+      },
     });
     res.status(200).json({ allUser });
   } catch (error) {
