@@ -5,10 +5,10 @@ const {
   createUserLeaveSchema,
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
-  deleteLeaveRequestsByUserLeaveIdSchema,
   getLeaveRequestsByUserLeaveId,
   createLeaveProfileSchema,
   updateRequestSchema,
+  deleteRequestsSchema,
 } = require('../validators/leave-validators');
 
 // ########## request leave ##########
@@ -60,19 +60,41 @@ exports.getLeaveRequestsByUserLeaveId = async (req, res, next) => {
   }
 };
 
-exports.getAllLeaveRequests = async (req, res, next) => {
+exports.getAllRequestLeaves = async (req, res, next) => {
   try {
-    const result = await prisma.requestLeave.findMany({
-      select: {
-        id: true,
-        userLeaveId: true,
-        startDate: true,
-        endDate: true,
-        halfDate: true,
-        statusRequest: true,
+    console.log(req.user);
+    const requestLeaves = await prisma.requestLeave.findMany({
+      where: {
+        userLeave: {
+          user: {
+            userRelationshipBoss: {
+              every: {
+                userBossId: req.user.id,
+              },
+            },
+          },
+        },
+      },
+      include: {
+        userLeave: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
-    res.status(200).json({ result });
+
+    // const requestLeaves = await prisma.user.findMany({
+    //   where: {
+    //     companyProfileId: req.user.companyProfileId,
+    //     userRelationshipBoss: {
+    //       every: {
+    //         userBossId: req.user.id,
+    //       },
+    //     },
+    //   },
+    // });
+    res.status(200).json({ requestLeaves });
   } catch (error) {
     next(error);
   }
@@ -128,26 +150,20 @@ exports.updateRequestLeave = async (req, res, next) => {
   }
 };
 
-exports.deleteLeaveRequestsByLeaveRequestId = async (req, res, next) => {
+exports.deleteLeaveRequests = async (req, res, next) => {
   try {
-    const { value, error } = deleteLeaveRequestsByUserLeaveIdSchema.validate(
-      req.params
-    );
-    // console.log("value", value);
-    // console.log("req.params", req.params);
+    const { value, error } = deleteRequestsSchema.validate(req.params);
 
     if (error) {
-      error.statusCode = 400;
       return next(error);
     }
 
-    // Delete userLeaveId
-    const result = await prisma.requestLeave.delete({
+    await prisma.requestLeave.delete({
       where: {
         id: value.leaveRequestId,
       },
     });
-    res.status(200).json({ result });
+    res.status(200).json({ message: 'Request Leave was deleted' });
   } catch (error) {
     next(error);
   }

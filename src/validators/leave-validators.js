@@ -39,7 +39,7 @@ const updateRequestSchema = Joi.object({
   messageLeave: Joi.string().required(),
 });
 
-const deleteLeaveRequestsByUserLeaveIdSchema = Joi.object({
+const deleteRequestsSchema = Joi.object({
   leaveRequestId: Joi.number().integer().positive().required(),
 });
 
@@ -54,6 +54,6 @@ module.exports = {
   deleteUserLeaveSchema,
   createLeaveProfileSchema,
   updateRequestSchema,
-  deleteLeaveRequestsByUserLeaveIdSchema,
+  deleteRequestsSchema,
   getLeaveRequestsByUserLeaveId,
 };
