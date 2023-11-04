@@ -3,6 +3,7 @@ const createError = require("../utils/create-error");
 const {
   timeProfileSchema,
   updateTimeProfileSchema,
+  deleteTimeProfileSchema,
 } = require("../validators/timeProfile-validators");
 
 exports.createTimeProfile = async (req, res, next) => {
@@ -74,26 +75,54 @@ exports.getTimeProfileById = async (req, res, next) => {
   }
 };
 
-// exports.getAllTimeProfile = async (req, res, next) => {
-//   try {
-//     const allTime = await prisma.timeProfile.findMany({
-//       where: {
-//         companyProfileId: req.timeProfile.companyProfileId,
-//       },
-//     });
-//     res.status(200).json({ allTime });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 exports.getAllTimeProfile = async (req, res, next) => {
   try {
-    const allTime = await prisma.timeProfile.findMany({
+    const allTimeProfiles = await prisma.timeProfile.findMany({
       where: {
         companyProfileId: req.user.companyProfileId,
       },
     });
-    res.status(200).json({ allTime });
+
+    res.status(200).json({ message: "Get all time profiles", allTimeProfiles });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteTimeProfile = async (req, res, next) => {
+  try {
+    console.log(req.user.position);
+    if (req.user.position !== "ADMIN") {
+      return next(
+        createError("You do not have permission to delete a time profile", 403)
+      );
+    }
+
+    const { error } = deleteTimeProfileSchema.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+
+    // Find the time profile
+    const foundTimeProfile = await prisma.timeProfile.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    // Check if the time profile exists
+    if (!foundTimeProfile) {
+      throw createError("Time Profile not found", 404);
+    }
+
+    // Delete the time profile
+    await prisma.timeProfile.delete({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    res.status(200).json({ message: "Time Profile deleted successfully" });
   } catch (error) {
     next(error);
   }

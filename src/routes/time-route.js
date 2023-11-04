@@ -16,12 +16,12 @@ router.post(
 );
 
 router.get(
-  "/:timeProfileId",
+  "/getTimeProfile/:timeProfileId",
   authenticatedMiddleware,
   timeProfileController.getTimeProfileById
 );
 router.get(
-  "/getTimeProfile",
+  "/getAllTimeProfile",
   authenticatedMiddleware,
   timeProfileController.getAllTimeProfile
 );
@@ -30,6 +30,12 @@ router.patch(
   "/updateTimeProfile/:timeProfileId",
   authenticatedMiddleware,
   timeProfileController.updateTimeProfile
+);
+
+router.delete(
+  "/deleteTimeProfile/:id",
+  authenticatedMiddleware,
+  timeProfileController.deleteTimeProfile
 );
 
 module.exports = router;

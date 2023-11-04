@@ -29,3 +29,8 @@ const updateTimeProfileSchema = Joi.object({
     .required(),
 });
 exports.updateTimeProfileSchema = updateTimeProfileSchema;
+
+const deleteTimeProfileSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+});
+exports.deleteTimeProfileSchema = deleteTimeProfileSchema;

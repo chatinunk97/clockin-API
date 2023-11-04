@@ -24,4 +24,4 @@ exports.createFlexible = async (req, res, next) => {
   }
 };
 
-// exports.updateFlexible
+// exports.updateFlexible = async ()
