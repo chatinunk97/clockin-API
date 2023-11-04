@@ -1,9 +1,9 @@
 const {
   clockInSchema,
   clockOutSchema,
-} = require('../validators/clock-validators');
-const prisma = require('../models/prisma');
-const createError = require('../utils/create-error');
+} = require("../validators/clock-validators");
+const prisma = require("../models/prisma");
+const createError = require("../utils/create-error");
 
 exports.clockIn = async (req, res, next) => {
   try {
@@ -54,7 +54,7 @@ exports.clockOut = async (req, res, next) => {
     });
 
     if (!foundClock) {
-      return next(createError('Not found', 400));
+      return next(createError("Not found", 400));
     }
 
     const clock = await prisma.clock.update({
@@ -69,3 +69,17 @@ exports.clockOut = async (req, res, next) => {
     next(error);
   }
 };
+
+// exports.getNewestClock = async (req, res, next) => {
+//   try {
+//     const newestClock = await prisma.clock.aggregate({
+//       _max : {
+//         id : true
+//       },
+//       where: { userId: +req.user.id },
+//     });
+//     res.status(200).json({ clockId : newestClock['_max'].id});
+//   } catch (error) {
+//     next(error);
+//   }
+// };

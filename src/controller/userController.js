@@ -281,8 +281,22 @@ exports.getAllUser = async (req, res, next) => {
   }
 };
 
-exports.getMe = (req, res) => {
-  res.status(200).json({ user: req.user });
+exports.getMe = async (req, res, next) => {
+  try {
+    const newestClockId = await prisma.clock.aggregate({
+      _max: {
+        id: true,
+      },
+      where: { userId: +req.user.id },
+    });
+    const newestClock = await prisma.clock.findUnique({
+      where: { id: newestClockId._max.id },
+    });
+    console.log(newestClock)
+    res.status(200).json({ user: req.user, newestClock });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.resetPassword = async (req, res, next) => {
