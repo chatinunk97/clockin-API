@@ -1,6 +1,6 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
-const TypetimeEnum = ['DEFAULT', 'FIRSTHALF', 'SECONDHALF', 'NOTSPECIFIED'];
+const TypetimeEnum = ["DEFAULT", "FIRSTHALF", "SECONDHALF", "NOTSPECIFIED"];
 
 const timeProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive(),
@@ -16,22 +16,21 @@ const timeProfileSchema = Joi.object({
 });
 exports.timeProfileSchema = timeProfileSchema;
 
-// const getTimeProfileSchema = Joi.object({
-//   companyProfileId: Joi.number().integer().positive(),
-//   start: Joi.date().required(),
-//   end: Joi.date().required(),
-//   typeTime: Joi.string()
-//     .valid(...TypetimeEnum)
-//     .required(),
-// });
-// exports.getTimeProfileSchema = getTimeProfileSchema;
-
 const updateTimeProfileSchema = Joi.object({
   // companyProfileId: Joi.number().integer().positive(),
-  start: Joi.date().required(),
-  end: Joi.date().required(),
+  start: Joi.string()
+    .regex(/^([0-9]{2})\:([0-9]{2})$/)
+    .required(),
+  end: Joi.string()
+    .regex(/^([0-9]{2})\:([0-9]{2})$/)
+    .required(),
   typeTime: Joi.string()
     .valid(...TypetimeEnum)
     .required(),
 });
 exports.updateTimeProfileSchema = updateTimeProfileSchema;
+
+const deleteTimeProfileSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+});
+exports.deleteTimeProfileSchema = deleteTimeProfileSchema;
