@@ -12,16 +12,19 @@ const {
   updateUserSchema,
   deleteUserSchema,
   resetPasswordSchema,
-} = require('../validators/user-validators');
-const createError = require('../utils/create-error');
-const { upload } = require('../utils/cloudinary');
-const { nanoid } = require('nanoid');
+} = require("../validators/user-validators");
+const createError = require("../utils/create-error");
+const { upload } = require("../utils/cloudinary");
+const { nanoid } = require("nanoid");
 
 exports.createUser = async (req, res, next) => {
   try {
     let validate;
-    console.log(req.user);
     const data = JSON.parse(req.body.data);
+    if (req.file) {
+      const url = await upload(req.file.path);
+      data.profileImage = url;
+    }
     const alphabet =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     data.password = nanoid(10, alphabet);
@@ -33,16 +36,11 @@ exports.createUser = async (req, res, next) => {
       return next(createError("You do not have permission to access", 403));
     }
 
-    if (req.file) {
-      const url = await upload(req.file.path);
-      validate.value.profileImage = url;
-    }
     if (validate.error) {
       return next(validate.error);
     }
 
     validate.value.password = await bcrypt.hash(validate.value.password, 14);
-
     const user = await prisma.user.create({
       data: {
         profileImage: validate.value.profileImage,
@@ -69,7 +67,8 @@ exports.createUser = async (req, res, next) => {
     const payload = { userId: user.id };
     const accessToken = jwt.sign(
       payload,
-      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD"
+      process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD",
+      { expiresIn: "1m" }
     );
 
     user.accessToken = accessToken;
@@ -77,8 +76,6 @@ exports.createUser = async (req, res, next) => {
     delete user.password;
 
     res.status(201).json({ message: "User was created", user });
-
-   
   } catch (error) {
     next(error);
   } finally {
@@ -189,12 +186,12 @@ exports.updateUser = async (req, res, next) => {
     if (!foundUser) {
       return next(createError("User is not exists", 400));
     }
-    console.log(foundUser, '=============================');
+    console.log(foundUser, "=============================");
 
     const foundRelationship = await prisma.userRelationship.findFirst({
       where: { userId: +req.body.id },
     });
-    console.log(foundRelationship, '=============================');
+    console.log(foundRelationship, "=============================");
     if (req.file) {
       const url = await upload(req.file.path);
       req.body.profileImage = url;
@@ -220,7 +217,7 @@ exports.updateUser = async (req, res, next) => {
     if (validate.error) {
       return next(validate.error);
     }
-    console.log(validate.value, '=============================');
+    console.log(validate.value, "=============================");
 
     const user = await prisma.user.update({
       where: { id: validate.value.id },
@@ -263,9 +260,9 @@ exports.getUserById = async (req, res, next) => {
     });
 
     if (!user || user.length === 0) {
-      throw createError(404, 'User not found');
+      throw createError(404, "User not found");
     }
-    res.status(200).json({ message: 'Get user', user: user });
+    res.status(200).json({ message: "Get user", user: user });
   } catch (error) {
     next(error);
   }
@@ -304,7 +301,7 @@ exports.resetPassword = async (req, res, next) => {
       where: { id: req.user.id },
     });
 
-    res.status(200).json({ message: 'Password was reset' });
+    res.status(200).json({ message: "Password was reset" });
   } catch (error) {
     next(error);
   }
