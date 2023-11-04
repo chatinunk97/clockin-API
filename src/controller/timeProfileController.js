@@ -30,8 +30,6 @@ exports.createTimeProfile = async (req, res, next) => {
 
 exports.updateTimeProfile = async (req, res, next) => {
   try {
-    // req.body.companyProfileId = req.user.companyProfileId;
-    console.log(req.params);
     if (req.user.position !== "ADMIN") {
       return next(createError("You do not have permission to access", 403));
     }
@@ -91,7 +89,6 @@ exports.getAllTimeProfile = async (req, res, next) => {
 
 exports.deleteTimeProfile = async (req, res, next) => {
   try {
-    console.log(req.user.position);
     if (req.user.position !== "ADMIN") {
       return next(
         createError("You do not have permission to delete a time profile", 403)

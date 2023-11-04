@@ -1,10 +1,10 @@
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
+const updateFlexibleTimeSchema = require("../validators/flexible-validator");
 const flexiblaTimeSchema = require("../validators/flexible-validator");
 
 exports.createFlexible = async (req, res, next) => {
   try {
-    console.log(req.body);
     if (req.user.position !== "HR") {
       return next(createError("It's not your business, Jackass", 403));
     }
@@ -12,8 +12,6 @@ exports.createFlexible = async (req, res, next) => {
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-
-    console.log(value);
     const flexible = await prisma.flexibleTime.create({
       data: value,
     });
@@ -24,4 +22,15 @@ exports.createFlexible = async (req, res, next) => {
   }
 };
 
-// exports.updateFlexible = async ()
+// exports.updateFlexible = async(req, res, next) => {
+//   try{
+//     if (req.user.position !== "HR") {
+//       return next(createError("You don't have permission to access this section"))
+//     }
+//     const {value,error} = updateFlexibleTimeSchema.validate(req.body);    if (error) {      return next(createError(error.details[0].message,400));
+//     }
+//     const foundFlexible = await prisma.flexibleTime.update({
+//       data:value,
+//     });
+//   }
+// }
