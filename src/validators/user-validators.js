@@ -7,7 +7,7 @@ const loginSchema = Joi.object({
 exports.loginSchema = loginSchema;
 
 const createUserSchemaByAdmin = Joi.object({
-  profileImage: Joi.string(),
+  profileImage: Joi.string().allow("",null),
   employeeId: Joi.string().required(),
   position: Joi.string().valid('HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
@@ -105,7 +105,6 @@ const deleteUserSchema = Joi.object({
 exports.deleteUserSchema = deleteUserSchema;
 
 const resetPasswordSchema = Joi.object({
-  id: Joi.number().integer().positive().required(),
   password: Joi.string()
     .pattern(/^[a-zA-Z0-9]{6,16}$/)
     .trim()

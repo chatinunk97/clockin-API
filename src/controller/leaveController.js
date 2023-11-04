@@ -80,30 +80,49 @@ exports.getAllLeaveRequests = async (req, res, next) => {
 
 exports.updateRequestLeave = async (req, res, next) => {
   try {
-    const { value, error } = updateRequestSchema.validate(req.params);
+    const { value, error } = updateRequestSchema.validate(req.body);
 
     if (error) {
       return next(error);
     }
 
-    // Find userLeaveId
     const found = await prisma.requestLeave.findFirst({
       where: { userLeaveId: +value.userLeaveId },
     });
+
     if (!found) {
-      return res.status(404).json({ message: 'userLeaveId not found' });
+      return next(createError('Request leave not found'));
     }
 
-    // Update the status to 'accept'
-    const result = await prisma.requestLeave.update({
-      data: {
-        statusRequest: 'ACCEPT',
-      },
+    const requestLeave = await prisma.requestLeave.update({
+      data: value,
       where: {
         id: found.id,
       },
     });
-    res.status(200).json({ result });
+
+    console.log(requestLeave);
+
+    requestLeave.startDate;
+    if (requestLeave.statusRequest === 'ACCEPT') {
+      await prisma.userLeave.update({
+        where: { id: requestLeave.userLeaveId },
+        data: {
+          dateAmount: {
+            decrement,
+          },
+        },
+      });
+    } else if (
+      requestLeave.statusRequest === 'ACCEPT' &&
+      requestLeave.halfDate === true
+    ) {
+      await prisma.flexibleTime.create({
+        data: {},
+      });
+    }
+
+    res.status(200).json({ requestLeave });
   } catch (error) {
     next(error);
   }
