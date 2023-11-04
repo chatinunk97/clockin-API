@@ -86,7 +86,6 @@ exports.createUser = async (req, res, next) => {
 };
 
 exports.deleteUser = async (req, res, next) => {
-  console.log(req.user);
   try {
     if (req.user.position === "USER" || req.user.position === "MANAGER") {
       return next(createError("You do not have permission to access", 403));
@@ -292,7 +291,6 @@ exports.getMe = async (req, res, next) => {
     const newestClock = await prisma.clock.findUnique({
       where: { id: newestClockId._max.id },
     });
-    console.log(newestClock)
     res.status(200).json({ user: req.user, newestClock });
   } catch (error) {
     next(error);

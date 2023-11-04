@@ -46,21 +46,24 @@ exports.clockOut = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-
+    const newestClockId = await prisma.clock.aggregate({
+      _max: {
+        id: true,
+      },
+      where: { userId: +req.user.id },
+    });
     const foundClock = await prisma.clock.findFirst({
       where: {
-        id: value.id,
+        id: newestClockId._max.id,
       },
     });
-
     if (!foundClock) {
       return next(createError("Not found", 400));
     }
-
     const clock = await prisma.clock.update({
       data: value,
       where: {
-        id: value.id,
+        id: foundClock.id
       },
     });
 
