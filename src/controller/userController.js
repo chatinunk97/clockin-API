@@ -45,6 +45,7 @@ exports.createUser = async (req, res, next) => {
 
     const user = await prisma.user.create({
       data: {
+        profileImage: validate.value.profileImage,
         employeeId: validate.value.employeeId,
         firstName: validate.value.firstName,
         lastName: validate.value.lastName,
