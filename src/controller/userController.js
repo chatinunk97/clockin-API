@@ -86,7 +86,6 @@ exports.createUser = async (req, res, next) => {
 };
 
 exports.deleteUser = async (req, res, next) => {
-  console.log(req.user);
   try {
     if (req.user.position === 'USER' || req.user.position === 'MANAGER') {
       return next(createError('You do not have permission to access', 403));
@@ -283,8 +282,21 @@ exports.getAllUser = async (req, res, next) => {
   }
 };
 
-exports.getMe = (req, res) => {
-  res.status(200).json({ user: req.user });
+exports.getMe = async (req, res, next) => {
+  try {
+    const newestClockId = await prisma.clock.aggregate({
+      _max: {
+        id: true,
+      },
+      where: { userId: +req.user.id },
+    });
+    const newestClock = await prisma.clock.findUnique({
+      where: { id: newestClockId._max.id },
+    });
+    res.status(200).json({ user: req.user, newestClock });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.resetPassword = async (req, res, next) => {
