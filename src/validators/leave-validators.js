@@ -5,7 +5,7 @@ const createRequestLeaveSchema = Joi.object({
   startDate: Joi.string().required(),
   endDate: Joi.string().required(),
   halfDate: Joi.boolean(),
-  statusRequest: Joi.string().trim().valid("PENDING", "ACCEPT", "REJECT"),
+  statusRequest: Joi.string().trim().valid("ACCEPT", "REJECT"),
   messageLeave: Joi.string(),
 });
 

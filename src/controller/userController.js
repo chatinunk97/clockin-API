@@ -302,6 +302,9 @@ exports.getAllUser = async (req, res, next) => {
       include: {
         userRelationshipBoss: true,
       },
+      orderBy: {
+        isActive: "desc",
+      },
     });
     res.status(200).json({ allUser });
   } catch (error) {
