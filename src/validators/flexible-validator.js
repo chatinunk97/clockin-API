@@ -9,7 +9,7 @@ const createFlexibleTimeSchema = Joi.object({
 exports.createFlexibleTimeSchema = createFlexibleTimeSchema;
 
 const updateFlexibleTimeSchema = Joi.object({
-  // userId: Joi.number().integer(),
+  userId: Joi.number().integer(),
   date: Joi.string().required(),
   timeProfileId: Joi.number().integer().required(),
 });

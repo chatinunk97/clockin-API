@@ -12,10 +12,11 @@ const router = express.Router();
 router.post('/clockIn', authenticatedMiddleware, clockController.clockIn);
 router.patch('/clockOut', authenticatedMiddleware, clockController.clockOut);
 router.get(
-  '/getClockUser',
+  '/location',
   authenticatedMiddleware,
-  clockController.getClockByUser
+  clockController.companyProfile
 );
+router.get('/', authenticatedMiddleware, clockController.getClock);
 
 // router.get('/clock/newest', authenticatedMiddleware ,clockController.getNewestClock )
 
