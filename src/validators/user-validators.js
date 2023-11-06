@@ -14,6 +14,9 @@ const createUserSchemaByAdmin = Joi.object({
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().trim().required(),
+  userType: Joi.string().required(),
+  userBossId: Joi.number().integer().positive().required(),
+  isActive: Joi.boolean().required(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
@@ -29,6 +32,9 @@ const createUserSchemaByHR = Joi.object({
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().trim().required(),
+  userType: Joi.string().required(),
+  userBossId: Joi.number().integer().positive().required(),
+  isActive: Joi.boolean().required(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
@@ -48,7 +54,6 @@ const updateUserSchemaByAdmin = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   userType: Joi.string().required(),
-  companyProfileId: Joi.number().integer().positive().required(),
   userBossId: Joi.number().integer().positive().required(),
   isActive: Joi.boolean().required(),
   checkLocation: Joi.boolean().required(),
@@ -69,7 +74,6 @@ const updateUserSchemaByHR = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
-  companyProfileId: Joi.number().integer().positive().required(),
   userType: Joi.string().required(),
   userBossId: Joi.number().integer().positive().required(),
   isActive: Joi.boolean().required(),
@@ -88,7 +92,6 @@ const updateUserSchema = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
-  companyProfileId: Joi.number().integer().positive().required(),
   userType: Joi.string().required(),
   userBossId: Joi.number().integer().positive().required(),
   isActive: Joi.boolean().required(),
