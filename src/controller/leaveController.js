@@ -5,10 +5,10 @@ const {
   createUserLeaveSchema,
   updateUserLeaveSchema,
   deleteUserLeaveSchema,
-  getLeaveRequestsByUserLeaveId,
   createLeaveProfileSchema,
   updateRequestSchema,
   deleteRequestsSchema,
+  getRequestLeaveByIdSchema,
 } = require('../validators/leave-validators');
 
 // ########## request leave ##########
@@ -30,31 +30,21 @@ exports.createRequestLeave = async (req, res, next) => {
   }
 };
 
-exports.getLeaveRequestsByUserLeaveId = async (req, res, next) => {
+exports.getRequestLeaveById = async (req, res, next) => {
   try {
-    const { value, error } = getLeaveRequestsByUserLeaveId.validate(req.params);
-    // console.log("value", value);
-    // console.log("req.params", req.params);
+    const { value, error } = getRequestLeaveByIdSchema.validate(req.params);
 
     if (error) {
       error.statusCode = 400;
       return next(error);
     }
 
-    const result = await prisma.requestLeave.findMany({
+    const requestLeave = await prisma.requestLeave.findUnique({
       where: {
-        userLeaveId: value.userLeaveId,
-      },
-      select: {
-        id: true,
-        startDate: true,
-        endDate: true,
-        halfDate: true,
-        statusRequest: true,
-        messageLeave: true,
+        id: value.requestLeaveId,
       },
     });
-    res.status(200).json({ result });
+    res.status(200).json({ requestLeave });
   } catch (error) {
     next(error);
   }
@@ -62,7 +52,6 @@ exports.getLeaveRequestsByUserLeaveId = async (req, res, next) => {
 
 exports.getAllRequestLeaves = async (req, res, next) => {
   try {
-    console.log(req.user);
     const requestLeaves = await prisma.requestLeave.findMany({
       where: {
         userLeave: {
@@ -84,16 +73,6 @@ exports.getAllRequestLeaves = async (req, res, next) => {
       },
     });
 
-    // const requestLeaves = await prisma.user.findMany({
-    //   where: {
-    //     companyProfileId: req.user.companyProfileId,
-    //     userRelationshipBoss: {
-    //       every: {
-    //         userBossId: req.user.id,
-    //       },
-    //     },
-    //   },
-    // });
     res.status(200).json({ requestLeaves });
   } catch (error) {
     next(error);

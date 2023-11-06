@@ -85,10 +85,29 @@ exports.registerCompany = async (req, res, next) => {
             position: "ADMIN",
           },
         },
+        leaveProfile: {
+          createMany: {
+            data: [
+              {
+                leaveName: 'Annual Leave',
+                defaultDateAmount: 0,
+              },
+              {
+                leaveName: 'Sick Leave',
+                defaultDateAmount: 30,
+              },
+              {
+                leaveName: 'Business Leave',
+                defaultDateAmount: 3,
+              },
+            ],
+          },
+        },
       },
       include: {
         companyLocations: true,
         payment: true,
+        leaveProfile: true,
         user: true,
       },
     });
