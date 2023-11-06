@@ -94,11 +94,12 @@ model Payment {
 }
 
 model LeaveProfile {
-  id               Int            @id @default(autoincrement())
-  companyProfileId Int
-  companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
-  leaveName        String
-  userLeave        UserLeave[]
+  id                Int            @id @default(autoincrement())
+  companyProfileId  Int
+  companyProfile    CompanyProfile @relation(fields: [companyProfileId], references: [id])
+  leaveName         String
+  defaultDateAmount Int            @default(0)
+  userLeave         UserLeave[]
 }
 
 model RequestLeave {
@@ -122,8 +123,8 @@ model UserLeave {
   id             Int            @id @default(autoincrement())
   userId         Int
   user           User           @relation(fields: [userId], references: [id])
-  leaveProfiieId Int
-  leaveProfile   LeaveProfile   @relation(fields: [leaveProfiieId], references: [id])
+  leaveProfile   LeaveProfile   @relation(fields: [leaveProfileId], references: [id])
+  leaveProfileId Int
   requestLeave   RequestLeave[]
   dateAmount     Int            @default(0)
 }
