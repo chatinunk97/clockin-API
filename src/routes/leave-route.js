@@ -1,7 +1,6 @@
 const express = require('express');
 
 // Controller
-
 const leaveController = require('../controller/leaveController');
 
 // Middlewares
@@ -10,7 +9,11 @@ const authenticatedMiddleware = require('../middleware/authenticate/authenticate
 const router = express.Router();
 
 // request leave
-router.get('/', leaveController.getAllLeaveRequests);
+router.get(
+  '/getAllRequestLeaves',
+  authenticatedMiddleware,
+  leaveController.getAllRequestLeaves
+);
 router.post(
   '/createRequestLeave',
   authenticatedMiddleware,
@@ -22,9 +25,10 @@ router.patch(
   leaveController.updateRequestLeave
 );
 router.delete(
-  '/:leaveRequestId',
-  leaveController.deleteLeaveRequestsByLeaveRequestId
+  '/deleteRequestLeave/:leaveRequestId',
+  leaveController.deleteLeaveRequests
 );
+
 // user leave
 router.get('/:userLeaveId', leaveController.getLeaveRequestsByUserLeaveId);
 router.post(
