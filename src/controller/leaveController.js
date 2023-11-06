@@ -8,6 +8,8 @@ const {
   createLeaveProfileSchema,
   updateRequestSchema,
   deleteRequestsSchema,
+  deleteLeaveProfile,
+  updateLeaveProfileSchema,
   getRequestLeaveByIdSchema,
 } = require("../validators/leave-validators");
 
@@ -260,6 +262,86 @@ exports.createLeaveProfile = async (req, res, next) => {
       data: value,
     });
     res.status(201).json({ leaveProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllLeaveProfile = async (req, res, next) => {
+  try {
+    if (req.user.position !== "ADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    const allLeaveProfile = await prisma.leaveProfile.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
+    res
+      .status(200)
+      .json({ message: "Get all leave profiles", allLeaveProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteLeaveProfile = async (req, res, next) => {
+  try {
+    if (req.user.position !== "ADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    // Validate request parameters
+    const { error } = deleteLeaveProfile.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+
+    // Find the leave profile record to check its existence
+    const foundLeaveProfile = await prisma.leaveProfile.findUnique({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    // Check if the leave profile record exists
+    if (!foundLeaveProfile) {
+      throw createError("Leave profile not found", 404);
+    }
+
+    // Delete the leave profile record
+    await prisma.leaveProfile.delete({
+      where: {
+        id: +req.params.id,
+      },
+    });
+
+    res.status(200).json({ message: "Leave profile deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateLeaveProfile = async (req, res, next) => {
+  try {
+    if (req.user.position !== "ADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+
+    const { value, error } = updateLeaveProfileSchema.validate(req.body);
+
+    if (error) {
+      return next(createError(error.details[0].message, 400));
+    }
+
+    const updateLeaveProfile = await prisma.leaveProfile.update({
+      where: {
+        id: +req.params.id, // Assuming the URL parameter is named timeProfileId
+      },
+      data: value,
+    });
+    res
+      .status(200)
+      .json({ message: "LeaveProfile was updated", updateLeaveProfile });
   } catch (error) {
     next(error);
   }

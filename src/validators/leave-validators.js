@@ -5,7 +5,7 @@ const createRequestLeaveSchema = Joi.object({
   startDate: Joi.string().required(),
   endDate: Joi.string().required(),
   halfDate: Joi.boolean(),
-  statusRequest: Joi.string().trim().valid("PENDING", "ACCEPT", "REJECT"),
+  statusRequest: Joi.string().trim().valid("ACCEPT", "REJECT"),
   messageLeave: Joi.string(),
 });
 
@@ -47,7 +47,12 @@ const deleteRequestsSchema = Joi.object({
 const getRequestLeaveByIdSchema = Joi.object({
   requestLeaveId: Joi.number().integer().positive().required(),
 });
-
+const deleteLeaveProfile = Joi.object({
+  id: Joi.number().integer().positive().required(),
+});
+const updateLeaveProfileSchema = Joi.object({
+  leaveName: Joi.string().required(),
+});
 module.exports = {
   createRequestLeaveSchema,
   createUserLeaveSchema,
@@ -56,5 +61,7 @@ module.exports = {
   createLeaveProfileSchema,
   updateRequestSchema,
   deleteRequestsSchema,
+  deleteLeaveProfile,
+  updateLeaveProfileSchema,
   getRequestLeaveByIdSchema,
 };

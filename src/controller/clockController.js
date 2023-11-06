@@ -1,9 +1,9 @@
 const {
   clockInSchema,
   clockOutSchema,
-} = require('../validators/clock-validators');
-const prisma = require('../models/prisma');
-const createError = require('../utils/create-error');
+} = require("../validators/clock-validators");
+const prisma = require("../models/prisma");
+const createError = require("../utils/create-error");
 
 exports.clockIn = async (req, res, next) => {
   try {
@@ -23,17 +23,17 @@ exports.clockIn = async (req, res, next) => {
 
     //Create Start work time using clock in date + time profile Time
     const startTime = new Date(
-      value.clockInTime.split('T')[0] + ' ' + foundTimeProfile.start
+      value.clockInTime.split("T")[0] + " " + foundTimeProfile.start
     );
     const clockInTime = new Date(value.clockInTime);
     if (clockInTime > startTime) {
       const clockInDate = new Date(value.clockInTime);
       const todayDate = new Date();
       if (clockInDate.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)) {
-        console.log('already has data for today');
+        console.log("already has data for today");
       } else {
-        console.log('LATE!!!');
-        value.statusClockIn = 'LATE';
+        console.log("LATE!!!");
+        value.statusClockIn = "LATE";
       }
     }
 
@@ -65,7 +65,7 @@ exports.clockOut = async (req, res, next) => {
       },
     });
     if (!foundClock) {
-      return next(createError('Not found', 400));
+      return next(createError("Not found", 400));
     }
     const clock = await prisma.clock.update({
       data: value,
@@ -84,6 +84,7 @@ exports.getClock = async (req, res, next) => {
   try {
     const allClock = await prisma.clock.findMany({
       where: { userId: +req.user.id },
+      include: { user: true },
     });
     return res.json({ allClock });
   } catch (error) {
