@@ -1,11 +1,11 @@
-const Joi = require('joi').extend(require('@joi/date'));
+const Joi = require("joi").extend(require("@joi/date"));
 
 const createRequestLeaveSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
   startDate: Joi.string().required(),
   endDate: Joi.string().required(),
   halfDate: Joi.boolean(),
-  statusRequest: Joi.string().trim().valid('PENDING', 'ACCEPT', 'REJECT'),
+  statusRequest: Joi.string().trim().valid("ACCEPT", "REJECT"),
   messageLeave: Joi.string(),
 });
 

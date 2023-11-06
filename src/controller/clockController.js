@@ -29,9 +29,7 @@ exports.clockIn = async (req, res, next) => {
     if (clockInTime > startTime) {
       const clockInDate = new Date(value.clockInTime);
       const todayDate = new Date();
-      if (
-        clockInDate.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)
-      ) {
+      if (clockInDate.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)) {
         console.log("already has data for today");
       } else {
         console.log("LATE!!!");
@@ -86,6 +84,7 @@ exports.getClock = async (req, res, next) => {
   try {
     const allClock = await prisma.clock.findMany({
       where: { userId: +req.user.id },
+      include: { user: true },
     });
     return res.json({ allClock });
   } catch (error) {
