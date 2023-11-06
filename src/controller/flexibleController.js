@@ -2,6 +2,8 @@ const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
 const {
   createFlexibleTimeSchema,
+  deleteFlexibleTimeSchema,
+  updateFlexibleTimeSchema,
 } = require("../validators/flexible-validator");
 const schemas = require("../validators/flexible-validator");
 exports.createFlexible = async (req, res, next) => {
