@@ -108,7 +108,7 @@ model RequestLeave {
   userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
   startDate     String
   endDate       String
-  halfDate      Boolean      @default(false)
+  leaveType     LeaveType
   statusRequest StateRequest @default(PENDING)
   messageLeave  String
 }
@@ -117,6 +117,12 @@ enum StateRequest {
   PENDING
   ACCEPT
   REJECT
+}
+
+enum LeaveType {
+  FULLDAY
+  FIRSTHALF
+  SECONDHALF
 }
 
 model UserLeave {
