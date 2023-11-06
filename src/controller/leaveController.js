@@ -95,7 +95,7 @@ exports.updateRequestLeave = async (req, res, next) => {
     }
 
     const found = await prisma.requestLeave.findFirst({
-      where: { userLeaveId: +value.userLeaveId },
+      where: { id: +value.id },
     });
 
     if (!found) {
@@ -105,29 +105,33 @@ exports.updateRequestLeave = async (req, res, next) => {
     const requestLeave = await prisma.requestLeave.update({
       data: value,
       where: {
-        id: found.id,
+        id: +value.id,
       },
     });
 
     console.log(requestLeave);
-
-    requestLeave.startDate;
-    if (requestLeave.statusRequest === "ACCEPT") {
-      await prisma.userLeave.update({
-        where: { id: requestLeave.userLeaveId },
-        data: {
-          dateAmount: {
-            decrement,
-          },
-        },
-      });
-    } else if (
+    if (
       requestLeave.statusRequest === "ACCEPT" &&
       requestLeave.halfDate === true
     ) {
-      await prisma.flexibleTime.create({
-        data: {},
+      const startDate = new Date(requestLeave.startDate);
+      const endDate = new Date(requestLeave.endDate);
+
+      const dateAmount = (endDate - startDate) / (1000 * 60 * 60 * 24);
+    } else if (requestLeave.statusRequest === "ACCEPT") {
+      const startDate = new Date(requestLeave.startDate);
+      const endDate = new Date(requestLeave.endDate);
+
+      const dateAmount = (endDate - startDate) / (1000 * 60 * 60 * 24);
+      const newUserLeave = await prisma.userLeave.update({
+        where: { id: requestLeave.userLeaveId },
+        data: {
+          dateAmount: {
+            decrement: dateAmount,
+          },
+        },
       });
+      console.log(newUserLeave);
     }
 
     res.status(200).json({ requestLeave });

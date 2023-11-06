@@ -31,6 +31,7 @@ const createLeaveProfileSchema = Joi.object({
 });
 
 const updateRequestSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
   userLeaveId: Joi.number().integer().positive().required(),
   startDate: Joi.string().required(),
   endDate: Joi.string().required(),
