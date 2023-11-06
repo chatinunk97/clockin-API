@@ -14,6 +14,10 @@ router.get(
   authenticatedMiddleware,
   leaveController.getAllRequestLeaves
 );
+router.get(
+  '/getRequestLeave/:requestLeaveId',
+  leaveController.getRequestLeaveById
+);
 router.post(
   '/createRequestLeave',
   authenticatedMiddleware,
@@ -26,11 +30,11 @@ router.patch(
 );
 router.delete(
   '/deleteRequestLeave/:leaveRequestId',
+  authenticatedMiddleware,
   leaveController.deleteLeaveRequests
 );
 
 // user leave
-router.get('/:userLeaveId', leaveController.getLeaveRequestsByUserLeaveId);
 router.post(
   '/createUserLeave',
   authenticatedMiddleware,

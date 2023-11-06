@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const createFlexibleTimeSchema = Joi.object({
   userId: Joi.number().integer().required(),
