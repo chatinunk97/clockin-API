@@ -298,6 +298,10 @@ exports.getMe = async (req, res, next) => {
       },
       where: { userId: +req.user.id },
     });
+    console.log(newestClockId)
+    if(!newestClockId['_max']['id']){
+      return res.status(200).json({newestClock : null})
+    }
     const newestClock = await prisma.clock.findUnique({
       where: { id: newestClockId._max.id },
     });
