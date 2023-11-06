@@ -11,28 +11,29 @@ exports.clockIn = async (req, res, next) => {
     if (error) {
       return next(error);
     }
+    //Check for flexible Time on that date
 
-    const foundTimeProfile = await prisma.user.findUnique({
+    console.log(value);
+    //Use default time if no flexible Time
+    const foundTimeProfile = await prisma.timeProfile.findFirst({
       where: {
-        id: req.user.id,
-      },
-      include: {
-        flexibleTime: true,
+        companyProfile: req.user.companyProfile,
       },
     });
 
-    console.log(foundTimeProfile);
+    //Create Start work time using clock in date + time profile Time
+    const startTime = new Date(
+      value.clockInTime.split("T")[0] + " " + foundTimeProfile.start
+    );
+    const clockInTime = new Date(value.clockInTime);
+    if (clockInTime > startTime) {
+      console.log("LATE!!!");
+      value.statusClockIn = "LATE";
+    }
 
-    value.userId = req.user.id;
-
+    value.user = { connect: { id: req.user.id } };
     const clockIn = await prisma.clock.create({
-      data: {
-        clockInTime: value.clockInTime,
-        clockOutTime: value.clockOutTime,
-        latitudeClockIn: value.latitudeClockIn,
-        longitudeClockIn: value.longitudeClockIn,
-        user: { connect: { id: value.userId } },
-      },
+      data: value,
     });
     res.status(201).json({ clockIn });
   } catch (error) {
@@ -63,7 +64,7 @@ exports.clockOut = async (req, res, next) => {
     const clock = await prisma.clock.update({
       data: value,
       where: {
-        id: foundClock.id
+        id: foundClock.id,
       },
     });
 
