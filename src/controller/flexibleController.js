@@ -2,6 +2,8 @@ const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
 const {
   createFlexibleTimeSchema,
+  deleteFlexibleTimeSchema,
+  updateFlexibleTimeSchema,
 } = require("../validators/flexible-validator");
 const schemas = require("../validators/flexible-validator");
 exports.createFlexible = async (req, res, next) => {
@@ -40,7 +42,7 @@ exports.updateFlexible = async (req, res, next) => {
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-
+    console.log(req.body);
     // Update flexible time record
     const updatedFlexible = await prisma.flexibleTime.update({
       data: value,
