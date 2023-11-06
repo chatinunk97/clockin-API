@@ -41,6 +41,17 @@ exports.createUser = async (req, res, next) => {
       return next(validate.error);
     }
 
+    const foundLeaveProfiles = await prisma.leaveProfile.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
+
+    const newLeaveProfiles = foundLeaveProfiles.map((item) => ({
+      leaveProfileId: item.id,
+      dateAmount: item.defaultDateAmount,
+    }));
+
     validate.value.password = await bcrypt.hash(validate.value.password, 14);
 
     const user = await prisma.user.create({
@@ -62,10 +73,17 @@ exports.createUser = async (req, res, next) => {
             userBossId: validate.value.userBossId,
           },
         },
+        userLeave: {
+          createMany: {
+            data: newLeaveProfiles,
+          },
+        },
       },
+
       include: {
         userRelationshipBoss: true,
         userRelationshipUser: true,
+        userLeave: true,
       },
     });
 
@@ -263,6 +281,7 @@ exports.getUserById = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: +req.params.userId },
+      include: { clock: true },
     });
 
     if (!user || user.length === 0) {

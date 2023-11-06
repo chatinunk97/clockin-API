@@ -21,6 +21,7 @@ const createUserSchemaByAdmin = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   userBossId: Joi.number().integer().positive().required(),
+  checkLocation: Joi.boolean().required(),
 });
 exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 
@@ -39,6 +40,7 @@ const createUserSchemaByHR = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
   userBossId: Joi.number().integer().positive().required(),
+  checkLocation: Joi.boolean().required(),
 });
 exports.createUserSchemaByHR = createUserSchemaByHR;
 
