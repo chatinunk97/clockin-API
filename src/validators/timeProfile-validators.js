@@ -5,10 +5,10 @@ const TypetimeEnum = ["DEFAULT", "FIRSTHALF", "SECONDHALF", "NOTSPECIFIED"];
 const timeProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive(),
   start: Joi.string()
-    .regex(/^([0-9]{2})\:([0-9]{2})$/)
+    .regex(/[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?/)
     .required(),
   end: Joi.string()
-    .regex(/^([0-9]{2})\:([0-9]{2})$/)
+    .regex(/[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,3})?/)
     .required(),
   typeTime: Joi.string()
     .valid(...TypetimeEnum)

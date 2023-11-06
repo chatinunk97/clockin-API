@@ -1,9 +1,9 @@
 const {
   clockInSchema,
   clockOutSchema,
-} = require('../validators/clock-validators');
-const prisma = require('../models/prisma');
-const createError = require('../utils/create-error');
+} = require("../validators/clock-validators");
+const prisma = require("../models/prisma");
+const createError = require("../utils/create-error");
 
 exports.clockIn = async (req, res, next) => {
   try {
@@ -11,28 +11,29 @@ exports.clockIn = async (req, res, next) => {
     if (error) {
       return next(error);
     }
+    //Check for flexible Time on that date
 
-    const foundTimeProfile = await prisma.user.findUnique({
+    console.log(value);
+    //Use default time if no flexible Time
+    const foundTimeProfile = await prisma.timeProfile.findFirst({
       where: {
-        id: req.user.id,
-      },
-      include: {
-        flexibleTime: true,
+        companyProfile: req.user.companyProfile,
       },
     });
 
-    console.log(foundTimeProfile);
+    //Create Start work time using clock in date + time profile Time
+    const startTime = new Date(
+      value.clockInTime.split("T")[0] + " " + foundTimeProfile.start
+    );
+    const clockInTime = new Date(value.clockInTime);
+    if (clockInTime > startTime) {
+      console.log("LATE!!!");
+      value.statusClockIn = "LATE";
+    }
 
-    value.userId = req.user.id;
-
+    value.user = { connect: { id: req.user.id } };
     const clockIn = await prisma.clock.create({
-      data: {
-        clockInTime: value.clockInTime,
-        clockOutTime: value.clockOutTime,
-        latitudeClockIn: value.latitudeClockIn,
-        longitudeClockIn: value.longitudeClockIn,
-        user: { connect: { id: value.userId } },
-      },
+      data: value,
     });
     res.status(201).json({ clockIn });
   } catch (error) {
@@ -46,21 +47,24 @@ exports.clockOut = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-
+    const newestClockId = await prisma.clock.aggregate({
+      _max: {
+        id: true,
+      },
+      where: { userId: +req.user.id },
+    });
     const foundClock = await prisma.clock.findFirst({
       where: {
-        id: value.id,
+        id: newestClockId._max.id,
       },
     });
-
     if (!foundClock) {
-      return next(createError('Not found', 400));
+      return next(createError("Not found", 400));
     }
-
     const clock = await prisma.clock.update({
       data: value,
       where: {
-        id: value.id,
+        id: foundClock.id,
       },
     });
 
@@ -69,3 +73,17 @@ exports.clockOut = async (req, res, next) => {
     next(error);
   }
 };
+
+// exports.getNewestClock = async (req, res, next) => {
+//   try {
+//     const newestClock = await prisma.clock.aggregate({
+//       _max : {
+//         id : true
+//       },
+//       where: { userId: +req.user.id },
+//     });
+//     res.status(200).json({ clockId : newestClock['_max'].id});
+//   } catch (error) {
+//     next(error);
+//   }
+// };

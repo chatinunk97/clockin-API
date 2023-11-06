@@ -7,7 +7,7 @@ const loginSchema = Joi.object({
 exports.loginSchema = loginSchema;
 
 const createUserSchemaByAdmin = Joi.object({
-  profileImage: Joi.string().allow("",null),
+  profileImage: Joi.string().allow('', null),
   employeeId: Joi.string().required(),
   position: Joi.string().valid('HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
@@ -38,21 +38,20 @@ exports.createUserSchemaByHR = createUserSchemaByHR;
 
 const updateUserSchemaByAdmin = Joi.object({
   id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string(),
+  profileImage: Joi.string().allow(null, ''),
   employeeId: Joi.string().required(),
   position: Joi.string().valid('ADMIN', 'HR', 'MANAGER', 'USER'),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string()
-    .pattern(/^[a-zA-Z0-9]{6,16}$/)
-    .trim(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
   userType: Joi.string().required(),
   companyProfileId: Joi.number().integer().positive().required(),
   userBossId: Joi.number().integer().positive().required(),
+  isActive: Joi.boolean().required(),
+  checkLocation: Joi.boolean().required(),
 });
 exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
 
@@ -67,15 +66,14 @@ const updateUserSchemaByHR = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string()
-    .pattern(/^[a-zA-Z0-9]{6,16}$/)
-    .trim(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
   userType: Joi.string().required(),
   userBossId: Joi.number().integer().positive().required(),
+  isActive: Joi.boolean().required(),
+  checkLocation: Joi.boolean().required(),
 });
 exports.updateUserSchemaByHR = updateUserSchemaByHR;
 
@@ -87,15 +85,14 @@ const updateUserSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string()
-    .pattern(/^[a-zA-Z0-9]{6,16}$/)
-    .trim(),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
   userType: Joi.string().required(),
   userBossId: Joi.number().integer().positive().required(),
+  isActive: Joi.boolean().required(),
+  checkLocation: Joi.boolean().required(),
 });
 exports.updateUserSchema = updateUserSchema;
 

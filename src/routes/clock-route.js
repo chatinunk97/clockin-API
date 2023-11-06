@@ -12,4 +12,6 @@ const router = express.Router();
 router.post('/clockIn', authenticatedMiddleware, clockController.clockIn);
 router.patch('/clockOut', authenticatedMiddleware, clockController.clockOut);
 
+// router.get('/clock/newest', authenticatedMiddleware ,clockController.getNewestClock )
+
 module.exports = router;
