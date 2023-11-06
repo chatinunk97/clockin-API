@@ -70,6 +70,11 @@ exports.getAllRequestLeaves = async (req, res, next) => {
         userLeave: {
           include: {
             user: true,
+            leaveProfile: {
+              select: {
+                leaveName: true,
+              },
+            },
           },
         },
       },
