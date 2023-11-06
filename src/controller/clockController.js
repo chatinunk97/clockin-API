@@ -27,8 +27,16 @@ exports.clockIn = async (req, res, next) => {
     );
     const clockInTime = new Date(value.clockInTime);
     if (clockInTime > startTime) {
-      console.log("LATE!!!");
-      value.statusClockIn = "LATE";
+      const clockInDate = new Date(value.clockInTime);
+      const todayDate = new Date();
+      if (
+        clockInDate.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)
+      ) {
+        console.log("already has data for today");
+      } else {
+        console.log("LATE!!!");
+        value.statusClockIn = "LATE";
+      }
     }
 
     value.user = { connect: { id: req.user.id } };
@@ -74,16 +82,24 @@ exports.clockOut = async (req, res, next) => {
   }
 };
 
-// exports.getNewestClock = async (req, res, next) => {
-//   try {
-//     const newestClock = await prisma.clock.aggregate({
-//       _max : {
-//         id : true
-//       },
-//       where: { userId: +req.user.id },
-//     });
-//     res.status(200).json({ clockId : newestClock['_max'].id});
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+exports.getClock = async (req, res, next) => {
+  try {
+    const allClock = await prisma.clock.findMany({
+      where: { userId: +req.user.id },
+    });
+    return res.json({ allClock });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.companyProfile = async (req, res, next) => {
+  try {
+    const companyLocation = await prisma.companyLocation.findMany({
+      where: { companyProfileId: req.user.companyProfileId },
+    });
+    res.json(companyLocation);
+  } catch (error) {
+    next(error);
+  }
+};
