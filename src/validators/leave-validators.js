@@ -46,7 +46,12 @@ const deleteRequestsSchema = Joi.object({
 const getRequestLeaveByIdSchema = Joi.object({
   requestLeaveId: Joi.number().integer().positive().required(),
 });
-
+const deleteLeaveProfile = Joi.object({
+  id: Joi.number().integer().positive().required(),
+});
+const updateLeaveProfileSchema = Joi.object({
+  leaveName: Joi.string().required(),
+});
 module.exports = {
   createRequestLeaveSchema,
   createUserLeaveSchema,
@@ -55,5 +60,7 @@ module.exports = {
   createLeaveProfileSchema,
   updateRequestSchema,
   deleteRequestsSchema,
+  deleteLeaveProfile,
+  updateLeaveProfileSchema,
   getRequestLeaveByIdSchema,
 };
