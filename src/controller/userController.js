@@ -51,7 +51,6 @@ exports.createUser = async (req, res, next) => {
       leaveProfileId: item.id,
       dateAmount: item.defaultDateAmount,
     }));
-    console.log(newLeaveProfiles, '++++++++++++++++++++++++++');
 
     validate.value.password = await bcrypt.hash(validate.value.password, 14);
 
