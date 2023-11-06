@@ -15,10 +15,22 @@ router.post(
   flexibleController.createFlexible
 );
 
-// router.patch(
-//   "/updateFlexible",
-//   authenticatedMiddleware,
-//   flexibleController.updateFlexible
-// );
+router.patch(
+  "/updateFlexible/:id",
+  authenticatedMiddleware,
+  flexibleController.updateFlexible
+);
+
+router.get(
+  "/getFlexible/:id",
+  authenticatedMiddleware,
+  flexibleController.getFlexibleByid
+);
+
+router.delete(
+  "/deleteFlexible/:id",
+  authenticatedMiddleware,
+  flexibleController.deleteFlexibleByid
+);
 
 module.exports = router;
