@@ -42,7 +42,7 @@ exports.updateFlexible = async (req, res, next) => {
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-
+    console.log(req.body);
     // Update flexible time record
     const updatedFlexible = await prisma.flexibleTime.update({
       data: value,
