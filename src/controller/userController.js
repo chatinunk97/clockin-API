@@ -39,6 +39,11 @@ exports.createUser = async (req, res, next) => {
     if (validate.error) {
       return next(validate.error);
     }
+    const foundLeaveProfiles = await prisma.leaveProfile.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
 
     validate.value.password = await bcrypt.hash(validate.value.password, 14);
     const user = await prisma.user.create({

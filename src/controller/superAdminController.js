@@ -89,13 +89,36 @@ exports.registerCompany = async (req, res, next) => {
       include: {
         companyLocations: true,
         payment: true,
+        leaveProfile: true,
         user: true,
       },
+    });
+
+    const leaveProfile = await prisma.leaveProfile.createMany({
+      data: [
+        {
+          leaveName: 'Annual Leave',
+
+          defaultDateAmount: 0,
+          companyProfileId: company.id,
+        },
+        {
+          leaveName: 'Sick Leave',
+          defaultDateAmount: 30,
+          companyProfileId: company.id,
+        },
+        {
+          leaveName: 'Business Leave',
+          defaultDateAmount: 3,
+          companyProfileId: company.id,
+        },
+      ],
     });
 
     res.status(201).json({
       message: 'Company was created',
       company,
+      leaveProfile,
     });
   } catch (error) {
     next(error);

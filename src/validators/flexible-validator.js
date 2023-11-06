@@ -1,12 +1,12 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
-const flexibleTimeSchema = Joi.object({
+const createFlexibleTimeSchema = Joi.object({
   userId: Joi.number().integer().required(),
   date: Joi.string().required(),
   timeProfileId: Joi.number().integer().required(),
 });
 
-module.exports = flexibleTimeSchema;
+exports.createFlexibleTimeSchema = createFlexibleTimeSchema;
 
 const updateFlexibleTimeSchema = Joi.object({
   // userId: Joi.number().integer(),
@@ -14,9 +14,9 @@ const updateFlexibleTimeSchema = Joi.object({
   timeProfileId: Joi.number().integer().required(),
 });
 
-module.exports = updateFlexibleTimeSchema;
+exports.updateFlexibleTimeSchema = updateFlexibleTimeSchema;
 
 const deleteFlexibleTimeSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-module.exports = deleteFlexibleTimeSchema;
+exports.deleteFlexibleTimeSchema = deleteFlexibleTimeSchema;
