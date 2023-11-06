@@ -54,6 +54,9 @@ exports.createUser = async (req, res, next) => {
         password: validate.value.password,
         position: validate.value.position,
         companyProfileId: req.user.companyProfileId,
+        userType: validate.value.userType,
+        isActive: validate.value.isActive,
+        checkLocation: validate.value.checkLocation,
         userRelationshipUser: {
           create: {
             userBossId: validate.value.userBossId,
@@ -229,6 +232,9 @@ exports.updateUser = async (req, res, next) => {
         mobile: validate.value.mobile,
         position: validate.value.position,
         companyProfileId: req.user.companyProfileId,
+        userType: validate.value.userType,
+        isActive: validate.value.isActive,
+        checkLocation: validate.value.checkLocation,
         userRelationshipUser: {
           update: {
             where: { id: foundRelationship.id },
