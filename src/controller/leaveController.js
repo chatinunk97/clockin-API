@@ -70,6 +70,11 @@ exports.getAllRequestLeaves = async (req, res, next) => {
         userLeave: {
           include: {
             user: true,
+            leaveProfile: {
+              select: {
+                leaveName: true,
+              },
+            },
           },
         },
       },
@@ -90,40 +95,78 @@ exports.updateRequestLeave = async (req, res, next) => {
     }
 
     const found = await prisma.requestLeave.findFirst({
-      where: { userLeaveId: +value.userLeaveId },
+      where: { id: +value.id },
     });
 
     if (!found) {
       return next(createError("Request leave not found"));
     }
 
-    const requestLeave = await prisma.requestLeave.update({
-      data: value,
+    const foundTimeProfile = await prisma.timeProfile.findMany({
       where: {
-        id: found.id,
+        companyProfileId: req.user.companyProfileId,
       },
     });
 
-    console.log(requestLeave);
+    let dateAmount;
+    if (
+      requestLeave.statusRequest === "ACCEPT" &&
+      requestLeave.leaveType === "FULLDAY"
+    ) {
+      const startDate = new Date(requestLeave.startDate);
+      const endDate = new Date(requestLeave.endDate);
 
-    requestLeave.startDate;
-    if (requestLeave.statusRequest === "ACCEPT") {
-      await prisma.userLeave.update({
-        where: { id: requestLeave.userLeaveId },
+      dateAmount = parseInt((endDate - startDate + 1) / (1000 * 60 * 60 * 24));
+    } else if (
+      requestLeave.statusRequest === "ACCEPT" &&
+      requestLeave.leaveType === "FIRSTHALF"
+    ) {
+      const timeProfile = foundTimeProfile.filter(
+        (item) => item.typeTime === "SECONDHALF"
+      );
+      dateAmount = 0.5;
+      const newFlexibleTime = await prisma.flexibleTime.create({
         data: {
-          dateAmount: {
-            decrement,
-          },
+          userId: +requestLeave.userLeave.userId,
+          date: requestLeave.startDate,
+          timeProfileId: timeProfile[0].id,
         },
       });
     } else if (
       requestLeave.statusRequest === "ACCEPT" &&
-      requestLeave.halfDate === true
+      requestLeave.leaveType === "SECONDHALF"
     ) {
-      await prisma.flexibleTime.create({
-        data: {},
+      const timeProfile = foundTimeProfile.filter(
+        (item) => item.typeTime === "FIRSTHALF"
+      );
+      dateAmount = 0.5;
+      const newFlexibleTime = await prisma.flexibleTime.create({
+        data: {
+          userId: +requestLeave.userLeave.userId,
+          date: requestLeave.startDate,
+          timeProfileId: timeProfile[0].id,
+        },
       });
     }
+
+    const requestLeave = await prisma.requestLeave.update({
+      data: value,
+      where: {
+        id: +value.id,
+      },
+      include: {
+        userLeave: true,
+      },
+    });
+
+    await prisma.userLeave.update({
+      where: { id: requestLeave.userLeaveId },
+      data: {
+        dateAmount: {
+          decrement: dateAmount,
+        },
+      },
+    });
 
     res.status(200).json({ requestLeave });
   } catch (error) {
