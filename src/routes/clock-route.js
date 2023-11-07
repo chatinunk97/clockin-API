@@ -16,5 +16,6 @@ router.get(
   authenticatedMiddleware,
   clockController.companyProfile
 );
+router.get('/latestClock' , authenticatedMiddleware , clockController.latestClock)
 
 module.exports = router;

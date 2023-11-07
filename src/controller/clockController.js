@@ -51,12 +51,45 @@ exports.clockIn = async (req, res, next) => {
 
 exports.clockOut = async (req, res, next) => {
   try {
+    const { value, error } = clockOutSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    const latestClock = await prisma.clock.findFirst({
+      orderBy: {
+        id: "desc",
+      },
+      take: 1,
+      where: { userId: req.user.id },
+    });
+    if (!latestClock) {
+      return next(createError("No previois clock in found", 400));
+    }
+    await prisma.clock.update({
+      where: { id: latestClock.id },
+      data: value,
+    });
     res.json({ message: "Reached Clock Out" });
   } catch (error) {
     next(error);
   }
 };
 
+exports.latestClock = async (req, res, next) => {
+  try {
+    console.log(req.user.id);
+    const latestClock = await prisma.clock.findFirst({
+      orderBy: {
+        id: "desc",
+      },
+      take: 1,
+      where: { userId: req.user.id },
+    });
+    res.json(latestClock);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getClock = async (req, res, next) => {
   try {
     const allClock = await prisma.clock.findMany({
