@@ -94,8 +94,9 @@ exports.getClock = async (req, res, next) => {
   try {
     const allClock = await prisma.clock.findMany({
       where: { userId: +req.user.id },
+      include: { user: true },
     });
-    return res.json({ allClock });
+    res.status(200).json({ allClock });
   } catch (error) {
     next(error);
   }
@@ -106,7 +107,7 @@ exports.companyProfile = async (req, res, next) => {
     const companyLocation = await prisma.companyLocation.findFirst({
       where: { companyProfileId: req.user.companyProfileId },
     });
-    res.json(companyLocation);
+    res.status(200).json(companyLocation);
   } catch (error) {
     next(error);
   }
