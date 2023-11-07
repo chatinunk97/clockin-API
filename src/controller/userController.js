@@ -287,6 +287,8 @@ exports.getUserById = async (req, res, next) => {
     if (!user || user.length === 0) {
       throw createError(404, "User not found");
     }
+
+    delete user.password;
     res.status(200).json({ message: "Get user", user: user });
   } catch (error) {
     next(error);
@@ -298,6 +300,20 @@ exports.getAllUser = async (req, res, next) => {
     const allUser = await prisma.user.findMany({
       where: {
         companyProfileId: +req.user.companyProfileId,
+      },
+      select: {
+        id: true,
+        profileImage: true,
+        employeeId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        mobile: true,
+        position: true,
+        userType: true,
+        isActive: true,
+        checkLocation: true,
+        companyProfileId: true,
       },
       include: {
         userRelationshipBoss: {
@@ -311,6 +327,7 @@ exports.getAllUser = async (req, res, next) => {
         isActive: "desc",
       },
     });
+
     res.status(200).json({ allUser });
   } catch (error) {
     next(error);

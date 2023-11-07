@@ -1,14 +1,14 @@
-const prisma = require('../models/prisma');
-const createError = require('../utils/create-error');
+const prisma = require("../models/prisma");
+const createError = require("../utils/create-error");
 const {
   createFlexibleTimeSchema,
   deleteFlexibleTimeSchema,
   updateFlexibleTimeSchema,
-} = require('../validators/flexible-validator');
-const schemas = require('../validators/flexible-validator');
+} = require("../validators/flexible-validator");
+
 exports.createFlexible = async (req, res, next) => {
   try {
-    if (req.user.position !== 'HR') {
+    if (req.user.position !== "HR") {
       return next(
         createError("You don't have permission to access this section", 403)
       );
@@ -22,7 +22,7 @@ exports.createFlexible = async (req, res, next) => {
       data: value,
     });
 
-    res.status(201).json({ message: 'Flexible was created', flexibles });
+    res.status(201).json({ message: "Flexible was created", flexibles });
   } catch (error) {
     next(error);
   }
@@ -31,7 +31,7 @@ exports.createFlexible = async (req, res, next) => {
 exports.updateFlexible = async (req, res, next) => {
   try {
     // Check user permissions
-    if (req.user.position !== 'HR') {
+    if (req.user.position !== "HR") {
       return next(
         createError("You don't have permission to access this section")
       );
@@ -51,13 +51,13 @@ exports.updateFlexible = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: 'Flexible was updated', updatedFlexible });
+    res.status(200).json({ message: "Flexible was updated", updatedFlexible });
   } catch (error) {
     next(error);
   }
 };
 
-exports.getFlexibleByid = async (req, res, next) => {
+exports.getFlexibleById = async (req, res, next) => {
   try {
     const flexible = await prisma.flexibleTime.findMany({
       where: {
@@ -65,24 +65,24 @@ exports.getFlexibleByid = async (req, res, next) => {
       },
     });
     if (flexible.lenght === 0) {
-      throw createError('Time profile not found', 404);
+      throw createError("Time profile not found", 404);
     }
-    res.status(200).json({ message: 'Get flexible', flexible: flexible });
+    res.status(200).json({ message: "Get flexible", flexible: flexible });
   } catch (error) {
     next(error);
   }
 };
 
-exports.deleteFlexibleByid = async (req, res, next) => {
+exports.deleteFlexible = async (req, res, next) => {
   try {
-    console.log('++++++++');
+    console.log("++++++++");
     console.log(req.params);
     // Validate the request parameters
     const { error } = deleteFlexibleTimeSchema.validate(req.params);
     if (error) {
       return next(error);
     }
-    console.log('error', error);
+    console.log("error", error);
     // Find the flexible time record to check its existence
     const foundFlexible = await prisma.flexibleTime.findUnique({
       where: {
@@ -92,7 +92,7 @@ exports.deleteFlexibleByid = async (req, res, next) => {
 
     // Check if the flexible time record exists
     if (!foundFlexible) {
-      throw createError('Flexible not found', 404);
+      throw createError("Flexible not found", 404);
     }
 
     // Delete the flexible time record
@@ -102,7 +102,7 @@ exports.deleteFlexibleByid = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ message: 'Flexible deleted successfully' });
+    res.status(200).json({ message: "Flexible deleted successfully" });
   } catch (error) {
     next(error);
   }
