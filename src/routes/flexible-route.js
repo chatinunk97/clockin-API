@@ -24,13 +24,13 @@ router.patch(
 router.get(
   "/getFlexible/:id",
   authenticatedMiddleware,
-  flexibleController.getFlexibleByid
+  flexibleController.getFlexibleById
 );
 
 router.delete(
   "/deleteFlexible/:id",
   authenticatedMiddleware,
-  flexibleController.deleteFlexibleByid
+  flexibleController.deleteFlexible
 );
 
 module.exports = router;
