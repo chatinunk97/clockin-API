@@ -314,14 +314,8 @@ exports.getAllUser = async (req, res, next) => {
         isActive: true,
         checkLocation: true,
         companyProfileId: true,
-      },
-      include: {
-        userRelationshipBoss: {
-          select: {
-            userBossId: true,
-            user: true,
-          },
-        },
+        userRelationshipBoss: true,
+        userRelationshipUser: true,
       },
       orderBy: {
         isActive: "desc",
