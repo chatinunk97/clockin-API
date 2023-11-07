@@ -102,37 +102,71 @@ exports.updateRequestLeave = async (req, res, next) => {
       return next(createError("Request leave not found"));
     }
 
+    const foundTimeProfile = await prisma.timeProfile.findMany({
+      where: {
+        companyProfileId: req.user.companyProfileId,
+      },
+    });
+
+    let dateAmount;
+    if (
+      requestLeave.statusRequest === "ACCEPT" &&
+      requestLeave.leaveType === "FULLDAY"
+    ) {
+      const startDate = new Date(requestLeave.startDate);
+      const endDate = new Date(requestLeave.endDate);
+
+      dateAmount = parseInt((endDate - startDate + 1) / (1000 * 60 * 60 * 24));
+    } else if (
+      requestLeave.statusRequest === "ACCEPT" &&
+      requestLeave.leaveType === "FIRSTHALF"
+    ) {
+      const timeProfile = foundTimeProfile.filter(
+        (item) => item.typeTime === "SECONDHALF"
+      );
+      dateAmount = 0.5;
+      const newFlexibleTime = await prisma.flexibleTime.create({
+        data: {
+          userId: +requestLeave.userLeave.userId,
+          date: requestLeave.startDate,
+          timeProfileId: timeProfile[0].id,
+        },
+      });
+    } else if (
+      requestLeave.statusRequest === "ACCEPT" &&
+      requestLeave.leaveType === "SECONDHALF"
+    ) {
+      const timeProfile = foundTimeProfile.filter(
+        (item) => item.typeTime === "FIRSTHALF"
+      );
+      dateAmount = 0.5;
+      const newFlexibleTime = await prisma.flexibleTime.create({
+        data: {
+          userId: +requestLeave.userLeave.userId,
+          date: requestLeave.startDate,
+          timeProfileId: timeProfile[0].id,
+        },
+      });
+    }
+
     const requestLeave = await prisma.requestLeave.update({
       data: value,
       where: {
         id: +value.id,
       },
+      include: {
+        userLeave: true,
+      },
     });
 
-    console.log(requestLeave);
-    if (
-      requestLeave.statusRequest === "ACCEPT" &&
-      requestLeave.halfDate === true
-    ) {
-      const startDate = new Date(requestLeave.startDate);
-      const endDate = new Date(requestLeave.endDate);
-
-      const dateAmount = (endDate - startDate) / (1000 * 60 * 60 * 24);
-    } else if (requestLeave.statusRequest === "ACCEPT") {
-      const startDate = new Date(requestLeave.startDate);
-      const endDate = new Date(requestLeave.endDate);
-
-      const dateAmount = (endDate - startDate) / (1000 * 60 * 60 * 24);
-      const newUserLeave = await prisma.userLeave.update({
-        where: { id: requestLeave.userLeaveId },
-        data: {
-          dateAmount: {
-            decrement: dateAmount,
-          },
+    await prisma.userLeave.update({
+      where: { id: requestLeave.userLeaveId },
+      data: {
+        dateAmount: {
+          decrement: dateAmount,
         },
-      });
-      console.log(newUserLeave);
-    }
+      },
+    });
 
     res.status(200).json({ requestLeave });
   } catch (error) {
