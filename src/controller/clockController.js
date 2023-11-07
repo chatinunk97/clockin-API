@@ -11,37 +11,39 @@ exports.clockIn = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    //Check for flexible Time on that date
 
-    console.log(value);
-    //Use default time if no flexible Time
-    const foundTimeProfile = await prisma.timeProfile.findFirst({
+    //Get default time
+    const result = await prisma.timeProfile.findFirst({
       where: {
-        companyProfile: req.user.companyProfile,
+        AND: [
+          { companyProfileId: req.user.companyProfileId },
+          { typeTime: "DEFAULT" },
+        ],
+      },
+    });
+    //Compare Time and check today clockin (you can only be late once a day)
+    const startTime = new Date(
+      value.clockInTime.split("T")[0] + " " + result?.start
+    );
+    const clockInTime = new Date(value.clockInTime);
+
+    //Check for today previous clock in if true don't check late
+    const todayClockIn = await prisma.clock.findFirst({
+      where: {
+        clockInTime: { startsWith: `%${value.clockInTime.split("T")[0]}` },
       },
     });
 
-    //Create Start work time using clock in date + time profile Time
-    const startTime = new Date(
-      value.clockInTime.split("T")[0] + " " + foundTimeProfile.start
-    );
-    const clockInTime = new Date(value.clockInTime);
-    if (clockInTime > startTime) {
-      const clockInDate = new Date(value.clockInTime);
-      const todayDate = new Date();
-      if (clockInDate.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)) {
-        console.log("already has data for today");
-      } else {
-        console.log("LATE!!!");
-        value.statusClockIn = "LATE";
-      }
+    if (clockInTime > startTime && !todayClockIn) {
+      console.log(`You're late !`);
+      value.statusClockIn = "LATE";
     }
 
     value.user = { connect: { id: req.user.id } };
     const clockIn = await prisma.clock.create({
       data: value,
     });
-    res.status(201).json({ clockIn });
+    res.json({ clockIn });
   } catch (error) {
     next(error);
   }
@@ -53,33 +55,41 @@ exports.clockOut = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    const newestClockId = await prisma.clock.aggregate({
-      _max: {
-        id: true,
+    const latestClock = await prisma.clock.findFirst({
+      orderBy: {
+        id: "desc",
       },
-      where: { userId: +req.user.id },
+      take: 1,
+      where: { userId: req.user.id },
     });
-    const foundClock = await prisma.clock.findFirst({
-      where: {
-        id: newestClockId._max.id,
-      },
-    });
-    if (!foundClock) {
-      return next(createError("Not found", 400));
+    if (!latestClock) {
+      return next(createError("No previois clock in found", 400));
     }
-    const clock = await prisma.clock.update({
+    await prisma.clock.update({
+      where: { id: latestClock.id },
       data: value,
-      where: {
-        id: foundClock.id,
-      },
     });
-
-    res.status(200).json({ clock });
+    res.json({ message: "Reached Clock Out" });
   } catch (error) {
     next(error);
   }
 };
 
+exports.latestClock = async (req, res, next) => {
+  try {
+    console.log(req.user.id);
+    const latestClock = await prisma.clock.findFirst({
+      orderBy: {
+        id: "desc",
+      },
+      take: 1,
+      where: { userId: req.user.id },
+    });
+    res.json(latestClock);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getClock = async (req, res, next) => {
   try {
     const allClock = await prisma.clock.findMany({
@@ -94,7 +104,7 @@ exports.getClock = async (req, res, next) => {
 
 exports.companyProfile = async (req, res, next) => {
   try {
-    const companyLocation = await prisma.companyLocation.findMany({
+    const companyLocation = await prisma.companyLocation.findFirst({
       where: { companyProfileId: req.user.companyProfileId },
     });
     res.status(200).json(companyLocation);
