@@ -12,7 +12,7 @@ exports.clockIn = async (req, res, next) => {
       return next(error);
     }
 
-    //Get default timr
+    //Get default time
     const result = await prisma.timeProfile.findFirst({
       where: {
         AND: [
@@ -21,13 +21,20 @@ exports.clockIn = async (req, res, next) => {
         ],
       },
     });
-    //Compare Time
+    //Compare Time and check today clockin (you can only be late once a day)
     const startTime = new Date(
-      value.clockInTime.split("T")[0] + " " + result.start
+      value.clockInTime.split("T")[0] + " " + result?.start
     );
     const clockInTime = new Date(value.clockInTime);
 
-    if (clockInTime > startTime) {
+    //Check for today previous clock in if true don't check late
+    const todayClockIn = await prisma.clock.findFirst({
+      where: {
+        clockInTime: { startsWith: `%${value.clockInTime.split("T")[0]}` },
+      },
+    });
+
+    if (clockInTime > startTime && !todayClockIn) {
       console.log(`You're late !`);
       value.statusClockIn = "LATE";
     }

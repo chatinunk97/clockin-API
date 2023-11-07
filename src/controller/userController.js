@@ -91,7 +91,7 @@ exports.createUser = async (req, res, next) => {
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD",
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
     );
 
     user.accessToken = accessToken;
@@ -311,20 +311,7 @@ exports.getAllUser = async (req, res, next) => {
 
 exports.getMe = async (req, res, next) => {
   try {
-    const newestClockId = await prisma.clock.aggregate({
-      _max: {
-        id: true,
-      },
-      where: { userId: +req.user.id },
-    });
-    console.log(newestClockId)
-    if(!newestClockId['_max']['id']){
-      return res.status(200).json({newestClock : null})
-    }
-    const newestClock = await prisma.clock.findUnique({
-      where: { id: newestClockId._max.id },
-    });
-    res.status(200).json({ user: req.user, newestClock });
+    res.status(200).json({ user: req.user });
   } catch (error) {
     next(error);
   }
