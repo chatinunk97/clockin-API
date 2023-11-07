@@ -91,7 +91,7 @@ exports.createUser = async (req, res, next) => {
     const accessToken = jwt.sign(
       payload,
       process.env.JWT_SECRET_KEY || "CATBORNTOBEGOD",
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
     );
 
     user.accessToken = accessToken;
@@ -287,6 +287,8 @@ exports.getUserById = async (req, res, next) => {
     if (!user || user.length === 0) {
       throw createError(404, "User not found");
     }
+
+    delete user.password;
     res.status(200).json({ message: "Get user", user: user });
   } catch (error) {
     next(error);
@@ -299,18 +301,27 @@ exports.getAllUser = async (req, res, next) => {
       where: {
         companyProfileId: +req.user.companyProfileId,
       },
-      include: {
-        userRelationshipBoss: {
-          select: {
-            userBossId: true,
-            user: true,
-          },
-        },
+      select: {
+        id: true,
+        profileImage: true,
+        employeeId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        mobile: true,
+        position: true,
+        userType: true,
+        isActive: true,
+        checkLocation: true,
+        companyProfileId: true,
+        userRelationshipBoss: true,
+        userRelationshipUser: true,
       },
       orderBy: {
         isActive: "desc",
       },
     });
+
     res.status(200).json({ allUser });
   } catch (error) {
     next(error);
@@ -319,16 +330,7 @@ exports.getAllUser = async (req, res, next) => {
 
 exports.getMe = async (req, res, next) => {
   try {
-    const newestClockId = await prisma.clock.aggregate({
-      _max: {
-        id: true,
-      },
-      where: { userId: +req.user.id },
-    });
-    const newestClock = await prisma.clock.findUnique({
-      where: { id: newestClockId._max.id },
-    });
-    res.status(200).json({ user: req.user, newestClock });
+    res.status(200).json({ user: req.user });
   } catch (error) {
     next(error);
   }

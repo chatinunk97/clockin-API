@@ -132,7 +132,7 @@ model UserLeave {
   leaveProfile   LeaveProfile   @relation(fields: [leaveProfileId], references: [id])
   leaveProfileId Int
   requestLeave   RequestLeave[]
-  dateAmount     Float          @default(0)
+  dateAmount     Float          @default(0.0)
 }
 
 model Clock {
