@@ -7,8 +7,16 @@ const createError = require('../utils/create-error');
 
 exports.clockIn = async (req, res, next) => {
   try {
-    console.log(req.body)
-    res.json({message : "Reached Clock In"})
+    const { value, error } = clockInSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    value.user = { connect: { id: req.user.id } };
+    const clockIn = await prisma.clock.create({
+      data: value,
+    });
+    res.json({clockIn})
+    
   } catch (error) {
     next(error);
   }
