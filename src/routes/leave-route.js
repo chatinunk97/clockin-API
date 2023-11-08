@@ -52,6 +52,12 @@ router.delete(
   leaveController.deleteUserLeave
 );
 
+router.get(
+  "/getUserLeave",
+  authenticatedMiddleware,
+  leaveController.getUserLeaveByUserId
+);
+
 // leave profile
 router.post(
   "/createLeaveProfile",
