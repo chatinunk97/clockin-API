@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -7,9 +7,9 @@ const loginSchema = Joi.object({
 exports.loginSchema = loginSchema;
 
 const createUserSchemaByAdmin = Joi.object({
-  profileImage: Joi.string().allow('', null),
+  profileImage: Joi.string().allow("", null),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('HR', 'MANAGER', 'USER'),
+  position: Joi.string().valid("HR", "MANAGER", "USER"),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -28,7 +28,7 @@ exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 const createUserSchemaByHR = Joi.object({
   profileImage: Joi.string(),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('MANAGER', 'USER'),
+  position: Joi.string().valid("MANAGER", "USER"),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -46,9 +46,9 @@ exports.createUserSchemaByHR = createUserSchemaByHR;
 
 const updateUserSchemaByAdmin = Joi.object({
   id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string().allow(null, ''),
+  profileImage: Joi.string().allow(null, ""),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('ADMIN', 'HR', 'MANAGER', 'USER'),
+  position: Joi.string().valid("ADMIN", "HR", "MANAGER", "USER"),
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -64,10 +64,10 @@ exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
 
 const updateUserSchemaByHR = Joi.object({
   id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string().allow(null, ''),
+  profileImage: Joi.string().allow(null, ""),
   employeeId: Joi.string().required(),
-  position: Joi.string().valid('HR', 'MANAGER', 'USER'),
-  userType: Joi.string().valid('FULLTIME', 'PARTTIME'),
+  position: Joi.string().valid("HR", "MANAGER", "USER"),
+  userType: Joi.string().valid("FULLTIME", "PARTTIME"),
   isActive: Joi.boolean(),
   checkLocation: Joi.boolean(),
   firstName: Joi.string().required(),
@@ -83,24 +83,6 @@ const updateUserSchemaByHR = Joi.object({
 });
 exports.updateUserSchemaByHR = updateUserSchemaByHR;
 
-const updateUserSchema = Joi.object({
-  id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string(),
-  employeeId: Joi.string().required(),
-  position: Joi.string().valid('MANAGER', 'USER'),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email().required(),
-  mobile: Joi.string()
-    .pattern(/^[0-9]{10}$/)
-    .required(),
-  userType: Joi.string().required(),
-  userBossId: Joi.number().integer().positive().required(),
-  isActive: Joi.boolean().required(),
-  checkLocation: Joi.boolean().required(),
-});
-exports.updateUserSchema = updateUserSchema;
-
 const deleteUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
@@ -112,7 +94,7 @@ const resetPasswordSchema = Joi.object({
     .trim()
     .required(),
   confirmPassword: Joi.string()
-    .valid(Joi.ref('password'))
+    .valid(Joi.ref("password"))
     .trim()
     .required()
     .strip(),

@@ -4,7 +4,6 @@ const express = require("express");
 const timeProfileController = require("../controller/timeProfileController");
 
 // Middlewares
-
 const authenticatedMiddleware = require("../middleware/authenticate/authenticate");
 
 const router = express.Router();
@@ -15,11 +14,6 @@ router.post(
   timeProfileController.createTimeProfile
 );
 
-router.get(
-  "/getTimeProfile/:timeProfileId",
-  authenticatedMiddleware,
-  timeProfileController.getTimeProfileById
-);
 router.get(
   "/getAllTimeProfile",
   authenticatedMiddleware,

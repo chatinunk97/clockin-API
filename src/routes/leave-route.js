@@ -30,6 +30,7 @@ router.patch(
 );
 router.delete(
   "/deleteRequestLeave/:leaveRequestId",
+  authenticatedMiddleware,
   leaveController.deleteLeaveRequests
 );
 
