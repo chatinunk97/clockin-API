@@ -100,3 +100,4 @@ const resetPasswordSchema = Joi.object({
     .strip(),
 });
 exports.resetPasswordSchema = resetPasswordSchema;
+module.exports = {};

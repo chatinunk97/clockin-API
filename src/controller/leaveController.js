@@ -387,7 +387,7 @@ exports.updateLeaveProfile = async (req, res, next) => {
 
     const updateLeaveProfile = await prisma.leaveProfile.update({
       where: {
-        id: +req.params.id, // Assuming the URL parameter is named timeProfileId
+        id: value.id, // Assuming the URL parameter is named timeProfileId
       },
       data: value,
     });

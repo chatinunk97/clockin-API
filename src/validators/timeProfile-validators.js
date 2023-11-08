@@ -1,6 +1,6 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
-const TypetimeEnum = ['DEFAULT', 'FIRSTHALF', 'SECONDHALF', 'NOTSPECIFIED'];
+const TypetimeEnum = ["DEFAULT", "FIRSTHALF", "SECONDHALF", "NOTSPECIFIED"];
 
 const timeProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive(),
@@ -14,7 +14,6 @@ const timeProfileSchema = Joi.object({
     .valid(...TypetimeEnum)
     .required(),
 });
-exports.timeProfileSchema = timeProfileSchema;
 
 const updateTimeProfileSchema = Joi.object({
   // companyProfileId: Joi.number().integer().positive(),
@@ -28,9 +27,13 @@ const updateTimeProfileSchema = Joi.object({
     .valid(...TypetimeEnum)
     .required(),
 });
-exports.updateTimeProfileSchema = updateTimeProfileSchema;
 
 const deleteTimeProfileSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-exports.deleteTimeProfileSchema = deleteTimeProfileSchema;
+
+module.exports = {
+  timeProfileSchema,
+  updateTimeProfileSchema,
+  deleteTimeProfileSchema,
+};

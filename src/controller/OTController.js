@@ -12,10 +12,13 @@ exports.requestOT = async (req, res, next) => {
     if (!foundClock) {
       return next(createError("Not found", 400));
     }
-
-    req.body.userId = req.user.id;
+    const { value, error } = createOTSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    value.userId = req.user.id;
     const OT = await prisma.requestOT.create({
-      data: req.body,
+      data: value,
     });
     res.status(201).json({ message: "OT was requested", OT });
   } catch (error) {
