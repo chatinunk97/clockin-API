@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const registerCompanySchema = Joi.object({
   companyName: Joi.string().trim().required(),
@@ -18,13 +18,11 @@ const registerCompanySchema = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
 });
-exports.registerCompanySchema = registerCompanySchema;
 
 const loginSuperAdminSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().trim().required(),
 });
-exports.loginSuperAdminSchema = loginSuperAdminSchema;
 
 const createSuperAdminSchema = Joi.object({
   profileImage: Joi.string(),
@@ -41,7 +39,6 @@ const createSuperAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.createSuperAdminSchema = createSuperAdminSchema;
 
 const updateSuperAdminSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
@@ -58,9 +55,15 @@ const updateSuperAdminSchema = Joi.object({
     .required(),
   companyProfileId: Joi.number().integer().positive().required(),
 });
-exports.updateSuperAdminSchema = updateSuperAdminSchema;
 
 const deleteSuperAdminSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-exports.deleteSuperAdminSchema = deleteSuperAdminSchema;
+
+module.exports = {
+  registerCompanySchema,
+  loginSuperAdminSchema,
+  createSuperAdminSchema,
+  updateSuperAdminSchema,
+  deleteSuperAdminSchema,
+};

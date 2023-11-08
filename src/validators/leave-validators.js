@@ -5,7 +5,9 @@ const createLeaveProfileSchema = Joi.object({
   leaveName: Joi.string().required(),
 });
 const updateLeaveProfileSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
   leaveName: Joi.string().required(),
+  defaultDateAmount: Joi.number().integer().positive().required(),
 });
 const deleteLeaveProfile = Joi.object({
   id: Joi.number().integer().positive().required(),
