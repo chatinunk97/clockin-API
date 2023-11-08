@@ -355,3 +355,34 @@ exports.resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getPosition = async (req, res, next) => {
+  try {
+    const allUser = await prisma.user.findMany({
+      where: {
+        companyProfileId: +req.user.companyProfileId,
+      },
+      select: {
+        userType: true,
+        isActive: true,
+      },
+    });
+
+    // สร้างออบเจกต์เพื่อเก็บผลรวมของ userType แต่ละชนิด
+    const userTypeTotals = {};
+
+    // นับ userType แต่ละชนิดและเพิ่มผลรวม
+    allUser.forEach((user) => {
+      const userType = user.userType;
+      if (userType in userTypeTotals) {
+        userTypeTotals[userType]++;
+      } else {
+        userTypeTotals[userType] = 1;
+      }
+    });
+
+    res.status(200).json({ userTypeTotals });
+  } catch (error) {
+    next(error);
+  }
+};
