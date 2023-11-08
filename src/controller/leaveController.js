@@ -282,6 +282,19 @@ exports.deleteUserLeave = async (req, res, next) => {
   }
 };
 
+exports.getUserLeaveByUserId = async (req, res, next) => {
+  try {
+    const userLeave = await prisma.userLeave.findMany({
+      where: {
+        userId: +req.user.id,
+      },
+    });
+    res.status(200).json({ userLeave });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // ########## leave profile ##########
 exports.createLeaveProfile = async (req, res, next) => {
   try {
@@ -374,7 +387,7 @@ exports.updateLeaveProfile = async (req, res, next) => {
 
     const updateLeaveProfile = await prisma.leaveProfile.update({
       where: {
-        id: +req.params.id, // Assuming the URL parameter is named timeProfileId
+        id: value.id, // Assuming the URL parameter is named timeProfileId
       },
       data: value,
     });

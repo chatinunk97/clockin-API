@@ -83,24 +83,6 @@ const updateUserSchemaByHR = Joi.object({
 });
 exports.updateUserSchemaByHR = updateUserSchemaByHR;
 
-const updateUserSchema = Joi.object({
-  id: Joi.number().integer().positive().required(),
-  profileImage: Joi.string(),
-  employeeId: Joi.string().required(),
-  position: Joi.string().valid("MANAGER", "USER"),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email().required(),
-  mobile: Joi.string()
-    .pattern(/^[0-9]{10}$/)
-    .required(),
-  userType: Joi.string().required(),
-  userBossId: Joi.number().integer().positive().required(),
-  isActive: Joi.boolean().required(),
-  checkLocation: Joi.boolean().required(),
-});
-exports.updateUserSchema = updateUserSchema;
-
 const deleteUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });

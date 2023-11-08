@@ -30,6 +30,7 @@ router.patch(
 );
 router.delete(
   "/deleteRequestLeave/:leaveRequestId",
+  authenticatedMiddleware,
   leaveController.deleteLeaveRequests
 );
 
@@ -50,6 +51,12 @@ router.delete(
   "/deleteUserLeave/:userLeaveId",
   authenticatedMiddleware,
   leaveController.deleteUserLeave
+);
+
+router.get(
+  "/getUserLeave",
+  authenticatedMiddleware,
+  leaveController.getUserLeaveByUserId
 );
 
 // leave profile

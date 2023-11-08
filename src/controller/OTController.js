@@ -59,7 +59,7 @@ exports.getAllRequestOT = async (req, res, next) => {
         },
       },
     });
-    res.status(200).json({ message: "Yooooo", OT });
+    res.status(200).json({ OT });
   } catch (error) {
     next(error);
   }

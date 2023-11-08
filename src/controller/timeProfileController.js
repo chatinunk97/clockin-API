@@ -54,25 +54,6 @@ exports.updateTimeProfile = async (req, res, next) => {
   }
 };
 
-exports.getTimeProfileById = async (req, res, next) => {
-  try {
-    const timeProfile = await prisma.timeProfile.findMany({
-      where: {
-        id: +req.params.timeProfileId,
-      },
-    });
-
-    if (timeProfile.length === 0) {
-      throw createError("Time profile not found", 404);
-    }
-    res
-      .status(200)
-      .json({ message: "Get timeProfile", timeProfile: timeProfile });
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.getAllTimeProfile = async (req, res, next) => {
   try {
     const allTimeProfiles = await prisma.timeProfile.findMany({
