@@ -9,7 +9,6 @@ const {
   createUserSchemaByHR,
   updateUserSchemaByHR,
   updateUserSchemaByAdmin,
-  updateUserSchema,
   deleteUserSchema,
   resetPasswordSchema,
 } = require("../validators/user-validators");
@@ -213,12 +212,12 @@ exports.updateUser = async (req, res, next) => {
     const foundRelationship = await prisma.userRelationship.findFirst({
       where: { userId: +data.id },
     });
-    console.log(foundRelationship, "=============================");
+
     if (req.file) {
       const url = await upload(req.file.path);
       data.profileImage = url;
     }
-    console.log(data, "=============================");
+
     let validate;
     if (req.user.position === "ADMIN") {
       validate = updateUserSchemaByAdmin.validate(data);
@@ -237,7 +236,6 @@ exports.updateUser = async (req, res, next) => {
     if (validate.error) {
       return next(validate.error);
     }
-    console.log(validate.value, "=============================");
 
     const user = await prisma.user.update({
       where: { id: validate.value.id },

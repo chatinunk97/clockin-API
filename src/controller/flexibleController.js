@@ -13,16 +13,16 @@ exports.createFlexible = async (req, res, next) => {
         createError("You don't have permission to access this section", 403)
       );
     }
-    console.log(req.body);
+
     const { value, error } = createFlexibleTimeSchema.validate(req.body);
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-    const flexibles = await prisma.flexibleTime.create({
+    const flexible = await prisma.flexibleTime.create({
       data: value,
     });
 
-    res.status(201).json({ message: "Flexible was created", flexibles });
+    res.status(201).json({ message: "Flexible was created", flexible });
   } catch (error) {
     next(error);
   }
@@ -42,7 +42,6 @@ exports.updateFlexible = async (req, res, next) => {
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-    console.log(req.body);
     // Update flexible time record
     const updatedFlexible = await prisma.flexibleTime.update({
       data: value,
@@ -59,13 +58,13 @@ exports.updateFlexible = async (req, res, next) => {
 
 exports.getFlexibleById = async (req, res, next) => {
   try {
-    const flexible = await prisma.flexibleTime.findMany({
+    const flexible = await prisma.flexibleTime.findUnique({
       where: {
         id: +req.params.id,
       },
     });
-    if (flexible.lenght === 0) {
-      throw createError("Time profile not found", 404);
+    if (!flexible) {
+      throw createError("flexible time not found", 404);
     }
     res.status(200).json({ message: "Get flexible", flexible: flexible });
   } catch (error) {
@@ -75,14 +74,11 @@ exports.getFlexibleById = async (req, res, next) => {
 
 exports.deleteFlexible = async (req, res, next) => {
   try {
-    console.log("++++++++");
-    console.log(req.params);
     // Validate the request parameters
     const { error } = deleteFlexibleTimeSchema.validate(req.params);
     if (error) {
       return next(error);
     }
-    console.log("error", error);
     // Find the flexible time record to check its existence
     const foundFlexible = await prisma.flexibleTime.findUnique({
       where: {
