@@ -4,13 +4,13 @@ const bcrypt = require("bcrypt");
 const prisma = require("../models/prisma");
 const nodemailerSender = require("../config/nodemailer");
 const {
-  loginSchema,
   createUserSchemaByAdmin,
   createUserSchemaByHR,
   updateUserSchemaByHR,
   updateUserSchemaByAdmin,
   deleteUserSchema,
   resetPasswordSchema,
+  loginSchema,
 } = require("../validators/user-validators");
 const createError = require("../utils/create-error");
 const { upload } = require("../utils/cloudinary");
@@ -155,6 +155,7 @@ exports.deleteUser = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { loginType } = req.body;
     delete req.body.loginType;
     const { value, error } = loginSchema.validate(req.body);
