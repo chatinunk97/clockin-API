@@ -13,3 +13,15 @@ const clockOutSchema = Joi.object({
   longitudeClockOut: Joi.number().required(),
 });
 exports.clockOutSchema = clockOutSchema;
+
+const dateFilterSchema = Joi.object({
+  dateStart : Joi.date().allow('',null),
+  dateEnd : Joi.date().allow('',null),
+})
+exports.dateFilterSchema = dateFilterSchema
+
+
+const todayFilterSchema = Joi.object({
+  today : Joi.date().allow('',null),
+})
+exports.todayFilterSchema = todayFilterSchema
