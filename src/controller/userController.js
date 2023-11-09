@@ -4,13 +4,13 @@ const bcrypt = require("bcrypt");
 const prisma = require("../models/prisma");
 const nodemailerSender = require("../config/nodemailer");
 const {
-  loginSchema,
   createUserSchemaByAdmin,
   createUserSchemaByHR,
   updateUserSchemaByHR,
   updateUserSchemaByAdmin,
   deleteUserSchema,
   resetPasswordSchema,
+  loginSchema,
 } = require("../validators/user-validators");
 const createError = require("../utils/create-error");
 const { upload } = require("../utils/cloudinary");
@@ -155,6 +155,7 @@ exports.deleteUser = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { loginType } = req.body;
     delete req.body.loginType;
     const { value, error } = loginSchema.validate(req.body);
@@ -351,6 +352,37 @@ exports.resetPassword = async (req, res, next) => {
     });
 
     res.status(200).json({ message: "Password was reset" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPosition = async (req, res, next) => {
+  try {
+    const allUser = await prisma.user.findMany({
+      where: {
+        companyProfileId: +req.user.companyProfileId,
+      },
+      select: {
+        userType: true,
+        isActive: true,
+      },
+    });
+
+    // สร้างออบเจกต์เพื่อเก็บผลรวมของ userType แต่ละชนิด
+    const userTypeTotals = {};
+
+    // นับ userType แต่ละชนิดและเพิ่มผลรวม
+    allUser.forEach((user) => {
+      const userType = user.userType;
+      if (userType in userTypeTotals) {
+        userTypeTotals[userType]++;
+      } else {
+        userTypeTotals[userType] = 1;
+      }
+    });
+
+    res.status(200).json({ userTypeTotals });
   } catch (error) {
     next(error);
   }
