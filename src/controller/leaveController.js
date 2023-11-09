@@ -288,6 +288,9 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
       where: {
         userId: +req.user.id,
       },
+      include: {
+        leaveProfile: true,
+      },
     });
     res.status(200).json({ userLeave });
   } catch (error) {
