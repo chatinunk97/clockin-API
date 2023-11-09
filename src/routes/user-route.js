@@ -56,4 +56,6 @@ router.get("/getAllUser", authenticatedMiddleware, userController.getAllUser);
 
 router.get("/me", authenticatedMiddleware, userController.getMe);
 
+router.get("/getPosition", authenticatedMiddleware, userController.getPosition);
+
 module.exports = router;
