@@ -371,6 +371,7 @@ exports.getPosition = async (req, res, next) => {
 
     // สร้างออบเจกต์เพื่อเก็บผลรวมของ userType แต่ละชนิด
     const userTypeTotals = {};
+    let totalUserCount = 0;
 
     // นับ userType แต่ละชนิดและเพิ่มผลรวม
     allUser.forEach((user) => {
@@ -380,9 +381,10 @@ exports.getPosition = async (req, res, next) => {
       } else {
         userTypeTotals[userType] = 1;
       }
+      totalUserCount++;
     });
 
-    res.status(200).json({ userTypeTotals });
+    res.status(200).json({ userTypeTotals, totalUserCount });
   } catch (error) {
     next(error);
   }
