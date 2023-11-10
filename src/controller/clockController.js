@@ -98,14 +98,12 @@ exports.latestClock = async (req, res, next) => {
 };
 exports.getClock = async (req, res, next) => {
   try {
-    console.log(req.query)
     const { value, error } = dateFilterSchema.validate(req.query);
     if (error) {
       return next(error);
     }
     let clockInFilter = {}
     if(value.dateStart){
-      console.log('first')
       clockInFilter.gte = value.dateStart.toISOString()
     }
     if(value.dateEnd){
