@@ -3,6 +3,7 @@ const Joi = require("joi").extend(require("@joi/date"));
 const createLeaveProfileSchema = Joi.object({
   companyProfileId: Joi.number().integer().positive().required(),
   leaveName: Joi.string().required(),
+  defaultDateAmount: Joi.number().integer().positive().required(),
 });
 const updateLeaveProfileSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
