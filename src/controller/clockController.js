@@ -2,7 +2,7 @@ const {
   clockInSchema,
   clockOutSchema,
   dateFilterSchema,
-  todayFilterSchema,
+  todayFilterSchema,,
 } = require("../validators/clock-validators");
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
@@ -134,16 +134,44 @@ exports.companyProfile = async (req, res, next) => {
   }
 };
 
-exports.statusClockIn = async (req, res, next) => {
+exports.allStatus = async (req, res, next) => {
   try {
-    const lateClockInsCount = await prisma.clock.count({
+    const status = await prisma.clock.findMany({
+      select: {
+        statusClockIn: true,
+      },
       where: {
         user: { companyProfileId: req.user.companyProfileId },
-        statusClockIn: "LATE",
       },
     });
 
-    res.status(200).json({ lateClockInsCount });
+    let countLate = 0;
+    let countOntime = 0;
+
+    // Count the number of occurrences for each status
+    for (let i = 0; i < status.length; i++) {
+      if (status[i].statusClockIn === "LATE") {
+        countLate++;
+      } else {
+        countOntime++;
+      }
+    }
+
+    // Calculate total count
+    const totalCount = countLate + countOntime;
+
+    // Calculate percentages
+    const percentageLate = Math.round((countLate / totalCount) * 100);
+    const percentageOntime = Math.round((countOntime / totalCount) * 100);
+
+    console.log("countLate", countLate);
+    console.log("countOntime", countOntime);
+    console.log("percentageLate", percentageLate);
+    console.log("percentageOntime", percentageOntime);
+
+    res
+      .status(200)
+      .json({ countLate, countOntime, percentageLate, percentageOntime });
   } catch (error) {
     next(error);
   }

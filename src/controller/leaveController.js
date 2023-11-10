@@ -21,7 +21,7 @@ exports.createRequestLeave = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    console.log(value)
+    console.log(value);
     const requestLeave = await prisma.requestLeave.create({
       data: value,
     });
@@ -44,6 +44,18 @@ exports.getRequestLeaveById = async (req, res, next) => {
     const requestLeave = await prisma.requestLeave.findUnique({
       where: {
         id: value.requestLeaveId,
+      },
+      include: {
+        userLeave: {
+          select: {
+            dateAmount: true,
+            leaveProfile: {
+              select: {
+                leaveName: true,
+              },
+            },
+          },
+        },
       },
     });
     res.status(200).json({ requestLeave });
@@ -99,7 +111,7 @@ exports.updateRequestLeave = async (req, res, next) => {
     });
 
     if (!found) {
-      return next(createError("Request leave not found"));
+      return next(createError("Request leave not found", 400));
     }
 
     const foundTimeProfile = await prisma.timeProfile.findMany({
@@ -107,6 +119,12 @@ exports.updateRequestLeave = async (req, res, next) => {
         companyProfileId: req.user.companyProfileId,
       },
     });
+
+    if (!foundTimeProfile) {
+      return next(
+        createError("TimeProfile not found. Please contact your admin ", 400)
+      );
+    }
 
     let dateAmount;
     if (
@@ -288,12 +306,13 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
       where: {
         userId: +req.user.id,
       },
-      include : {
-        leaveProfile : {select  : {
-          leaveName : true
-        }
-        }
-      }
+      include: {
+        leaveProfile: {
+          select: {
+            leaveName: true,
+          },
+        },
+      },
     });
     res.status(200).json({ userLeave });
   } catch (error) {
