@@ -43,6 +43,19 @@ exports.registerCompany = async (req, res, next) => {
   try {
     const data = JSON.parse(req.body.data);
     console.log(data);
+    const foundUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: data.email }, { mobile: data.mobile }],
+      },
+    });
+    if (foundUser) {
+      if (foundUser.email === data.email) {
+        return next(createError("This Email is already in use", 400));
+      } else if (foundUser.mobile === data.mobile) {
+        return next(createError("Phone number is already in use", 400));
+      }
+    }
+
     if (!req.file) {
       return next(createError("Pay slip is required", 400));
     }
