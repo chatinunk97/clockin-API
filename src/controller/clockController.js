@@ -1,6 +1,8 @@
 const {
   clockInSchema,
   clockOutSchema,
+  dateFilterSchema,
+  todayFilterSchema,
 } = require("../validators/clock-validators");
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
@@ -77,13 +79,20 @@ exports.clockOut = async (req, res, next) => {
 
 exports.latestClock = async (req, res, next) => {
   try {
-    console.log(req.user.id);
+    const { value, error } = todayFilterSchema.validate(req.query);
+    if (error) {
+      return next(error);
+    }
+    console.log(value);
     const latestClock = await prisma.clock.findFirst({
       orderBy: {
         id: "desc",
       },
       take: 1,
-      where: { userId: req.user.id },
+      where: {
+        userId: req.user.id,
+        clockInTime: { gte: value.today.toISOString() },
+      },
     });
     res.json(latestClock);
   } catch (error) {
@@ -92,11 +101,23 @@ exports.latestClock = async (req, res, next) => {
 };
 exports.getClock = async (req, res, next) => {
   try {
+    console.log(req.query);
+    const { value, error } = dateFilterSchema.validate(req.query);
+    if (error) {
+      return next(error);
+    }
+    let clockInFilter = {};
+    if (value.dateStart) {
+      console.log("first");
+      clockInFilter.gte = value.dateStart.toISOString();
+    }
+    if (value.dateEnd) {
+      clockInFilter.lte = value.dateEnd.toISOString();
+    }
     const allClock = await prisma.clock.findMany({
-      where: { userId: +req.user.id },
-      include: { user: true },
+      where: { userId: +req.user.id, clockInTime: clockInFilter },
     });
-    res.status(200).json({ allClock });
+    res.status(200).json(allClock);
   } catch (error) {
     next(error);
   }
@@ -112,3 +133,26 @@ exports.companyProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+// exports.statusClockIn = async (req, res, next) => {
+//   try {
+//     const findLate = await prisma.clock.findMany({
+//       where: {
+//         AND: [
+//           { companyProfileId: req.user.companyProfileId },
+//           { statusClockIn: "LATE" },
+//         ],
+//       },
+//     });
+
+//     let totalUser = 0;
+
+//     findLate.forEach((user) => {
+//       totalUser++;
+//     });
+
+//     res.status(200).json({ totalUser });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
