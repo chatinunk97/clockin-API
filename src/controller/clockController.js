@@ -2,7 +2,7 @@ const {
   clockInSchema,
   clockOutSchema,
   dateFilterSchema,
-  todayFilterSchema,,
+  todayFilterSchema,
 } = require("../validators/clock-validators");
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
