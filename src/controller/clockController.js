@@ -101,12 +101,14 @@ exports.latestClock = async (req, res, next) => {
 };
 exports.getClock = async (req, res, next) => {
   try {
+    console.log(req.query);
     const { value, error } = dateFilterSchema.validate(req.query);
     if (error) {
       return next(error);
     }
     let clockInFilter = {};
     if (value.dateStart) {
+      console.log("first");
       clockInFilter.gte = value.dateStart.toISOString();
     }
     if (value.dateEnd) {
@@ -170,6 +172,21 @@ exports.allStatus = async (req, res, next) => {
     res
       .status(200)
       .json({ countLate, countOntime, percentageLate, percentageOntime });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.statusClockIn = async (req, res, next) => {
+  try {
+    const lateClockInsCount = await prisma.clock.count({
+      where: {
+        user: { companyProfileId: req.user.companyProfileId },
+        statusClockIn: "LATE",
+      },
+    });
+
+    res.status(200).json({ lateClockInsCount });
   } catch (error) {
     next(error);
   }

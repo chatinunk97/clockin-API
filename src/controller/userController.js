@@ -18,8 +18,21 @@ const { nanoid } = require("nanoid");
 
 exports.createUser = async (req, res, next) => {
   try {
-    let validate;
     const data = JSON.parse(req.body.data);
+    const foundUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: data.email }, { mobile: data.mobile }],
+      },
+    });
+    if (foundUser) {
+      if (foundUser.email === data.email) {
+        return next(createError("This Email is already in use", 400));
+      } else if (foundUser.mobile === data.mobile) {
+        return next(createError("Phone number is already in use", 400));
+      }
+    }
+
+    let validate;
     if (req.file) {
       const url = await upload(req.file.path);
       data.profileImage = url;
@@ -35,7 +48,6 @@ exports.createUser = async (req, res, next) => {
     } else {
       return next(createError("You do not have permission to access", 403));
     }
-
     if (validate.error) {
       return next(validate.error);
     }
@@ -371,6 +383,7 @@ exports.getPosition = async (req, res, next) => {
 
     // สร้างออบเจกต์เพื่อเก็บผลรวมของ userType แต่ละชนิด
     const userTypeTotals = {};
+    let totalUserCount = 0;
 
     // นับ userType แต่ละชนิดและเพิ่มผลรวม
     allUser.forEach((user) => {
@@ -380,9 +393,10 @@ exports.getPosition = async (req, res, next) => {
       } else {
         userTypeTotals[userType] = 1;
       }
+      totalUserCount++;
     });
 
-    res.status(200).json({ userTypeTotals });
+    res.status(200).json({ userTypeTotals, totalUserCount });
   } catch (error) {
     next(error);
   }

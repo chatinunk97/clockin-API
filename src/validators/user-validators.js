@@ -4,7 +4,6 @@ const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().trim().required(),
 });
-exports.loginSchema = loginSchema;
 
 const createUserSchemaByAdmin = Joi.object({
   profileImage: Joi.string().allow("", null),
@@ -23,7 +22,6 @@ const createUserSchemaByAdmin = Joi.object({
   userBossId: Joi.number().integer().positive().required(),
   checkLocation: Joi.boolean().required(),
 });
-exports.createUserSchemaByAdmin = createUserSchemaByAdmin;
 
 const createUserSchemaByHR = Joi.object({
   profileImage: Joi.string(),
@@ -42,7 +40,6 @@ const createUserSchemaByHR = Joi.object({
   userBossId: Joi.number().integer().positive().required(),
   checkLocation: Joi.boolean().required(),
 });
-exports.createUserSchemaByHR = createUserSchemaByHR;
 
 const updateUserSchemaByAdmin = Joi.object({
   id: Joi.number().integer().positive().required(),
@@ -60,7 +57,6 @@ const updateUserSchemaByAdmin = Joi.object({
   isActive: Joi.boolean().required(),
   checkLocation: Joi.boolean().required(),
 });
-exports.updateUserSchemaByAdmin = updateUserSchemaByAdmin;
 
 const updateUserSchemaByHR = Joi.object({
   id: Joi.number().integer().positive().required(),
@@ -81,12 +77,10 @@ const updateUserSchemaByHR = Joi.object({
   isActive: Joi.boolean().required(),
   checkLocation: Joi.boolean().required(),
 });
-exports.updateUserSchemaByHR = updateUserSchemaByHR;
 
 const deleteUserSchema = Joi.object({
   id: Joi.number().integer().positive().required(),
 });
-exports.deleteUserSchema = deleteUserSchema;
 
 const resetPasswordSchema = Joi.object({
   password: Joi.string()
@@ -99,4 +93,13 @@ const resetPasswordSchema = Joi.object({
     .required()
     .strip(),
 });
-exports.resetPasswordSchema = resetPasswordSchema;
+
+module.exports = {
+  loginSchema,
+  createUserSchemaByAdmin,
+  createUserSchemaByHR,
+  updateUserSchemaByAdmin,
+  updateUserSchemaByHR,
+  deleteUserSchema,
+  resetPasswordSchema,
+};
