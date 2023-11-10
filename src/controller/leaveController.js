@@ -100,6 +100,7 @@ exports.getAllRequestLeaves = async (req, res, next) => {
 
 exports.updateRequestLeave = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { value, error } = updateRequestSchema.validate(req.body);
 
     if (error) {
@@ -125,6 +126,16 @@ exports.updateRequestLeave = async (req, res, next) => {
         createError("TimeProfile not found. Please contact your admin ", 400)
       );
     }
+
+    const requestLeave = await prisma.requestLeave.update({
+      data: value,
+      where: {
+        id: +value.id,
+      },
+      include: {
+        userLeave: true,
+      },
+    });
 
     let dateAmount;
     if (
@@ -157,6 +168,7 @@ exports.updateRequestLeave = async (req, res, next) => {
       const timeProfile = foundTimeProfile.filter(
         (item) => item.typeTime === "FIRSTHALF"
       );
+      console.log(timeProfile);
       dateAmount = 0.5;
       const newFlexibleTime = await prisma.flexibleTime.create({
         data: {
@@ -166,16 +178,6 @@ exports.updateRequestLeave = async (req, res, next) => {
         },
       });
     }
-
-    const requestLeave = await prisma.requestLeave.update({
-      data: value,
-      where: {
-        id: +value.id,
-      },
-      include: {
-        userLeave: true,
-      },
-    });
 
     await prisma.userLeave.update({
       where: { id: requestLeave.userLeaveId },
