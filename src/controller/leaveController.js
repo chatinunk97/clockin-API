@@ -98,6 +98,21 @@ exports.getAllRequestLeaves = async (req, res, next) => {
   }
 };
 
+exports.getRequestLeaveByUserId = async (req, res, next) => {
+  try {
+    const MyRequest = await prisma.requestLeave.findMany({
+      where: {
+        userLeave: {
+          userId: req.user.id,
+        },
+      },
+    });
+    res.status(200).json({ MyRequest });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.updateRequestLeave = async (req, res, next) => {
   try {
     const { value, error } = updateRequestSchema.validate(req.body);

@@ -18,6 +18,11 @@ router.get(
   "/getRequestLeave/:requestLeaveId",
   leaveController.getRequestLeaveById
 );
+router.get(
+  "/getRequestLeaveByUserId",
+  authenticatedMiddleware,
+  leaveController.getRequestLeaveByUserId
+);
 router.post(
   "/createRequestLeave",
   authenticatedMiddleware,
