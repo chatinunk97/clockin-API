@@ -134,25 +134,17 @@ exports.companyProfile = async (req, res, next) => {
   }
 };
 
-// exports.statusClockIn = async (req, res, next) => {
-//   try {
-//     const findLate = await prisma.clock.findMany({
-//       where: {
-//         AND: [
-//           { companyProfileId: req.user.companyProfileId },
-//           { statusClockIn: "LATE" },
-//         ],
-//       },
-//     });
+exports.statusClockIn = async (req, res, next) => {
+  try {
+    const lateClockInsCount = await prisma.clock.count({
+      where: {
+        user: { companyProfileId: req.user.companyProfileId },
+        statusClockIn: "LATE",
+      },
+    });
 
-//     let totalUser = 0;
-
-//     findLate.forEach((user) => {
-//       totalUser++;
-//     });
-
-//     res.status(200).json({ totalUser });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    res.status(200).json({ lateClockInsCount });
+  } catch (error) {
+    next(error);
+  }
+};

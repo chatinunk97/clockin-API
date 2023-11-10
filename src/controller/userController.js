@@ -18,8 +18,21 @@ const { nanoid } = require("nanoid");
 
 exports.createUser = async (req, res, next) => {
   try {
-    let validate;
     const data = JSON.parse(req.body.data);
+    const foundUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: data.email }, { mobile: data.mobile }],
+      },
+    });
+    if (foundUser) {
+      if (foundUser.email === data.email) {
+        return next(createError("This Email is already in use", 400));
+      } else if (foundUser.mobile === data.mobile) {
+        return next(createError("Phone number is already in use", 400));
+      }
+    }
+
+    let validate;
     if (req.file) {
       const url = await upload(req.file.path);
       data.profileImage = url;
@@ -35,7 +48,6 @@ exports.createUser = async (req, res, next) => {
     } else {
       return next(createError("You do not have permission to access", 403));
     }
-
     if (validate.error) {
       return next(validate.error);
     }
