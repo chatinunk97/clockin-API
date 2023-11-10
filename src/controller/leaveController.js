@@ -45,6 +45,18 @@ exports.getRequestLeaveById = async (req, res, next) => {
       where: {
         id: value.requestLeaveId,
       },
+      include: {
+        userLeave: {
+          select: {
+            dateAmount: true,
+            leaveProfile: {
+              select: {
+                leaveName: true,
+              },
+            },
+          },
+        },
+      },
     });
     res.status(200).json({ requestLeave });
   } catch (error) {
@@ -295,7 +307,11 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
         userId: +req.user.id,
       },
       include: {
-        leaveProfile: true,
+        leaveProfile: {
+          select: {
+            leaveName: true,
+          },
+        },
       },
     });
     res.status(200).json({ userLeave });

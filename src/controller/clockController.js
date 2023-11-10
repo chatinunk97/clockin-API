@@ -2,7 +2,7 @@ const {
   clockInSchema,
   clockOutSchema,
   dateFilterSchema,
-  todayFilterSchema
+  todayFilterSchema,
 } = require("../validators/clock-validators");
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
@@ -79,17 +79,20 @@ exports.clockOut = async (req, res, next) => {
 
 exports.latestClock = async (req, res, next) => {
   try {
-    const {value , error} = todayFilterSchema.validate(req.query)
-    if(error){
-      return next(error)
+    const { value, error } = todayFilterSchema.validate(req.query);
+    if (error) {
+      return next(error);
     }
-    console.log(value)
+    console.log(value);
     const latestClock = await prisma.clock.findFirst({
       orderBy: {
         id: "desc",
       },
       take: 1,
-      where: { userId: req.user.id , clockInTime : {gte : value.today.toISOString()} },
+      where: {
+        userId: req.user.id,
+        clockInTime: { gte: value.today.toISOString() },
+      },
     });
     res.json(latestClock);
   } catch (error) {
@@ -98,23 +101,21 @@ exports.latestClock = async (req, res, next) => {
 };
 exports.getClock = async (req, res, next) => {
   try {
-    console.log(req.query)
     const { value, error } = dateFilterSchema.validate(req.query);
     if (error) {
       return next(error);
     }
-    let clockInFilter = {}
-    if(value.dateStart){
-      console.log('first')
-      clockInFilter.gte = value.dateStart.toISOString()
+    let clockInFilter = {};
+    if (value.dateStart) {
+      clockInFilter.gte = value.dateStart.toISOString();
     }
-    if(value.dateEnd){
-      clockInFilter.lte = value.dateEnd.toISOString()
+    if (value.dateEnd) {
+      clockInFilter.lte = value.dateEnd.toISOString();
     }
     const allClock = await prisma.clock.findMany({
-      where: { userId: +req.user.id, clockInTime: clockInFilter }
+      where: { userId: +req.user.id, clockInTime: clockInFilter },
     });
-    res.status(200).json( allClock );
+    res.status(200).json(allClock);
   } catch (error) {
     next(error);
   }
@@ -126,6 +127,49 @@ exports.companyProfile = async (req, res, next) => {
       where: { companyProfileId: req.user.companyProfileId },
     });
     res.status(200).json(companyLocation);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.allStatus = async (req, res, next) => {
+  try {
+    const status = await prisma.clock.findMany({
+      select: {
+        statusClockIn: true,
+      },
+      where: {
+        user: { companyProfileId: req.user.companyProfileId },
+      },
+    });
+
+    let countLate = 0;
+    let countOntime = 0;
+
+    // Count the number of occurrences for each status
+    for (let i = 0; i < status.length; i++) {
+      if (status[i].statusClockIn === "LATE") {
+        countLate++;
+      } else {
+        countOntime++;
+      }
+    }
+
+    // Calculate total count
+    const totalCount = countLate + countOntime;
+
+    // Calculate percentages
+    const percentageLate = Math.round((countLate / totalCount) * 100);
+    const percentageOntime = Math.round((countOntime / totalCount) * 100);
+
+    console.log("countLate", countLate);
+    console.log("countOntime", countOntime);
+    console.log("percentageLate", percentageLate);
+    console.log("percentageOntime", percentageOntime);
+
+    res
+      .status(200)
+      .json({ countLate, countOntime, percentageLate, percentageOntime });
   } catch (error) {
     next(error);
   }
