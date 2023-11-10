@@ -48,6 +48,12 @@ exports.getRequestLeaveById = async (req, res, next) => {
       include: {
         userLeave: {
           select: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
             dateAmount: true,
             leaveProfile: {
               select: {
@@ -138,7 +144,7 @@ exports.updateRequestLeave = async (req, res, next) => {
       },
     });
 
-    if (!foundTimeProfile) {
+    if (!foundTimeProfile.length) {
       return next(
         createError("TimeProfile not found. Please contact your admin ", 400)
       );
