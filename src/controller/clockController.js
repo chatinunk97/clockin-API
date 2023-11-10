@@ -176,3 +176,18 @@ exports.allStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.statusClockIn = async (req, res, next) => {
+  try {
+    const lateClockInsCount = await prisma.clock.count({
+      where: {
+        user: { companyProfileId: req.user.companyProfileId },
+        statusClockIn: "LATE",
+      },
+    });
+
+    res.status(200).json({ lateClockInsCount });
+  } catch (error) {
+    next(error);
+  }
+};

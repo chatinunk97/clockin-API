@@ -23,5 +23,10 @@ router.get(
   clockController.latestClock
 );
 router.get("/getAllStatus", authenticatedMiddleware, clockController.allStatus);
+router.get(
+  "/statusClockIn",
+  authenticatedMiddleware,
+  clockController.statusClockIn
+);
 
 module.exports = router;
