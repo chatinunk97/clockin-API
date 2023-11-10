@@ -100,7 +100,6 @@ exports.getAllRequestLeaves = async (req, res, next) => {
 
 exports.updateRequestLeave = async (req, res, next) => {
   try {
-    console.log(req.body);
     const { value, error } = updateRequestSchema.validate(req.body);
 
     if (error) {
@@ -113,6 +112,9 @@ exports.updateRequestLeave = async (req, res, next) => {
 
     if (!found) {
       return next(createError("Request leave not found", 400));
+    }
+    if (found.statusRequest === "ACCEPT") {
+      return next(createError("Request is already accepted", 400));
     }
 
     const foundTimeProfile = await prisma.timeProfile.findMany({
@@ -155,7 +157,7 @@ exports.updateRequestLeave = async (req, res, next) => {
         (item) => item.typeTime === "SECONDHALF"
       );
       dateAmount = 0.5;
-      const newFlexibleTime = await prisma.flexibleTime.create({
+      await prisma.flexibleTime.create({
         data: {
           userId: +requestLeave.userLeave.userId,
           date: requestLeave.startDate,
@@ -169,16 +171,14 @@ exports.updateRequestLeave = async (req, res, next) => {
       const timeProfile = foundTimeProfile.filter(
         (item) => item.typeTime === "FIRSTHALF"
       );
-      console.log(timeProfile, "******************************");
       dateAmount = 0.5;
-      const newFlexibleTime = await prisma.flexibleTime.create({
+      await prisma.flexibleTime.create({
         data: {
           userId: +requestLeave.userLeave.userId,
           date: requestLeave.startDate,
           timeProfileId: timeProfile[0].id,
         },
       });
-      console.log(dateAmount, "++++++++++++++++++++++++++++++++++");
     }
 
     requestLeave.userLeave = await prisma.userLeave.update({
