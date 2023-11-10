@@ -48,6 +48,12 @@ exports.getRequestLeaveById = async (req, res, next) => {
       include: {
         userLeave: {
           select: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
             dateAmount: true,
             leaveProfile: {
               select: {
