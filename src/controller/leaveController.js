@@ -137,13 +137,14 @@ exports.updateRequestLeave = async (req, res, next) => {
       },
     });
 
-    let dateAmount;
+    let dateAmount = 0;
     if (
       requestLeave.statusRequest === "ACCEPT" &&
       requestLeave.leaveType === "FULLDAY"
     ) {
-      const startDate = new Date(requestLeave.startDate);
-      const endDate = new Date(requestLeave.endDate);
+      const startDate = new Date(requestLeave.startDate.split("T")[0]);
+      const endDate = new Date(requestLeave.endDate.split("T")[0]);
+      console.log(startDate, endDate);
 
       dateAmount = parseInt((endDate - startDate + 1) / (1000 * 60 * 60 * 24));
     } else if (
@@ -168,7 +169,7 @@ exports.updateRequestLeave = async (req, res, next) => {
       const timeProfile = foundTimeProfile.filter(
         (item) => item.typeTime === "FIRSTHALF"
       );
-      console.log(timeProfile);
+      console.log(timeProfile, "******************************");
       dateAmount = 0.5;
       const newFlexibleTime = await prisma.flexibleTime.create({
         data: {
@@ -177,9 +178,10 @@ exports.updateRequestLeave = async (req, res, next) => {
           timeProfileId: timeProfile[0].id,
         },
       });
+      console.log(dateAmount, "++++++++++++++++++++++++++++++++++");
     }
 
-    await prisma.userLeave.update({
+    requestLeave.userLeave = await prisma.userLeave.update({
       where: { id: requestLeave.userLeaveId },
       data: {
         dateAmount: {
