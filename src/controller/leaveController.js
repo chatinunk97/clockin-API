@@ -137,7 +137,7 @@ exports.updateRequestLeave = async (req, res, next) => {
       },
     });
 
-    let dateAmount;
+    let dateAmount = 0;
     if (
       requestLeave.statusRequest === "ACCEPT" &&
       requestLeave.leaveType === "FULLDAY"
