@@ -16,6 +16,7 @@ router.get(
   authenticatedMiddleware,
   clockController.companyProfile
 );
+router.get("/", authenticatedMiddleware, clockController.getClock);
 router.get(
   "/latestClock",
   authenticatedMiddleware,

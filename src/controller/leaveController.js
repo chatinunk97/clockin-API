@@ -21,7 +21,7 @@ exports.createRequestLeave = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-
+    console.log(value)
     const requestLeave = await prisma.requestLeave.create({
       data: value,
     });
@@ -288,6 +288,12 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
       where: {
         userId: +req.user.id,
       },
+      include : {
+        leaveProfile : {select  : {
+          leaveName : true
+        }
+        }
+      }
     });
     res.status(200).json({ userLeave });
   } catch (error) {
