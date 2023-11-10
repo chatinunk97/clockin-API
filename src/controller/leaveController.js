@@ -123,7 +123,7 @@ exports.updateRequestLeave = async (req, res, next) => {
       },
     });
 
-    if (!foundTimeProfile) {
+    if (!foundTimeProfile.length) {
       return next(
         createError("TimeProfile not found. Please contact your admin ", 400)
       );
