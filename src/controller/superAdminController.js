@@ -80,6 +80,7 @@ exports.registerCompany = async (req, res, next) => {
         payment: {
           create: {
             paySlip: value.paySlip,
+            packageId: value.packageId,
           },
         },
         user: {

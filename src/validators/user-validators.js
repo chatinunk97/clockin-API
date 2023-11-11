@@ -94,6 +94,10 @@ const resetPasswordSchema = Joi.object({
     .strip(),
 });
 
+const paymentSchema = Joi.object({
+  packageId: Joi.number().integer().positive().required(),
+});
+
 module.exports = {
   loginSchema,
   createUserSchemaByAdmin,
@@ -102,4 +106,5 @@ module.exports = {
   updateUserSchemaByHR,
   deleteUserSchema,
   resetPasswordSchema,
+  paymentSchema,
 };
