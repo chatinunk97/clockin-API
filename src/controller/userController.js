@@ -180,9 +180,22 @@ exports.login = async (req, res, next) => {
       where: {
         email: value.email,
       },
+      include: {
+        companyProfile: {
+          select: { isActive: true },
+        },
+      },
     });
     if (!user) {
       return next(createError("Invalid credentials", 400));
+    }
+    if (!user.companyProfile.isActive) {
+      return next(
+        createError(
+          "Your company account is not Active, please contact your admin",
+          403
+        )
+      );
     }
     const isMatch = await bcrypt.compare(value.password, user.password);
     if (!isMatch) {
