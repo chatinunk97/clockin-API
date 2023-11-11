@@ -11,6 +11,7 @@ const {
   deleteUserSchema,
   resetPasswordSchema,
   loginSchema,
+  paymentSchema,
 } = require("../validators/user-validators");
 const createError = require("../utils/create-error");
 const { upload } = require("../utils/cloudinary");
@@ -179,9 +180,22 @@ exports.login = async (req, res, next) => {
       where: {
         email: value.email,
       },
+      include: {
+        companyProfile: {
+          select: { isActive: true },
+        },
+      },
     });
     if (!user) {
       return next(createError("Invalid credentials", 400));
+    }
+    if (!user.companyProfile.isActive) {
+      return next(
+        createError(
+          "Your company account is not Active, please contact your admin",
+          403
+        )
+      );
     }
     const isMatch = await bcrypt.compare(value.password, user.password);
     if (!isMatch) {
@@ -397,6 +411,51 @@ exports.getPosition = async (req, res, next) => {
     });
 
     res.status(200).json({ userTypeTotals, totalUserCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.payment = async (req, res, next) => {
+  try {
+    if (req.user.position !== "ADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    const data = JSON.parse(req.body.data);
+
+    const { value, error } = paymentSchema.validate(data);
+
+    if (error) {
+      return next(error);
+    }
+
+    if (!req.file) {
+      return next(createError("Pay slip is required", 400));
+    }
+
+    const url = await upload(req.file.path);
+    value.paySlip = url;
+
+    const company = await prisma.companyProfile.update({
+      where: {
+        id: req.user.companyProfileId,
+      },
+      data: {
+        packageId: value.packageId,
+        payment: {
+          create: {
+            paySlip: value.paySlip,
+            packageId: value.packageId,
+          },
+        },
+      },
+      include: {
+        payment: true,
+        package: true,
+      },
+    });
+
+    res.status(201).json({ company });
   } catch (error) {
     next(error);
   }
