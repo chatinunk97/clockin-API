@@ -7,6 +7,7 @@ const {
   registerCompanySchema,
 } = require("../validators/superAdmin-validators");
 const { upload } = require("../utils/cloudinary");
+const { updatePaymentSchema } = require("../validators/user-validators");
 
 exports.createPackage = async (req, res, next) => {
   try {
@@ -42,7 +43,6 @@ exports.getallPackage = async (req, res, next) => {
 exports.registerCompany = async (req, res, next) => {
   try {
     const data = JSON.parse(req.body.data);
-    console.log(data);
     const foundUser = await prisma.user.findFirst({
       where: {
         OR: [{ email: data.email }, { mobile: data.mobile }],
@@ -131,5 +131,80 @@ exports.registerCompany = async (req, res, next) => {
     if (req.file) {
       fs.unlink(req.file.path);
     }
+  }
+};
+
+exports.getAllCompanyProfile = async (req, res, next) => {
+  try {
+    if (req.user.position !== "SUPERADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    const companyProfiles = await prisma.companyProfile.findMany();
+    res.status(200).json({ companyProfiles });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllPayment = async (req, res, next) => {
+  try {
+    if (req.user.position !== "SUPERADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    const payments = await prisma.payment.findMany({
+      where: {
+        companyProfileId: req.body.companyProfileId,
+      },
+    });
+
+    res.status(201).json({ payments });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updatePayment = async (req, res, next) => {
+  try {
+    if (req.user.position !== "SUPERADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+
+    const { value, error } = updatePaymentSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    const foundPayment = await prisma.payment.findFirst({
+      where: {
+        id: req.body.id,
+      },
+    });
+    if (!foundPayment) {
+      return next(createError("Not found", 400));
+    }
+    if (foundPayment.statusPayment === "ACCEPT") {
+      return next(createError("This payment is already accepted"));
+    }
+
+    const payment = await prisma.payment.update({
+      where: {
+        id: req.body.id,
+      },
+      data: value,
+    });
+
+    if (payment.statusPayment === "ACCEPT") {
+      await prisma.companyProfile.update({
+        where: {
+          id: payment.companyProfileId,
+        },
+        data: {
+          isActive: true,
+        },
+      });
+    }
+
+    res.status(200).json({ payment });
+  } catch (error) {
+    next(error);
   }
 };

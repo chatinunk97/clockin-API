@@ -22,6 +22,23 @@ router.post(
   uploadMiddleware.single("paySlip"),
   superAdminController.registerCompany
 );
+router.patch(
+  "/payment",
+  authenticatedMiddleware,
+  superAdminController.updatePayment
+);
+
+router.get(
+  "/getAllCompanyProfile",
+  authenticatedMiddleware,
+  superAdminController.getAllCompanyProfile
+);
+
+router.get(
+  "/payment",
+  authenticatedMiddleware,
+  superAdminController.getAllPayment
+);
 
 //________________________Routes for admin operations________________________
 router.post(
