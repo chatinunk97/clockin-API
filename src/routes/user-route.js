@@ -58,4 +58,11 @@ router.get("/me", authenticatedMiddleware, userController.getMe);
 
 router.get("/getPosition", authenticatedMiddleware, userController.getPosition);
 
+router.post(
+  "/payment",
+  authenticatedMiddleware,
+  uploadMiddleware.single("paySlip"),
+  userController.payment
+);
+
 module.exports = router;

@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 async function main() {
   const package = await prisma.package.create({
@@ -11,7 +11,7 @@ async function main() {
   });
   const company = await prisma.companyProfile.create({
     data: {
-      companyName: 'Clockin',
+      companyName: "Clockin",
       packageId: package.id,
       companyLocations: {
         create: {
@@ -21,18 +21,19 @@ async function main() {
       },
       payment: {
         create: {
-          paySlip: 'paySlip',
+          paySlip: "paySlip",
+          packageId: package.id,
         },
       },
       user: {
         create: {
-          employeeId: '1',
-          firstName: 'Bob',
-          lastName: 'Bab',
-          email: 'Bob@email.com',
-          mobile: '0999999999',
-          password: await bcrypt.hash('superAdmin', 10),
-          position: 'SUPERADMIN',
+          employeeId: "1",
+          firstName: "Bob",
+          lastName: "Bab",
+          email: "Bob@email.com",
+          mobile: "0999999999",
+          password: await bcrypt.hash("superAdmin", 10),
+          position: "SUPERADMIN",
         },
       },
     },
