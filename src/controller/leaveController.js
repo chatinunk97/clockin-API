@@ -348,7 +348,7 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
 // ########## leave profile ##########
 exports.createLeaveProfile = async (req, res, next) => {
   try {
-    if (req.user.position !== "ADMIN") {
+    if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
 
@@ -371,7 +371,7 @@ exports.createLeaveProfile = async (req, res, next) => {
 
 exports.getAllLeaveProfile = async (req, res, next) => {
   try {
-    if (req.user.position !== "ADMIN") {
+    if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
     const allLeaveProfile = await prisma.leaveProfile.findMany({
@@ -389,7 +389,7 @@ exports.getAllLeaveProfile = async (req, res, next) => {
 
 exports.deleteLeaveProfile = async (req, res, next) => {
   try {
-    if (req.user.position !== "ADMIN") {
+    if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
     // Validate request parameters
@@ -425,7 +425,7 @@ exports.deleteLeaveProfile = async (req, res, next) => {
 
 exports.updateLeaveProfile = async (req, res, next) => {
   try {
-    if (req.user.position !== "ADMIN") {
+    if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
 
@@ -434,7 +434,7 @@ exports.updateLeaveProfile = async (req, res, next) => {
     if (error) {
       return next(createError(error.details[0].message, 400));
     }
-
+    console.log(value, "sfdkjghfldskjhglkdfasjkghsldfkj");
     const updateLeaveProfile = await prisma.leaveProfile.update({
       where: {
         id: value.id, // Assuming the URL parameter is named timeProfileId
