@@ -419,11 +419,9 @@ exports.payment = async (req, res, next) => {
     if (!req.file) {
       return next(createError("Pay slip is required", 400));
     }
-    console.log(req.file);
+
     const url = await upload(req.file.path);
     value.paySlip = url;
-
-    console.log(value);
 
     const company = await prisma.companyProfile.update({
       where: {
@@ -434,6 +432,7 @@ exports.payment = async (req, res, next) => {
         payment: {
           create: {
             paySlip: value.paySlip,
+            packageId: value.packageId,
           },
         },
       },

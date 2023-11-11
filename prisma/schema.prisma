@@ -61,6 +61,7 @@ model Package {
   price          Decimal          @db.Decimal(10, 2)
   userCount      Int
   companyProfile CompanyProfile[]
+  payment        Payment[]
 }
 
 model CompanyProfile {
@@ -68,7 +69,6 @@ model CompanyProfile {
   companyName      String
   packageId        Int
   package          Package           @relation(fields: [packageId], references: [id])
-  paymentId        Int
   isActive         Boolean           @default(true)
   user             User[]
   payment          Payment[]
@@ -89,6 +89,8 @@ model Payment {
   id               Int            @id @default(autoincrement())
   companyProfileId Int
   companyProfile   CompanyProfile @relation(fields: [companyProfileId], references: [id])
+  packageId        Int
+  package          Package        @relation(fields: [packageId], references: [id])
   paySlip          String
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now())

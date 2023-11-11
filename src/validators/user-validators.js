@@ -96,7 +96,6 @@ const resetPasswordSchema = Joi.object({
 
 const paymentSchema = Joi.object({
   packageId: Joi.number().integer().positive().required(),
-  paymentId: Joi.number().integer().positive().required(),
 });
 
 module.exports = {
