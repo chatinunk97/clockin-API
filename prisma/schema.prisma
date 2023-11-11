@@ -68,6 +68,7 @@ model CompanyProfile {
   companyName      String
   packageId        Int
   package          Package           @relation(fields: [packageId], references: [id])
+  paymentId        Int
   isActive         Boolean           @default(true)
   user             User[]
   payment          Payment[]
