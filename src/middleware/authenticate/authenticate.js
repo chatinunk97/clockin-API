@@ -16,9 +16,16 @@ module.exports = async (req, res, next) => {
 
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
+      include: {
+        companyProfile: {
+          select: { isActive: true },
+        },
+      },
     });
     if (!user) return next(createError("Unauthenticated", 401));
-
+    if(!user.companyProfile.isActive){
+      return next(createError("Your company account is not Active, please contact your admin",401))
+    }
     delete user.password;
     req.user = user;
     next();
