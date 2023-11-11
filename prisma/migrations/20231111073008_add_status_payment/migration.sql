@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `payment` ADD COLUMN `statusPayment` ENUM('PENDING', 'ACCEPT', 'REJECT') NOT NULL DEFAULT 'PENDING';

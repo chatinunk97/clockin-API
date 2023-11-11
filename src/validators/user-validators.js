@@ -98,6 +98,12 @@ const paymentSchema = Joi.object({
   packageId: Joi.number().integer().positive().required(),
 });
 
+const updatePaymentSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
+  packageId: Joi.number().integer().positive().required(),
+  statusPayment: Joi.string().trim().valid("ACCEPT", "REJECT"),
+});
+
 module.exports = {
   loginSchema,
   createUserSchemaByAdmin,
@@ -107,4 +113,5 @@ module.exports = {
   deleteUserSchema,
   resetPasswordSchema,
   paymentSchema,
+  updatePaymentSchema,
 };

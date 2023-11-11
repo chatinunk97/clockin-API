@@ -94,6 +94,13 @@ model Payment {
   paySlip          String
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @default(now())
+  statusPayment    StatusPayment  @default(PENDING)
+}
+
+enum StatusPayment {
+  PENDING
+  ACCEPT
+  REJECT
 }
 
 model LeaveProfile {
@@ -106,17 +113,17 @@ model LeaveProfile {
 }
 
 model RequestLeave {
-  id            Int          @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   userLeaveId   Int
-  userLeave     UserLeave    @relation(fields: [userLeaveId], references: [id])
+  userLeave     UserLeave     @relation(fields: [userLeaveId], references: [id])
   startDate     String
   endDate       String
   leaveType     LeaveType
-  statusRequest StateRequest @default(PENDING)
+  statusRequest StatusRequest @default(PENDING)
   messageLeave  String
 }
 
-enum StateRequest {
+enum StatusRequest {
   PENDING
   ACCEPT
   REJECT
