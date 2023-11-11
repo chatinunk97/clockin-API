@@ -101,14 +101,12 @@ exports.latestClock = async (req, res, next) => {
 };
 exports.getClock = async (req, res, next) => {
   try {
-    console.log(req.query);
     const { value, error } = dateFilterSchema.validate(req.query);
     if (error) {
       return next(error);
     }
     let clockInFilter = {};
     if (value.dateStart) {
-      console.log("first");
       clockInFilter.gte = value.dateStart.toISOString();
     }
     if (value.dateEnd) {
@@ -136,47 +134,32 @@ exports.companyProfile = async (req, res, next) => {
 
 exports.allStatus = async (req, res, next) => {
   try {
-    const status = await prisma.clock.findMany({
-      select: {
-        statusClockIn: true,
-      },
+    const statusCounts = await prisma.clock.groupBy({
+      by: ["statusClockIn"],
       where: {
         user: { companyProfileId: req.user.companyProfileId },
       },
+      _count: true,
     });
 
-    let countLate = 0;
-    let countOntime = 0;
+    const requestLeaveCounts = await prisma.requestLeave.groupBy({
+      by: ["statusRequest"],
+      where: {
+        userLeave: {
+          user: { companyProfileId: req.user.companyProfileId },
+        },
+      },
+      _count: true,
+    });
 
-    // Count the number of occurrences for each status
-    for (let i = 0; i < status.length; i++) {
-      if (status[i].statusClockIn === "LATE") {
-        countLate++;
-      } else {
-        countOntime++;
-      }
-    }
-
-    // Calculate total count
-    const totalCount = countLate + countOntime;
-
-    // Calculate percentages
-    const percentageLate = Math.round((countLate / totalCount) * 100);
-    const percentageOntime = Math.round((countOntime / totalCount) * 100);
-
-    console.log("countLate", countLate);
-    console.log("countOntime", countOntime);
-    console.log("percentageLate", percentageLate);
-    console.log("percentageOntime", percentageOntime);
-
-    res
-      .status(200)
-      .json({ countLate, countOntime, percentageLate, percentageOntime });
+    res.status(200).json({
+      statusCounts,
+      requestLeaveCounts,
+    });
   } catch (error) {
     next(error);
   }
 };
-
 exports.statusClockIn = async (req, res, next) => {
   try {
     const lateClockInsCount = await prisma.clock.count({
