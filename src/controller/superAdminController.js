@@ -139,7 +139,16 @@ exports.getAllCompanyProfile = async (req, res, next) => {
     if (req.user.position !== "SUPERADMIN") {
       return next(createError("You do not have permission to access", 403));
     }
-    const companyProfiles = await prisma.companyProfile.findMany();
+    const companyProfiles = await prisma.companyProfile.findMany({
+      include: {
+        package: { select: { userCount: true } },
+        payment: {
+          where: {
+            statusPayment: "PENDING",
+          },
+        },
+      },
+    });
     res.status(200).json({ companyProfiles });
   } catch (error) {
     next(error);

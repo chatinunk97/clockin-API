@@ -105,6 +105,7 @@ exports.getClock = async (req, res, next) => {
     if (error) {
       return next(error);
     }
+    console.log(value);
     let clockInFilter = {};
     if (value.dateStart) {
       clockInFilter.gte = value.dateStart.toISOString();
@@ -113,9 +114,17 @@ exports.getClock = async (req, res, next) => {
       clockInFilter.lte = value.dateEnd.toISOString();
     }
     const allClock = await prisma.clock.findMany({
-      where: { userId: +req.user.id, clockInTime: clockInFilter },
+      where: {
+        userId: req.user.id,
+      },
     });
-    res.status(200).json(allClock);
+    const filterClock = allClock.filter((el) => {
+      if (new Date(el.clockInTime) > new Date(value.dateStart)) {
+        return el;
+      }
+    });
+    console.log(filterClock);
+    res.status(200).json(filterClock);
   } catch (error) {
     next(error);
   }
