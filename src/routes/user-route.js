@@ -29,6 +29,12 @@ router.patch(
 );
 
 router.get(
+  "/getAllCompanyProfile/:id",
+  authenticatedMiddleware,
+  superAdminController.getCompanyById
+);
+
+router.get(
   "/getAllCompanyProfile",
   authenticatedMiddleware,
   superAdminController.getAllCompanyProfile

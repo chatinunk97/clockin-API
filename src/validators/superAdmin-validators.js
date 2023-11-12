@@ -18,4 +18,9 @@ const registerCompanySchema = Joi.object({
     .pattern(/^[0-9]{10}$/)
     .required(),
 });
+const idValidator = Joi.object({
+  id : Joi.number().required()
+})
 exports.registerCompanySchema = registerCompanySchema;
+exports.idValidator = idValidator;
+
