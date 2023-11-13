@@ -13,20 +13,35 @@ exports.clockIn = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-
-    //Get default time
-    const result = await prisma.timeProfile.findFirst({
-      where: {
-        AND: [
-          { companyProfileId: req.user.companyProfileId },
-          { typeTime: "DEFAULT" },
-        ],
+    console.log(value.today);
+    //Search For Flexible time
+    const flexibleTime = await prisma.flexibleTime.findFirst({
+      where: { AND: [{ userId: req.user.id }] },
+      include: {
+        timeProfile: {
+          select: {
+            start: true,
+          },
+        },
       },
     });
+    console.log("/sssss", flexibleTime);
+    let start = "";
+    if (!flexibleTime) {
+      //Get default time
+      const result = await prisma.timeProfile.findFirst({
+        where: {
+          AND: [
+            { companyProfileId: req.user.companyProfileId },
+            { typeTime: "DEFAULT" },
+          ],
+        },
+      });
+      start = result.start;
+    }
+    start = flexibleTime.timeProfile.start;
     //Compare Time and check today clockin (you can only be late once a day)
-    const startTime = new Date(
-      value.clockInTime.split("T")[0] + " " + result?.start
-    );
+    const startTime = new Date(value.clockInTime.split("T")[0] + " " + start);
     const clockInTime = new Date(value.clockInTime);
 
     //Check for today previous clock in if true don't check late
@@ -42,6 +57,7 @@ exports.clockIn = async (req, res, next) => {
     }
 
     value.user = { connect: { id: req.user.id } };
+    delete value.today;
     const clockIn = await prisma.clock.create({
       data: value,
     });
@@ -50,7 +66,21 @@ exports.clockIn = async (req, res, next) => {
     next(error);
   }
 };
-
+exports.clockReason = async (req, res, next) => {
+  try {
+    const updatedClock = await prisma.clock.update({
+      data: {
+        reasonLate: req.body.reason,
+      },
+      where: {
+        id: +req.body.clockId,
+      },
+    });
+    res.json(updatedClock);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.clockOut = async (req, res, next) => {
   try {
     const { value, error } = clockOutSchema.validate(req.body);
@@ -83,7 +113,6 @@ exports.latestClock = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    console.log(value);
     const latestClock = await prisma.clock.findFirst({
       orderBy: {
         id: "desc",
@@ -113,9 +142,16 @@ exports.getClock = async (req, res, next) => {
       clockInFilter.lte = value.dateEnd.toISOString();
     }
     const allClock = await prisma.clock.findMany({
-      where: { userId: +req.user.id, clockInTime: clockInFilter },
+      where: {
+        userId: req.user.id,
+      },
     });
-    res.status(200).json(allClock);
+    const filterClock = allClock.filter((el) => {
+      if (new Date(el.clockInTime) > new Date(value.dateStart)) {
+        return el;
+      }
+    });
+    res.status(200).json(filterClock);
   } catch (error) {
     next(error);
   }

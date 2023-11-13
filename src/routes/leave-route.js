@@ -84,7 +84,7 @@ router.delete(
 );
 
 router.patch(
-  "/updateLeaveProfile",
+  "/updateLeaveProfile/:id",
   authenticatedMiddleware,
   leaveController.updateLeaveProfile
 );

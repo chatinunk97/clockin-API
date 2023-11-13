@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.post("/clockIn", authenticatedMiddleware, clockController.clockIn);
 router.patch("/clockOut", authenticatedMiddleware, clockController.clockOut);
+router.patch("/clockReason", authenticatedMiddleware, clockController.clockReason);
 router.get(
   "/location",
   authenticatedMiddleware,

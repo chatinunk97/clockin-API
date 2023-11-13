@@ -17,6 +17,7 @@ const timeProfileSchema = Joi.object({
 
 const updateTimeProfileSchema = Joi.object({
   // companyProfileId: Joi.number().integer().positive(),
+  id: Joi.number().integer().positive().required(),
   start: Joi.string()
     .regex(/^([0-9]{2})\:([0-9]{2})$/)
     .required(),

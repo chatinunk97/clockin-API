@@ -5,6 +5,7 @@ const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
 const {
   registerCompanySchema,
+  idValidator,
 } = require("../validators/superAdmin-validators");
 const { upload } = require("../utils/cloudinary");
 const { updatePaymentSchema } = require("../validators/user-validators");
@@ -161,7 +162,43 @@ exports.getAllCompanyProfile = async (req, res, next) => {
     if (req.user.position !== "SUPERADMIN") {
       return next(createError("You do not have permission to access", 403));
     }
-    const companyProfiles = await prisma.companyProfile.findMany();
+    const companyProfiles = await prisma.companyProfile.findMany({
+      include: {
+        package: { select: { userCount: true } },
+        payment: {
+          where: {
+            statusPayment: "PENDING",
+          },
+        },
+      },
+    });
+    res.status(200).json({ companyProfiles });
+  } catch (error) {
+    next(error);
+  }
+};
+exports.getCompanyById = async (req, res, next) => {
+  try {
+    if (req.user.position !== "SUPERADMIN") {
+      return next(createError("You do not have permission to access", 403));
+    }
+    const { value, error } = idValidator.validate(req.params);
+    if (error) {
+      return next(error);
+    }
+    const companyProfiles = await prisma.companyProfile.findFirst({
+      where: {
+        id: value.id,
+      },
+      include: {
+        package: { select: { userCount: true } },
+        payment: {
+          where: {
+            statusPayment: "PENDING",
+          },
+        },
+      },
+    });
     res.status(200).json({ companyProfiles });
   } catch (error) {
     next(error);
