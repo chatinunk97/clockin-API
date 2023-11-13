@@ -112,12 +112,34 @@ exports.registerCompany = async (req, res, next) => {
             ],
           },
         },
+        timeProfile: {
+          createMany: {
+            data: [
+              {
+                start: "09:00",
+                end: "17:00",
+                typeTime: "DEFAULT",
+              },
+              {
+                start: "09:00",
+                end: "12:00",
+                typeTime: "FIRSTHALF",
+              },
+              {
+                start: "13:00",
+                end: "17:00",
+                typeTime: "SECONDHALF",
+              },
+            ],
+          },
+        },
       },
       include: {
         companyLocations: true,
         payment: true,
         leaveProfile: true,
         user: true,
+        timeProfile: true,
       },
     });
 
