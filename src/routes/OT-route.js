@@ -16,5 +16,10 @@ router.patch(
   OTController.updateRequestOT
 );
 router.get("/requestOT", authenticatedMiddleware, OTController.getAllRequestOT);
+router.get(
+  "/myRequestOT",
+  authenticatedMiddleware,
+  OTController.getAllMyRequestOT
+);
 
 module.exports = router;
