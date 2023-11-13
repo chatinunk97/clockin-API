@@ -68,7 +68,6 @@ exports.getAllRequestOT = async (req, res, next) => {
 
 exports.getAllMyRequestOT = async (req, res, next) => {
   try {
-    console.log("first");
     const OT = await prisma.requestOT.findMany({
       where: { userId: req.user.id },
       include: {

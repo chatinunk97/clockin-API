@@ -25,21 +25,28 @@ exports.clockIn = async (req, res, next) => {
         },
       },
     });
-    console.log("/sssss", flexibleTime);
-    let start = "";
-    if (!flexibleTime) {
-      //Get default time
-      const result = await prisma.timeProfile.findFirst({
-        where: {
-          AND: [
-            { companyProfileId: req.user.companyProfileId },
-            { typeTime: "DEFAULT" },
-          ],
-        },
-      });
+    const result = await prisma.timeProfile.findFirst({
+      where: {
+        AND: [
+          { companyProfileId: req.user.companyProfileId },
+          { typeTime: "DEFAULT" },
+        ],
+      },
+    });
+    if (result) {
       start = result.start;
+    } else {
+      return next(
+        createError(
+          "Your company time profile has not yet been set. Please contact your Admin",
+          400
+        )
+      );
     }
-    start = flexibleTime.timeProfile.start;
+    if (flexibleTime) {
+      start = flexibleTime.timeProfile.start;
+    }
+
     //Compare Time and check today clockin (you can only be late once a day)
     const startTime = new Date(value.clockInTime.split("T")[0] + " " + start);
     const clockInTime = new Date(value.clockInTime);
@@ -146,11 +153,13 @@ exports.getClock = async (req, res, next) => {
         userId: req.user.id,
       },
     });
+
     const filterClock = allClock.filter((el) => {
       if (new Date(el.clockInTime) > new Date(value.dateStart)) {
         return el;
       }
     });
+    console.log(filterClock)
     res.status(200).json(filterClock);
   } catch (error) {
     next(error);
