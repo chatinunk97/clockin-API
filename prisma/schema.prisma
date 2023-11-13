@@ -157,12 +157,14 @@ model Clock {
   longitudeClockOut Float?
   statusClockIn     statusClockIn @default(ONTIME)
   reasonLate        String?
+  reasonLocation    String?
   requestOT         requestOT[]
 }
 
 enum statusClockIn {
   ONTIME
   LATE
+  NOLOCATION
 }
 
 model FlexibleTime {

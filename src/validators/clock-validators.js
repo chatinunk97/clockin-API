@@ -1,9 +1,10 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const clockInSchema = Joi.object({
   clockInTime: Joi.string().required(),
   latitudeClockIn: Joi.number().required(),
   longitudeClockIn: Joi.number().required(),
+  today: Joi.string().required(),
 });
 exports.clockInSchema = clockInSchema;
 
@@ -15,13 +16,12 @@ const clockOutSchema = Joi.object({
 exports.clockOutSchema = clockOutSchema;
 
 const dateFilterSchema = Joi.object({
-  dateStart : Joi.date().allow('',null),
-  dateEnd : Joi.date().allow('',null),
-})
-exports.dateFilterSchema = dateFilterSchema
-
+  dateStart: Joi.date().allow("", null),
+  dateEnd: Joi.date().allow("", null),
+});
+exports.dateFilterSchema = dateFilterSchema;
 
 const todayFilterSchema = Joi.object({
-  today : Joi.date().allow('',null),
-})
-exports.todayFilterSchema = todayFilterSchema
+  today: Joi.date().allow("", null),
+});
+exports.todayFilterSchema = todayFilterSchema;
