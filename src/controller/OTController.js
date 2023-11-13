@@ -1,5 +1,6 @@
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
+const { createOTSchema } = require("../validators/OT-validators");
 
 exports.requestOT = async (req, res, next) => {
   try {
@@ -12,11 +13,11 @@ exports.requestOT = async (req, res, next) => {
     if (!foundClock) {
       return next(createError("Not found", 400));
     }
+    req.body.userId = +req.user.id;
     const { value, error } = createOTSchema.validate(req.body);
     if (error) {
       return next(error);
     }
-    value.userId = req.user.id;
     const OT = await prisma.requestOT.create({
       data: value,
     });
@@ -60,6 +61,21 @@ exports.getAllRequestOT = async (req, res, next) => {
       },
     });
     res.status(200).json({ OT });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllMyRequestOT = async (req, res, next) => {
+  try {
+    console.log("first");
+    const OT = await prisma.requestOT.findMany({
+      where: { userId: req.user.id },
+      include: {
+        clock: true,
+      },
+    });
+    res.status(201).json({ OT });
   } catch (error) {
     next(error);
   }

@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const createrOTSchema = Joi.object({
+const createOTSchema = Joi.object({
   userId: Joi.number().integer().positive().required(),
   startTime: Joi.string().required(),
   endTime: Joi.string().required(),
@@ -18,6 +18,6 @@ const updateOTSchema = Joi.object({
 });
 
 module.exports = {
-  createrOTSchema,
+  createOTSchema,
   updateOTSchema,
 };
