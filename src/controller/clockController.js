@@ -13,10 +13,10 @@ exports.clockIn = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    console.log(value.today);
     //Search For Flexible time
+    console.log(value);
     const flexibleTime = await prisma.flexibleTime.findFirst({
-      where: { AND: [{ userId: req.user.id }] },
+      where: { AND: [{ userId: req.user.id }, { date: value.today }] },
       include: {
         timeProfile: {
           select: {
@@ -33,6 +33,8 @@ exports.clockIn = async (req, res, next) => {
         ],
       },
     });
+    console.log(result, "DEFAULT");
+    console.log(flexibleTime, "FLEXIBLE");
     if (result) {
       start = result.start;
     } else {
@@ -54,10 +56,18 @@ exports.clockIn = async (req, res, next) => {
     //Check for today previous clock in if true don't check late
     const todayClockIn = await prisma.clock.findFirst({
       where: {
-        clockInTime: { startsWith: `%${value.clockInTime.split("T")[0]}` },
+        clockInTime: {
+          gte: new Date(value.clockInTime.split("T")[0]).toISOString(),
+        },
+        id: req.user.id,
       },
     });
-
+    // `%${value.clockInTime.split("T")[0]}`
+    console.log(
+      new Date(value.clockInTime.split("T")[0]).toISOString(),
+      "zzzzz"
+    );
+    console.log(clockInTime, startTime);
     if (clockInTime > startTime && !todayClockIn) {
       console.log(`You're late !`);
       value.statusClockIn = "LATE";
@@ -90,6 +100,7 @@ exports.clockReason = async (req, res, next) => {
 };
 exports.clockOut = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { value, error } = clockOutSchema.validate(req.body);
     if (error) {
       return next(error);
@@ -104,6 +115,8 @@ exports.clockOut = async (req, res, next) => {
     if (!latestClock) {
       return next(createError("No previois clock in found", 400));
     }
+    value.reasonLocation =
+      "IN : " + value.reasonLocation + "OUT : " + latestClock.reasonLocation;
     await prisma.clock.update({
       where: { id: latestClock.id },
       data: value,
@@ -159,7 +172,6 @@ exports.getClock = async (req, res, next) => {
         return el;
       }
     });
-    console.log(filterClock);
     res.status(200).json(filterClock);
   } catch (error) {
     next(error);
