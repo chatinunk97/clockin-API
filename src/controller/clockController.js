@@ -141,26 +141,41 @@ exports.getClock = async (req, res, next) => {
     if (error) {
       return next(error);
     }
-    let clockInFilter = {};
-    if (value.dateStart) {
-      clockInFilter.gte = value.dateStart.toISOString();
-    }
-    if (value.dateEnd) {
-      clockInFilter.lte = value.dateEnd.toISOString();
-    }
+    console.log(value, "the value is fk here");
+    const filterDate = value.dateStart;
+    filterDate.setUTCHours(0);
+    filterDate.setUTCMinutes(0);
+    filterDate.setUTCSeconds(0);
+    filterDate.setUTCMilliseconds(0);
+
+    const filterEndDate = new Date(filterDate);
+    filterEndDate.setDate(filterEndDate.getDate() + 1);
+
     const allClock = await prisma.clock.findMany({
       where: {
         userId: req.user.id,
+        AND: [
+          {
+            clockInTime: {
+              gte: filterDate.toISOString(),
+            },
+          },
+          {
+            clockInTime: {
+              lte: filterEndDate.toISOString(),
+            },
+          },
+        ],
       },
     });
-
-    const filterClock = allClock.filter((el) => {
-      if (new Date(el.clockInTime) > new Date(value.dateStart)) {
-        return el;
-      }
+    allClock.map((el) => {
+      console.log(el.clockInTime);
     });
-    console.log(filterClock)
-    res.status(200).json(filterClock);
+    // const filterClock = allClock.filter((el) => {
+    //   console.log(new Date(el.clockInTime));
+    // });
+    // console.log(allClock, "====================================");
+    res.status(200).json(allClock);
   } catch (error) {
     next(error);
   }
