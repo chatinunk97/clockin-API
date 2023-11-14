@@ -159,7 +159,7 @@ exports.getClock = async (req, res, next) => {
         return el;
       }
     });
-    console.log(filterClock)
+    console.log(filterClock);
     res.status(200).json(filterClock);
   } catch (error) {
     next(error);
