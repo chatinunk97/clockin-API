@@ -23,6 +23,11 @@ router.get(
   authenticatedMiddleware,
   leaveController.getRequestLeaveByUserId
 );
+router.get(
+  "/getConfirmLeaveById",
+  authenticatedMiddleware,
+  leaveController.getConfirmLeaveById
+);
 router.post(
   "/createRequestLeave",
   authenticatedMiddleware,

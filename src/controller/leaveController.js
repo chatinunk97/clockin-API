@@ -448,3 +448,22 @@ exports.updateLeaveProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getConfirmLeaveById = async (req, res, next) => {
+  try {
+    console.log(req.query);
+    const leaveResult = await prisma.requestLeave.findMany({
+      where: {
+        statusRequest: "ACCEPT",
+        userLeave: { userId: +req.query.userId },
+        AND: [
+          { startDate: { lte: req.query.date } },
+          { endDate: { gte: req.query.date } },
+        ],
+      },
+    });
+    res.json({ leaveResult });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -5,6 +5,7 @@ const clockInSchema = Joi.object({
   latitudeClockIn: Joi.number().required(),
   longitudeClockIn: Joi.number().required(),
   today: Joi.string().required(),
+  reasonLocation: Joi.string().allow("", null),
 });
 exports.clockInSchema = clockInSchema;
 
@@ -12,6 +13,7 @@ const clockOutSchema = Joi.object({
   clockOutTime: Joi.string().required(),
   latitudeClockOut: Joi.number().required(),
   longitudeClockOut: Joi.number().required(),
+  reasonLocation: Joi.string(),
 });
 exports.clockOutSchema = clockOutSchema;
 
