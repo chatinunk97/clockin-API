@@ -341,6 +341,11 @@ exports.getAllUser = async (req, res, next) => {
         companyProfileId: true,
         userRelationshipBoss: true,
         userRelationshipUser: true,
+        companyProfile: {
+          select: {
+            companyName: true,
+          },
+        },
       },
       orderBy: {
         isActive: "desc",
@@ -354,8 +359,16 @@ exports.getAllUser = async (req, res, next) => {
 };
 
 exports.getMe = async (req, res, next) => {
+  console.log(req.user);
   try {
-    res.status(200).json({ user: req.user });
+    const user = req.user;
+    const company = await prisma.companyProfile.findFirst({
+      where: {
+        id: req.user.companyProfileId,
+      },
+    });
+    user.companyProfile = company;
+    res.status(200).json({ user });
   } catch (error) {
     next(error);
   }

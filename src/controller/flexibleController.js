@@ -62,6 +62,9 @@ exports.getFlexibleById = async (req, res, next) => {
       where: {
         id: +req.params.id,
       },
+      include: {
+        timeProfile: true,
+      },
     });
     if (!flexible) {
       throw createError("flexible time not found", 404);
