@@ -20,7 +20,17 @@ const { nanoid } = require("nanoid");
 exports.createUser = async (req, res, next) => {
   try {
     const data = JSON.parse(req.body.data);
-    delete data.no
+    if (!data.userBossId) {
+      console.log("############################ NO USER BOSS ID FOUND");
+      const adminId = await prisma.user.findFirst({
+        where: {
+          position: "ADMIN",
+          companyProfileId: req.user.companyProfileId,
+        },
+      });
+      data.userBossId = adminId.id;
+    }
+    delete data.no;
     const foundUser = await prisma.user.findFirst({
       where: {
         OR: [{ email: data.email }, { mobile: data.mobile }],
