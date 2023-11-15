@@ -17,7 +17,7 @@ const deleteLeaveProfile = Joi.object({
 const createUserLeaveSchema = Joi.object({
   userId: Joi.number().integer().positive().required(),
   leaveProfileId: Joi.number().integer().positive().required(),
-  dateAmount: Joi.number().integer().positive().required(),
+  dateAmount: Joi.number().integer().positive().required().allow(0),
 });
 const updateUserLeaveSchema = Joi.object({
   userId: Joi.number().integer().positive().required(),

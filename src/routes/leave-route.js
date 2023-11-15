@@ -68,6 +68,11 @@ router.get(
   authenticatedMiddleware,
   leaveController.getUserLeaveByUserId
 );
+router.get(
+  "/getUserLeaveById/:userLeaveId",
+  authenticatedMiddleware,
+  leaveController.getUserLeaveById
+);
 
 // leave profile
 router.post(
