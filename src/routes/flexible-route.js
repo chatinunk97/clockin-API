@@ -24,7 +24,7 @@ router.patch(
 router.get(
   "/getFlexible/:id",
   authenticatedMiddleware,
-  flexibleController.getFlexibleById
+  flexibleController.getFlexibleByUserId
 );
 
 router.delete(
