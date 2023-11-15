@@ -33,8 +33,6 @@ exports.clockIn = async (req, res, next) => {
         ],
       },
     });
-    console.log(result, "DEFAULT");
-    console.log(flexibleTime, "FLEXIBLE");
     if (result) {
       start = result.start;
     } else {
@@ -54,20 +52,21 @@ exports.clockIn = async (req, res, next) => {
     const clockInTime = new Date(value.clockInTime);
 
     //Check for today previous clock in if true don't check late
+    console.log(new Date(value.clockInTime.split("T")[0]).toISOString());
+    console.log(req.user.id);
     const todayClockIn = await prisma.clock.findFirst({
       where: {
-        clockInTime: {
-          gte: new Date(value.clockInTime.split("T")[0]).toISOString(),
-        },
-        id: req.user.id,
+        AND: [
+          {
+            clockInTime: {
+              gte: new Date(value.clockInTime.split("T")[0]).toISOString(),
+            },
+          },
+          { user: { id: req.user.id } },
+        ],
       },
     });
-    // `%${value.clockInTime.split("T")[0]}`
-    console.log(
-      new Date(value.clockInTime.split("T")[0]).toISOString(),
-      "zzzzz"
-    );
-    console.log(clockInTime, startTime);
+    console.log(todayClockIn);
     if (clockInTime > startTime && !todayClockIn) {
       console.log(`You're late !`);
       value.statusClockIn = "LATE";
