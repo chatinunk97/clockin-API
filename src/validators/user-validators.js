@@ -24,7 +24,7 @@ const createUserSchemaByAdmin = Joi.object({
 });
 
 const createUserSchemaByHR = Joi.object({
-  profileImage: Joi.string(),
+  profileImage: Joi.string().allow("", null),
   employeeId: Joi.string().required(),
   position: Joi.string().valid("MANAGER", "USER"),
   firstName: Joi.string().required(),

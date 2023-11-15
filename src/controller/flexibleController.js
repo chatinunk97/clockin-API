@@ -56,9 +56,9 @@ exports.updateFlexible = async (req, res, next) => {
   }
 };
 
-exports.getFlexibleById = async (req, res, next) => {
+exports.getFlexibleByUserId = async (req, res, next) => {
   try {
-    const flexible = await prisma.flexibleTime.findUnique({
+    const flexible = await prisma.flexibleTime.findMany({
       where: {
         id: +req.params.id,
       },

@@ -243,6 +243,7 @@ exports.createUserLeave = async (req, res, next) => {
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
+
     const { value, error } = createUserLeaveSchema.validate(req.body);
 
     if (error) {
@@ -254,6 +255,9 @@ exports.createUserLeave = async (req, res, next) => {
         dateAmount: value.dateAmount,
         user: { connect: { id: value.userId } },
         leaveProfile: { connect: { id: value.leaveProfileId } },
+      },
+      include: {
+        leaveProfile: true,
       },
     });
     res.status(200).json({ userLeave });
@@ -267,7 +271,10 @@ exports.updateUserLeave = async (req, res, next) => {
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
-
+    console.log(req.params);
+    console.log(req.body);
+    delete req.body.leaveName;
+    delete req.body.id;
     const { value, error } = updateUserLeaveSchema.validate(req.body);
 
     if (error) {
@@ -278,7 +285,7 @@ exports.updateUserLeave = async (req, res, next) => {
       data: {
         dateAmount: value.dateAmount,
         user: { connect: { id: value.userId } },
-        leaveProfile: { connect: { id: value.leaveProfileId } },
+        leaveProfileId: value.leaveProfileId,
       },
       where: {
         id: +req.params.userLeaveId,
@@ -292,6 +299,7 @@ exports.updateUserLeave = async (req, res, next) => {
 
 exports.deleteUserLeave = async (req, res, next) => {
   try {
+    console.log(req.params);
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
@@ -337,6 +345,19 @@ exports.getUserLeaveByUserId = async (req, res, next) => {
             leaveName: true,
           },
         },
+      },
+    });
+    res.status(200).json({ userLeave });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUserLeaveById = async (req, res, next) => {
+  try {
+    const userLeave = await prisma.userLeave.findFirst({
+      where: {
+        userId: +req.params,
       },
     });
     res.status(200).json({ userLeave });
@@ -444,6 +465,25 @@ exports.updateLeaveProfile = async (req, res, next) => {
     res
       .status(200)
       .json({ message: "LeaveProfile was updated", updateLeaveProfile });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getConfirmLeaveById = async (req, res, next) => {
+  try {
+    console.log(req.query);
+    const leaveResult = await prisma.requestLeave.findMany({
+      where: {
+        statusRequest: "ACCEPT",
+        userLeave: { userId: +req.query.userId },
+        AND: [
+          { startDate: { lte: req.query.date } },
+          { endDate: { gte: req.query.date } },
+        ],
+      },
+    });
+    res.json({ leaveResult });
   } catch (error) {
     next(error);
   }

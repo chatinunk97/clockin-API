@@ -59,8 +59,27 @@ exports.getAllRequestOT = async (req, res, next) => {
           },
         },
       },
+      include: {
+        User: true,
+      },
     });
     res.status(200).json({ OT });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getRequestOTByUserId = async (req, res, next) => {
+  try {
+    const MyRequestOT = await prisma.requestOT.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      include: {
+        User: true,
+      },
+    });
+    res.status(200).json({ MyRequestOT });
   } catch (error) {
     next(error);
   }

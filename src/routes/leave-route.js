@@ -23,6 +23,11 @@ router.get(
   authenticatedMiddleware,
   leaveController.getRequestLeaveByUserId
 );
+router.get(
+  "/getConfirmLeaveById",
+  authenticatedMiddleware,
+  leaveController.getConfirmLeaveById
+);
 router.post(
   "/createRequestLeave",
   authenticatedMiddleware,
@@ -62,6 +67,11 @@ router.get(
   "/getUserLeave",
   authenticatedMiddleware,
   leaveController.getUserLeaveByUserId
+);
+router.get(
+  "/getUserLeaveById/:userLeaveId",
+  authenticatedMiddleware,
+  leaveController.getUserLeaveById
 );
 
 // leave profile
