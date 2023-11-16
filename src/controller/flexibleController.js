@@ -20,6 +20,9 @@ exports.createFlexible = async (req, res, next) => {
     }
     const flexible = await prisma.flexibleTime.create({
       data: value,
+      include: {
+        timeProfile: true,
+      },
     });
 
     res.status(201).json({ message: "Flexible was created", flexible });
