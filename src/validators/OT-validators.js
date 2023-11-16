@@ -16,8 +16,12 @@ const updateOTSchema = Joi.object({
   messageOT: Joi.string().required(),
   clockId: Joi.number().integer().positive().required(),
 });
+const getRequestOTByIdSchema = Joi.object({
+  requestOTId: Joi.number().integer().positive().required(),
+});
 
 module.exports = {
   createOTSchema,
   updateOTSchema,
+  getRequestOTByIdSchema,
 };
