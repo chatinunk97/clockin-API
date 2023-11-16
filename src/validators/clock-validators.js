@@ -13,7 +13,7 @@ const clockOutSchema = Joi.object({
   clockOutTime: Joi.string().required(),
   latitudeClockOut: Joi.number().required(),
   longitudeClockOut: Joi.number().required(),
-  reasonLocation: Joi.string(),
+  reasonLocation: Joi.string().allow("", null),
 });
 exports.clockOutSchema = clockOutSchema;
 
