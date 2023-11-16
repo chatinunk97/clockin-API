@@ -243,6 +243,18 @@ exports.createUserLeave = async (req, res, next) => {
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
+    console.log(req.body);
+
+    const foundUserLeave = await prisma.userLeave.findFirst({
+      where: {
+        leaveProfileId: req.body.leaveProfileId,
+        userId: +req.body.userId,
+      },
+    });
+
+    if (foundUserLeave) {
+      return next(createError("This leave is already exist", 400));
+    }
 
     const { value, error } = createUserLeaveSchema.validate(req.body);
 
@@ -271,10 +283,6 @@ exports.updateUserLeave = async (req, res, next) => {
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
-    console.log(req.params);
-    console.log(req.body);
-    delete req.body.leaveName;
-    delete req.body.id;
     const { value, error } = updateUserLeaveSchema.validate(req.body);
 
     if (error) {
@@ -289,6 +297,9 @@ exports.updateUserLeave = async (req, res, next) => {
       },
       where: {
         id: +req.params.userLeaveId,
+      },
+      include: {
+        leaveProfile: true,
       },
     });
     res.status(200).json({ userLeave });
