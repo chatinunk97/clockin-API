@@ -380,6 +380,7 @@ exports.getMe = async (req, res, next) => {
       where: {
         id: req.user.companyProfileId,
       },
+      include: { companyLocations: true },
     });
     user.companyProfile = company;
     res.status(200).json({ user });
