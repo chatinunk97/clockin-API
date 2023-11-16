@@ -167,9 +167,8 @@ exports.updateRequestLeave = async (req, res, next) => {
     ) {
       const startDate = new Date(requestLeave.startDate.split("T")[0]);
       const endDate = new Date(requestLeave.endDate.split("T")[0]);
-      console.log(startDate, endDate);
 
-      dateAmount = parseInt((endDate - startDate + 1) / (1000 * 60 * 60 * 24));
+      dateAmount = parseInt((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
     } else if (
       requestLeave.statusRequest === "ACCEPT" &&
       requestLeave.leaveType === "FIRSTHALF"
@@ -283,6 +282,8 @@ exports.updateUserLeave = async (req, res, next) => {
     if (!(req.user.position == "ADMIN" || req.user.position == "HR")) {
       return next(createError("You do not have permission to access", 403));
     }
+
+    delete req.body.leaveName;
     const { value, error } = updateUserLeaveSchema.validate(req.body);
 
     if (error) {
