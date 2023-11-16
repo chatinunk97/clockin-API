@@ -30,7 +30,11 @@ exports.createUser = async (req, res, next) => {
       });
       data.userBossId = adminId.id;
     }
+
     delete data.no;
+    delete data.result;
+    delete data.error;
+    delete data.loading;
     const foundUser = await prisma.user.findFirst({
       where: {
         OR: [{ email: data.email }, { mobile: data.mobile }],
