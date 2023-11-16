@@ -6,6 +6,7 @@ const createOTSchema = Joi.object({
   endTime: Joi.string().required(),
   messageOT: Joi.string().required(),
   clockId: Joi.number().integer().positive().required(),
+  totalTime: Joi.number().integer().positive().required(),
 });
 
 const updateOTSchema = Joi.object({
