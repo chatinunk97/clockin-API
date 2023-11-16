@@ -20,9 +20,10 @@ const createUserLeaveSchema = Joi.object({
   dateAmount: Joi.number().integer().positive().required().allow(0),
 });
 const updateUserLeaveSchema = Joi.object({
+  id: Joi.number().integer().positive().required(),
   userId: Joi.number().integer().positive().required(),
   leaveProfileId: Joi.number().integer().positive(),
-  dateAmount: Joi.number().integer().positive(),
+  dateAmount: Joi.number().integer().positive().allow(0),
 });
 const deleteUserLeaveSchema = Joi.object({
   userLeaveId: Joi.number().integer().positive().required(),
