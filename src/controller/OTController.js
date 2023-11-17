@@ -77,7 +77,8 @@ exports.getAllRequestOT = async (req, res, next) => {
 exports.getAllRequestOTByMonth = async (req, res, next) => {
   try {
     console.log(req.query.date);
-    const OT = await prisma.requestOT.findMany({
+    const OT = await prisma.requestOT.aggregate({
+      _sum: { totalTime : true },
       where: {
         statusOT: "ACCEPT",
         clock: { clockInTime: { startsWith: req.query.date } },
