@@ -320,15 +320,29 @@ exports.getUserById = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: +req.params.userId },
-      include: { clock: true },
+      include: {
+        clock: true,
+        // userRelationshipBoss: ,
+        userRelationshipUser: {
+          select: {
+            userBossId: true,
+          },
+        },
+      },
     });
 
     if (!user || user.length === 0) {
       throw createError(404, "User not found");
     }
+    console.log(user);
 
     delete user.password;
-    res.status(200).json({ message: "Get user", user: user });
+    const userBossId = user.userRelationshipUser[0].userBossId;
+    const bossInfo = await prisma.user.findUnique({
+      where: { id: userBossId },
+    });
+    delete bossInfo.password;
+    res.status(200).json({ message: "Get user", user, bossInfo });
   } catch (error) {
     next(error);
   }
@@ -353,7 +367,6 @@ exports.getAllUser = async (req, res, next) => {
         isActive: true,
         checkLocation: true,
         companyProfileId: true,
-        userRelationshipBoss: true,
         userRelationshipUser: true,
         companyProfile: {
           select: {
@@ -365,6 +378,21 @@ exports.getAllUser = async (req, res, next) => {
         isActive: "desc",
       },
     });
+
+    for (const user of allUser) {
+      if (user.userRelationshipUser.length > 0) {
+        const userBossId = user.userRelationshipUser[0].userBossId; // Assuming one boss for simplicity
+        const boss = await prisma.user.findUnique({
+          where: { id: userBossId },
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        });
+        delete boss.password;
+        user.bossInfo = boss; // Add bossInfo to the user object
+      }
+    }
 
     res.status(200).json({ allUser });
   } catch (error) {
