@@ -32,4 +32,10 @@ router.get(
   OTController.getAllMyRequestOT
 );
 
+router.get(
+  "/getRequestOT/:requestOTId",
+  authenticatedMiddleware,
+  OTController.getOTById
+);
+
 module.exports = router;

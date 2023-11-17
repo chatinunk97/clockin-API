@@ -1,6 +1,9 @@
 const prisma = require("../models/prisma");
 const createError = require("../utils/create-error");
-const { createOTSchema } = require("../validators/OT-validators");
+const {
+  createOTSchema,
+  getRequestOTByIdSchema,
+} = require("../validators/OT-validators");
 
 exports.requestOT = async (req, res, next) => {
   try {
@@ -32,16 +35,19 @@ exports.updateRequestOT = async (req, res, next) => {
     const foundOT = await prisma.requestOT.findFirst({
       where: { id: +req.body.id },
     });
+
     if (!foundOT) {
       return next(createError("Not found", 400));
     }
 
     const OT = await prisma.requestOT.update({
-      data: req.body,
+      data: {
+        statusOT: req.body.statusOT, // Corrected field name to 'statusOT'
+      },
       where: { id: +req.body.id },
     });
 
-    res.status(200).json({ message: "OT was updated", OT });
+    res.status(200).json({ message: "OT status was updated", OT });
   } catch (error) {
     next(error);
   }
@@ -109,6 +115,38 @@ exports.getAllMyRequestOT = async (req, res, next) => {
       },
     });
     res.status(201).json({ OT });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getOTById = async (req, res, next) => {
+  try {
+    console.log(req.params);
+    const { value, error } = getRequestOTByIdSchema.validate(req.params);
+
+    if (error) {
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const requestOTId = await prisma.requestOT.findUnique({
+      where: {
+        id: value.requestOTId,
+      },
+      include: {
+        User: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+        clock: true,
+      },
+    });
+
+    console.log(requestOTId, "sldpslpdsl");
+    res.status(200).json({ requestOTId });
   } catch (error) {
     next(error);
   }

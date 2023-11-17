@@ -20,6 +20,9 @@ exports.createFlexible = async (req, res, next) => {
     }
     const flexible = await prisma.flexibleTime.create({
       data: value,
+      include: {
+        timeProfile: true,
+      },
     });
 
     res.status(201).json({ message: "Flexible was created", flexible });
@@ -60,16 +63,17 @@ exports.getFlexibleByUserId = async (req, res, next) => {
   try {
     const flexible = await prisma.flexibleTime.findMany({
       where: {
-        id: +req.params.id,
+        userId: +req.params.id,
       },
       include: {
         timeProfile: true,
       },
     });
+    console.log(flexible, "ggdfgdf");
     if (!flexible) {
       throw createError("flexible time not found", 404);
     }
-    res.status(200).json({ message: "Get flexible", flexible: flexible });
+    res.status(200).json({ flexible });
   } catch (error) {
     next(error);
   }

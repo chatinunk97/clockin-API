@@ -201,6 +201,7 @@ model requestOT {
   clock     Clock   @relation(fields: [clockId], references: [id])
   startTime String
   endTime   String
+  totalTime Int
   statusOT  stateOT @default(PENDING)
   messageOT String
 }
