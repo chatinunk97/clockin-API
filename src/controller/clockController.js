@@ -209,6 +209,7 @@ exports.allStatus = async (req, res, next) => {
       by: ["statusClockIn"],
       where: {
         user: { companyProfileId: req.user.companyProfileId },
+        clockInTime: { startsWith: req.query.date },
       },
       _count: true,
     });
@@ -216,6 +217,7 @@ exports.allStatus = async (req, res, next) => {
     const requestLeaveCounts = await prisma.requestLeave.groupBy({
       by: ["statusRequest"],
       where: {
+        startDate: { startsWith: req.query.date },
         userLeave: {
           user: { companyProfileId: req.user.companyProfileId },
         },
@@ -233,13 +235,15 @@ exports.allStatus = async (req, res, next) => {
 };
 exports.statusClockIn = async (req, res, next) => {
   try {
+    console.log(req.query, "+++++++++++++statusClockIn+++++++++++++++++");
     const lateClockInsCount = await prisma.clock.count({
       where: {
         user: { companyProfileId: req.user.companyProfileId },
+        clockInTime: { startsWith: req.query.date },
         statusClockIn: "LATE",
       },
     });
-
+    console.log(lateClockInsCount);
     res.status(200).json({ lateClockInsCount });
   } catch (error) {
     next(error);

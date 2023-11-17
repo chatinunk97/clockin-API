@@ -68,6 +68,21 @@ exports.getAllRequestOT = async (req, res, next) => {
     next(error);
   }
 };
+exports.getAllRequestOTByMonth = async (req, res, next) => {
+  try {
+    console.log(req.query.date);
+    const OT = await prisma.requestOT.findMany({
+      where: {
+        statusOT: "ACCEPT",
+        clock: { clockInTime: { startsWith: req.query.date } },
+        User: { companyProfileId: req.user.companyProfileId },
+      },
+    });
+    res.status(200).json({ OT });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.getRequestOTByUserId = async (req, res, next) => {
   try {

@@ -17,6 +17,11 @@ router.patch(
 );
 router.get("/requestOT", authenticatedMiddleware, OTController.getAllRequestOT);
 router.get(
+  "/getAllRequestOTByMonth",
+  authenticatedMiddleware,
+  OTController.getAllRequestOTByMonth
+);
+router.get(
   "/getRequestOTByUserId",
   authenticatedMiddleware,
   OTController.getRequestOTByUserId
