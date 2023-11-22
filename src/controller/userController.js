@@ -433,7 +433,7 @@ exports.resetPassword = async (req, res, next) => {
       where: { id: req.user.id },
     });
 
-    res.status(200).json({ message: "Password was reset" });
+    res.status(200).json({ message: "Account setup done" });
   } catch (error) {
     next(error);
   }
