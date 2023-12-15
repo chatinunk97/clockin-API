@@ -42,7 +42,6 @@ app.use(
   })
 );
 //Default Middleware
-app.use(cors());
 app.use(requestLimitMiddleware);
 app.use(morgan("dev"));
 app.use(express.json());
