@@ -17,6 +17,29 @@ const flexibleRoute = require("./routes/flexible-route");
 const requestLimitMiddleware = require("./middleware/defaultMiddleware/requestLimit");
 const errorMiddleware = require("../src/middleware/defaultMiddleware/error");
 const notFoundMiddleware = require("../src/middleware/defaultMiddleware/not-found");
+
+// CORS configuration with specific origins
+
+const allowedOrigins = [
+  "http://localhost:5173/",
+  "https://your-cloud-app-domain.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const message =
+          "The CORS policy for this site does not allow access from the specified origin.";
+        return callback(new Error(message), false);
+      }
+
+      return callback(null, true);
+    },
+  })
+);
 //Default Middleware
 app.use(cors());
 app.use(requestLimitMiddleware);
