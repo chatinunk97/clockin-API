@@ -21,8 +21,9 @@ const notFoundMiddleware = require("../src/middleware/defaultMiddleware/not-foun
 // CORS configuration with specific origins
 
 const allowedOrigins = [
-  "http://localhost:5173/",
+  "http://localhost:5173",
   "https://clouclockapi.onrender.com",
+  "https://clockin-react-chatinuns-projects.vercel.app",
 ];
 
 app.use(
