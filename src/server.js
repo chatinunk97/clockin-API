@@ -22,7 +22,7 @@ const notFoundMiddleware = require("../src/middleware/defaultMiddleware/not-foun
 
 const allowedOrigins = [
   "http://localhost:5173/",
-  "https://your-cloud-app-domain.com",
+  "https://clockin-react-x6v0f4wnj-chatinuns-projects.vercel.app",
 ];
 
 app.use(
