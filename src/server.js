@@ -22,7 +22,7 @@ const notFoundMiddleware = require("../src/middleware/defaultMiddleware/not-foun
 
 const allowedOrigins = [
   "http://localhost:5173/",
-  "https://clockin-react-chatinuns-projects.vercel.app",
+  "https://clouclockapi.onrender.com",
 ];
 
 app.use(
