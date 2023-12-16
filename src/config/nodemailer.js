@@ -2,7 +2,9 @@ const nodemailer = require("nodemailer");
 const mailbody = require("../mail/mailbody");
 
 const nodemailerSender = (email, link) => {
-  const mailBody = mailbody(`http://localhost:5173/setpassword?token=${link}`);
+  const mailBody = mailbody(
+    `https://clockin-react-chatinuns-projects.vercel.app/setpassword?token=${link}`
+  );
 
   let transporter = nodemailer.createTransport({
     service: "gmail",
