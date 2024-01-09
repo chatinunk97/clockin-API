@@ -24,6 +24,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://clouclockapi.onrender.com",
   "https://clockin-react-chatinuns-projects.vercel.app",
+  "https://clockin-react.vercel.app",
 ];
 
 app.use(
