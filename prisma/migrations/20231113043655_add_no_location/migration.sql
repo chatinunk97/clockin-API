@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `clock` MODIFY `statusClockIn` ENUM('ONTIME', 'LATE', 'NOLOCATION') NOT NULL DEFAULT 'ONTIME';
