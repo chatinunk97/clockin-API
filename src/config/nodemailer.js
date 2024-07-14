@@ -3,11 +3,11 @@ const mailbody = require("../mail/mailbody");
 
 const nodemailerSender = (email, link) => {
   const mailBody = mailbody(
-    // //For Deployment
-    // `https://clockin-react-chatinuns-projects.vercel.app/setpassword?token=${link}`
+    //For Deployment
+    `https://clockin-react.vercel.app/setpassword?token=${link}`
 
-    //For Local
-     `http://localhost:5173/setpassword?token=${link}`
+    // //For Local
+    //  `http://localhost:5173/setpassword?token=${link}`
   );
 
   let transporter = nodemailer.createTransport({
